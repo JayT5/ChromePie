@@ -14,8 +14,6 @@
      limitations under the License.
 -->
 
-<!-- Used by browserbarbutton to show a clear background for the non pressed
-        state -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/tab_nr"
     android:shape="oval">
