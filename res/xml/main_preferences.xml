@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:name="pref_screen_name" android:key="pref_screen_key">
+
+    <Preference
+        android:key="kill_chrome"
+        android:title="@string/kill_chrome"
+        android:summary="@string/kill_chrome_summary" />
+    <ListPreference
+        android:key="trigger_side"
+        android:title="@string/trigger_side"
+        android:entries="@array/trigger_side_entries"
+        android:entryValues="@array/trigger_side_values"
+        android:defaultValue="both" />
+    <PreferenceCategory
+        android:key="pie_slices_cat"
+        android:title="@string/pie_slices_cat" />
+    <Preference
+        android:key="new_slice"
+        android:title="@string/new_slice"
+        android:icon="@drawable/ic_action_new" />
+
+</PreferenceScreen>

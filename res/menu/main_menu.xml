@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/actionbar_kill"
+        android:icon="@drawable/ic_action_refresh"
+        android:title="@string/menu_kill"
+        android:showAsAction="always" />
+    
+    <item
+        android:id="@+id/menu_help"
+        android:title="@string/app_help_title"
+        android:showAsAction="withText" />
+    
+</menu>

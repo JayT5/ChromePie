@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="pie_item_entries" translatable="false">
+        <item>@string/none</item>
+        <item>@string/back</item>
+        <item>@string/forward</item>
+        <item>@string/refresh</item>
+        <item>@string/new_tab</item>
+        <item>@string/new_incognito_tab</item>
+        <item>@string/close_tab</item>
+        <item>@string/close_all</item>
+        <item>@string/bookmarks</item>
+        <item>@string/add_bookmark</item>
+        <item>@string/history</item>
+        <item>@string/most_visited</item>
+        <item>@string/recent_tabs</item>
+        <item>@string/show_tabs</item>
+        <item>@string/add_to_home</item>
+        <item>@string/find_in_page</item>
+        <item>@string/edit_url</item>
+        <item>@string/desktop_site</item>
+        <item>@string/fullscreen</item>
+        <item>@string/scroll_to_top</item>
+        <item>@string/share</item>
+        <item>@string/print</item>
+        <item>@string/settings</item>
+        <item>@string/help</item>
+    </string-array>
+    
+    <string-array name="pie_item_values" translatable="false">
+        <item>none</item>
+        <item>back</item>
+        <item>forward</item>
+        <item>refresh</item>
+        <item>new_tab</item>
+        <item>new_incognito_tab</item>
+        <item>close_tab</item>
+        <item>close_all</item>
+        <item>bookmarks</item>
+        <item>add_bookmark</item>
+        <item>history</item>
+        <item>most_visited</item>
+        <item>recent_tabs</item>
+        <item>show_tabs</item>
+        <item>add_to_home</item>
+        <item>find_in_page</item>
+        <item>edit_url</item>
+        <item>desktop_site</item>
+        <item>fullscreen</item>
+        <item>scroll_to_top</item>
+        <item>share</item>
+        <item>print</item>
+        <item>settings</item>
+        <item>help</item>
+    </string-array>
+
+    <string-array name="pie_item_dark_drawables" translatable="false">
+        <item>null_icon</item>
+        <item>ic_action_back</item>
+        <item>ic_action_forward</item>
+        <item>ic_action_refresh</item>
+        <item>ic_action_new</item>
+        <item>ic_new_incognito_holo_dark</item>
+        <item>ic_action_remove</item>
+        <item>ic_close_all_holo_dark</item>
+        <item>ic_bookmarks_holo_dark</item>
+        <item>ic_action_not_important</item>
+        <item>ic_history_holo_dark</item>
+        <item>ic_action_view_as_grid</item>
+        <item>ic_action_collection</item>
+        <item>ic_windows_holo_dark</item>
+        <item>ic_action_home</item>
+        <item>ic_action_search</item>
+        <item>ic_action_web_site</item>
+        <item>ic_desktop_holo_dark</item>
+        <item>ic_action_full_screen</item>
+        <item>ic_action_collapse</item>
+        <item>ic_action_share</item>
+        <item>ic_menu_add_print_job</item>
+        <item>ic_action_settings</item>
+        <item>ic_action_help</item>
+    </string-array>
+    
+    <string-array name="pie_item_actions" translatable="false">
+        <item></item>
+        <item>back_menu_id</item>
+        <item>forward_menu_id</item>
+        <item></item>
+        <item>new_tab_menu_id</item>
+        <item>new_incognito_tab_menu_id</item>
+        <item></item>
+        <item></item>
+        <item>all_bookmarks_menu_id</item>
+        <item>bookmark_this_page_id</item>
+        <item>open_history_menu_id</item>
+        <item></item>
+        <item>recent_tabs_menu_id</item>
+        <item></item>
+        <item>add_to_homescreen_id</item>
+        <item>find_in_page_id</item>
+        <item></item>
+        <item>request_desktop_site_id</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item>print_id</item>
+        <item>preferences_id</item>
+        <item>help_id</item>
+    </string-array>
+
+    <string-array name="trigger_side_entries" translatable="false">
+        <item>@string/ts_right</item>
+        <item>@string/ts_left</item>
+        <item>@string/ts_both</item>
+    </string-array>
+    
+    <string-array name="trigger_side_values" translatable="false">
+        <item>right</item>
+        <item>left</item>
+        <item>both</item>
+    </string-array>
+
+</resources>
