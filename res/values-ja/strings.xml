@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ChromePie</string>
+    <string name="app_description">Google Chromeにパイ操作機能を追加します</string>
+    <string name="app_about">ChromePieはカスタマイズできるパイ操作機能を、Google ChromeとGoogle Chrome Betaに追加するXposedモジュールです。\n\n
+        内蔵している機能:
+        \n•   戻る、進む、再読み込み、新しいタブ、新しいシークレットタブ、タブを閉じる
+        \n•   ブックマークに追加、履歴、PC版サイトを見る、ページ内検索
+        \n•   ホーム画面に追加、共有、一番上へスクロール、全画面表示など
+    </string>
+    <string name="app_help">「新しいスライスの追加」をタップすると、パイメニューを開いたとき最初に表示される
+        メインアイテムを追加できます。メインアイテムに指をスライドしたときに
+        表示されるサブアイテムを追加することもできます。作成したメインアイテムの数だけ
+        サブアイテムを表示できます。アクションを実行するには、
+        アイテムを選んだ状態で指を離してください。スライスを変更した後はChromeを再起動しないといけません。
+    </string>
+    <string name="app_version">バージョン: %s</string>
+    <string name="app_help_title">ヘルプ</string>
+
+    <string name="kill_chrome">Chromeの再起動</string>
+    <string name="kill_chrome_summary">スライスを変更した後はこのオプションでChromeを再起動しないといけません。</string>
+    <string name="menu_kill">Chromeのキル</string>
+    
+    <string name="new_slice">新しいスライスの追加</string>
+    <string name="pie_slices_cat">パイスライス</string>
+    
+    <string name="trigger_side">トリガー領域</string>
+    <string name="ts_right">右</string>
+    <string name="ts_left">左</string>
+    <string name="ts_both">左右</string>
+    
+    <!-- Pie items -->
+    <string name="none">なし</string>
+    <string name="back">戻る</string>
+    <string name="forward">進む</string>
+    <string name="refresh">再読み込み</string>
+    <string name="edit_url">URLの編集</string>
+    <string name="find_in_page">ページ内検索</string>
+    <string name="share">共有</string>
+    <string name="bookmarks">ブックマーク</string>
+    <string name="add_bookmark">ブックマークに追加</string>
+    <string name="history">履歴</string>
+    <string name="new_tab">新しいタブ</string>
+    <string name="close_tab">タブを閉じる</string>
+    <string name="new_incognito_tab">新しいシークレットタブ</string>
+    <string name="close_all">タブを全て閉じる</string>
+    <string name="show_tabs">タブの表示</string>
+    <string name="fullscreen">全画面表示</string>
+    <string name="settings">設定</string>
+    <string name="desktop_site">PC版サイトを見る</string>
+    <string name="add_to_home">ホーム画面に追加</string>
+    <string name="recent_tabs">最近使ったタブ</string>
+    <string name="most_visited">よくアクセスするページ</string>
+    <string name="print">印刷</string>
+    <string name="help">ヘルプ</string>
+    <string name="scroll_to_top">一番上へスクロール</string>
+
+</resources>
