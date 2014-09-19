@@ -34,11 +34,15 @@ public class Controller {
     }
 
     Boolean itemSelected(int id) {
+        Boolean success = false;
         if (id != 0) {
-            Boolean selected = (Boolean) callMethod(mActivity, "onOptionsItemSelected", id);
-            return selected;
+            try {
+                success = (Boolean) callMethod(mActivity, ChromePie.ITEM_SELECTED_METHOD, id);
+            } catch (NoSuchMethodError nsme) {
+                XposedBridge.log(TAG + nsme);
+            }
         }
-        return false;
+        return success;
     }
 
     Object getCurrentTab() {

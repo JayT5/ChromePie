@@ -16,6 +16,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
 
     static String CHROME_PACKAGE;
+    static String ITEM_SELECTED_METHOD = "onOptionsItemSelected";
+
     private String MODULE_PATH;
     private XModuleResources mModRes;
     private FrameLayout mContentContainer;
@@ -99,7 +101,14 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
 
                 final Class<?> chromeActivityClass = XposedHelpers.findClass(CHROME_TABBED_ACTIVITY_CLASS, classLoader);
 
-                XposedHelpers.findMethodExact(chromeActivityClass, "onOptionsItemSelected", int.class);
+                // Newest Chrome Beta now using different item selected method
+                try {
+                    XposedHelpers.findMethodExact(chromeActivityClass, "onOptionsItemSelected", int.class);
+                } catch (NoSuchMethodError nsme) {
+                    XposedHelpers.findMethodExact(chromeActivityClass, "onMenuOrKeyboardAction", int.class);
+                    ITEM_SELECTED_METHOD = "onMenuOrKeyboardAction";
+                }
+
                 XposedHelpers.findAndHookMethod(chromeActivityClass, "onStart", new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
