@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ChromePie</string>
+    <string name="app_description">Добавление элементов управления в Google Chrome</string>
+    <string name="app_about">"ChromePie представляет собой Xposed модуль, который добавляет настраиваемые элементы управления в Google Chrome и Google Chrome Beta.
+
+Действия:
+• Назад, вперед, обновить, новая вкладка, новая вкладка инкогнито, закрыть вкладку
+• Добавить закладку, история, переход на полную версию, поиск на странице
+• Добавить на главный экран, отправить, перейти к началу, на весь экран и  т.д."</string>
+    <string name="app_help">"Нажмите \"Добавить новый элемент\", чтобы добавить основной элемент, который будет изначально отображаться при открытии меню. Основные элементы могут содержать подпункты, которые появляются, когда Вы перемещаете палец на основной элемент. Количество отображаемых подпунктов равно числу основных элементов. Для выполнения действий выберите элемент и поднимите палец. Для применения любых изменений требуются перезапуск Chrome."</string>
+    <string name="app_version">Версия: %s</string>
+    <string name="app_help_title">Справка</string>
+    <string name="kill_chrome">Перезапуск Chrome</string>
+    <string name="kill_chrome_summary">Перезапуск Chrome для применения изменений</string>
+    <string name="menu_kill">Закрыть Chrome</string>
+    <string name="new_slice">Добавить новый элемент</string>
+    <string name="pie_slices_cat">Элементы</string>
+    <string name="trigger_side">Сторона запуска</string>
+    <string name="ts_right">Правая</string>
+    <string name="ts_left">Левая</string>
+    <string name="ts_both">Правая и левая</string>
+    <string name="none">Нет</string>
+    <string name="back">Назад</string>
+    <string name="forward">Вперед</string>
+    <string name="refresh">Обновить</string>
+    <string name="edit_url">Изменить URL</string>
+    <string name="find_in_page">Поиск на странице</string>
+    <string name="share">Отправить</string>
+    <string name="bookmarks">Закладки</string>
+    <string name="add_bookmark">Добавить закладку</string>
+    <string name="history">История</string>
+    <string name="new_tab">Новая вкладка</string>
+    <string name="close_tab">Закрыть вкладку</string>
+    <string name="new_incognito_tab">Новая вкладка инкогнито</string>
+    <string name="close_all">Закрыть все</string>
+    <string name="show_tabs">Показать вкладки</string>
+    <string name="fullscreen">На весь экран</string>
+    <string name="settings">Настройки</string>
+    <string name="desktop_site">Полная версия</string>
+    <string name="add_to_home">Добавить на главный экран</string>
+    <string name="recent_tabs">Недавно открытые вкладки</string>
+    <string name="most_visited">Часто посещаемые</string>
+    <string name="print">Печать</string>
+    <string name="help">Справка</string>
+    <string name="scroll_to_top">Перейти к началу</string>
+</resources>
