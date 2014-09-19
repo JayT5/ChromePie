@@ -26,6 +26,13 @@ class Action_main implements Action {
             Activity activity = control.getChromeActivity();
             try {
                 callMethod(activity, "goBack");
+                return;
+            } catch (NoSuchMethodError nsme) {
+
+            }
+            Object tab = control.getCurrentTab();
+            try {
+                callMethod(tab, "goBack");
             } catch (NoSuchMethodError nsme) {
                 XposedBridge.log(TAG + nsme);
             }
