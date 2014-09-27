@@ -227,9 +227,9 @@ public class PieMenu extends FrameLayout {
         mOpen = show && (mControl.getTabCount() > 0) && !mControl.isInOverview() && !mControl.isInFullscreenVideo();
         String side = mControl.getTriggerSide();
         if (side.equals("left")) {
-            mOpen = mOpen && onTheLeft();
+            mOpen &= onTheLeft();
         } else if (side.equals("right")) {
-            mOpen = mOpen && !onTheLeft();
+            mOpen &= !onTheLeft();
         }
         if (mOpen) {
             // ensure clean state
