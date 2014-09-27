@@ -81,7 +81,7 @@ public class PieItem {
     public void setAlpha(float alpha) {
         mAlpha = alpha;
         if (mView != null) {
-            if (mId.equals("show_tabs") ) {
+            if (mId.equals("show_tabs")) {
                 final ImageView iv = (ImageView) ((ViewGroup) mView).getChildAt(0);
                 final TextView tv = (TextView) ((ViewGroup) mView).getChildAt(1);
                 final int alphaInt = Math.round(alpha * 255);
@@ -109,7 +109,7 @@ public class PieItem {
     public void setEnabled(boolean enabled) {
         mEnabled = enabled;
     }
-    
+
     public boolean isEnabled() {
         return mEnabled;
     }
@@ -117,7 +117,7 @@ public class PieItem {
     public String getId() {
         return mId;
     }
-    
+
     public String getAction() {
         return mAction;
     }
