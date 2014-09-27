@@ -86,6 +86,7 @@ public class PieMenu extends FrameLayout {
     private boolean mOpen;
     private PieController mController;
     private Controller mControl;
+    private ValueAnimator mAnimator;
 
     private List<PieItem> mItems;
     private int mLevels;
@@ -232,6 +233,9 @@ public class PieMenu extends FrameLayout {
         }
         if (mOpen) {
             // ensure clean state
+            if (mAnimator != null) {
+                mAnimator.cancel();
+            }
             mAnimating = false;
             mCurrentItem = null;
             mOpenItem = null;
@@ -240,6 +244,7 @@ public class PieMenu extends FrameLayout {
             mCurrentItems = mItems;
             for (PieItem item : mCurrentItems) {
                 item.setSelected(false);
+                item.setAlpha(0f);
             }
             if (mController != null) {
                 boolean changed = mController.onOpen();
@@ -251,19 +256,22 @@ public class PieMenu extends FrameLayout {
     }
 
     private void animateOpen() {
-        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-        anim.addUpdateListener(new AnimatorUpdateListener() {
+        mAnimator = ValueAnimator.ofFloat(0, 1);
+        mAnimator.addUpdateListener(new AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
+                final float animFraction = animation.getAnimatedFraction();
+                final float alpha = (animFraction * 2) - 1;
                 for (PieItem item : mCurrentItems) {
-                    item.setAnimationAngle((1 - animation.getAnimatedFraction()) * (- item.getStart()));
+                    item.setAnimationAngle((1 - animFraction) * (- item.getStart()));
+                    if (animFraction > 0.5) item.setAlpha(alpha);
                 }
                 invalidate();
             }
 
         });
-        anim.setDuration(2*ANIMATION);
-        anim.start();
+        mAnimator.setDuration(2*ANIMATION);
+        mAnimator.start();
     }
 
     private void setCenter(int x, int y) {
@@ -520,35 +528,43 @@ public class PieMenu extends FrameLayout {
     private void animateOut(final PieItem fixed, AnimatorListener listener) {
         if ((mCurrentItems == null) || (fixed == null)) return;
         final float target = fixed.getStartAngle();
-        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-        anim.addUpdateListener(new AnimatorUpdateListener() {
+        mAnimator = ValueAnimator.ofFloat(0, 1);
+        mAnimator.addUpdateListener(new AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
+                final float animFraction = animation.getAnimatedFraction();
+                final float alpha = (animFraction < 0.5) ?
+                        ((1 - animFraction) * 2) - 1 : 0;
                 for (PieItem item : mCurrentItems) {
                     if (item != fixed) {
-                        item.setAnimationAngle(animation.getAnimatedFraction()
+                        item.setAnimationAngle(animFraction
                                 * (target - item.getStart()));
+                        item.setAlpha(alpha);
                     }
                 }
                 invalidate();
             }
         });
-        anim.setDuration(ANIMATION);
-        anim.addListener(listener);
-        anim.start();
+        mAnimator.setDuration(ANIMATION);
+        mAnimator.addListener(listener);
+        mAnimator.start();
     }
 
     private void animateIn(final PieItem fixed, AnimatorListener listener) {
         if ((mCurrentItems == null) || (fixed == null)) return;
         final float target = fixed.getStartAngle();
-        ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-        anim.addUpdateListener(new AnimatorUpdateListener() {
+        mAnimator = ValueAnimator.ofFloat(0, 1);
+        mAnimator.addUpdateListener(new AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
+                final float animFraction = animation.getAnimatedFraction();
+                final float alpha = (animFraction > 0.5) ?
+                        (animFraction * 2) - 1 : 0;
                 for (PieItem item : mCurrentItems) {
                     if (item != fixed) {
-                        item.setAnimationAngle((1 - animation.getAnimatedFraction())
+                        item.setAnimationAngle((1 - animFraction)
                                 * (target - item.getStart()));
+                        item.setAlpha(alpha);
                     }
                 }
                 invalidate();
@@ -556,9 +572,9 @@ public class PieMenu extends FrameLayout {
             }
 
         });
-        anim.setDuration(ANIMATION);
-        anim.addListener(listener);
-        anim.start();
+        mAnimator.setDuration(ANIMATION);
+        mAnimator.addListener(listener);
+        mAnimator.start();
     }
 
     private void openSub(final PieItem item) {

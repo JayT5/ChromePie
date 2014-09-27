@@ -19,8 +19,11 @@ package com.jt5.xposed.chromepie.view;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.Color;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.jt5.xposed.chromepie.view.PieMenu.PieView;
 
@@ -35,6 +38,7 @@ public class PieItem {
     private float start;
     private float sweep;
     private float animate;
+    private float mAlpha;
     private int inner;
     private int outer;
     private boolean mSelected;
@@ -49,8 +53,6 @@ public class PieItem {
         mAction = action;
         this.level = level;
         mEnabled = true;
-        setAnimationAngle(getAnimationAngle());
-        setAlpha(getAlpha());
     }
 
     public PieItem(View view, int level, PieView sym) {
@@ -75,17 +77,25 @@ public class PieItem {
         mItems.add(item);
     }
 
+    @SuppressWarnings("deprecation")
     public void setAlpha(float alpha) {
+        mAlpha = alpha;
         if (mView != null) {
-            mView.setAlpha(alpha);
+            if (mId.equals("show_tabs") ) {
+                final ImageView iv = (ImageView) ((ViewGroup) mView).getChildAt(0);
+                final TextView tv = (TextView) ((ViewGroup) mView).getChildAt(1);
+                final int alphaInt = Math.round(alpha * 255);
+                iv.setAlpha(alphaInt);
+                tv.setTextColor(Color.argb(alphaInt, 255, 255, 255));
+                tv.getBackground().setAlpha(alphaInt);
+            } else {
+                ((ImageView) mView).setAlpha(Math.round(alpha * (mEnabled ? 255 : 77)));
+            }
         }
     }
 
     public float getAlpha() {
-        if (mView != null) {
-            return mView.getAlpha();
-        }
-        return 1;
+        return mAlpha;
     }
 
     public void setAnimationAngle(float a) {
@@ -97,11 +107,6 @@ public class PieItem {
     }
 
     public void setEnabled(boolean enabled) {
-        if (enabled) {
-            ((ImageView) getView()).getDrawable().setAlpha(255);
-        } else {
-            ((ImageView) getView()).getDrawable().setAlpha(77);
-        }
         mEnabled = enabled;
     }
     
