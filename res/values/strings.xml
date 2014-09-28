@@ -56,5 +56,6 @@
     <string name="print">Print</string>
     <string name="help">Help</string>
     <string name="scroll_to_top">Scroll to top</string>
+    <string name="exit">Exit</string>
 
 </resources>

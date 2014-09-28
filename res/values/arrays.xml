@@ -26,6 +26,7 @@
         <item>@string/print</item>
         <item>@string/settings</item>
         <item>@string/help</item>
+        <item>@string/exit</item>
     </string-array>
     
     <string-array name="pie_item_values" translatable="false">
@@ -53,6 +54,7 @@
         <item>print</item>
         <item>settings</item>
         <item>help</item>
+        <item>exit</item>
     </string-array>
 
     <string-array name="pie_item_dark_drawables" translatable="false">
@@ -80,6 +82,7 @@
         <item>ic_menu_add_print_job</item>
         <item>ic_action_settings</item>
         <item>ic_action_help</item>
+        <item>ic_action_exit</item>
     </string-array>
     
     <string-array name="pie_item_actions" translatable="false">
@@ -107,6 +110,7 @@
         <item>print_id</item>
         <item>preferences_id</item>
         <item>help_id</item>
+        <item></item>
     </string-array>
 
     <string-array name="trigger_side_entries" translatable="false">

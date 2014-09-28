@@ -181,3 +181,10 @@ class Action_close_all implements Action {
         control.itemSelected(id);
     }
 }
+
+class Action_exit implements Action {
+    @Override
+    public void execute(Controller control) {
+        control.getChromeActivity().finish();
+    }
+}
