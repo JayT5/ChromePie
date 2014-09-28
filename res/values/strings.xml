@@ -57,5 +57,7 @@
     <string name="help">Help</string>
     <string name="scroll_to_top">Scroll to top</string>
     <string name="exit">Exit</string>
+    <string name="next_tab">Next tab</string>
+    <string name="previous_tab">Previous tab</string>
 
 </resources>

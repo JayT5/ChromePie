@@ -188,3 +188,25 @@ class Action_exit implements Action {
         control.getChromeActivity().finish();
     }
 }
+
+class Action_next_tab implements Action {
+    @Override
+    public void execute(Controller control) {
+        Integer index = control.getCurrentTabIndex();
+        if (index == -1) {
+            return;
+        }
+        control.showTabByIndex(index + 1);
+    }
+}
+
+class Action_previous_tab implements Action {
+    @Override
+    public void execute(Controller control) {
+        Integer index = control.getCurrentTabIndex();
+        if (index == -1) {
+            return;
+        }
+        control.showTabByIndex(index - 1);
+    }
+}

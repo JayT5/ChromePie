@@ -69,6 +69,49 @@ public class Controller {
         }
     }
 
+    Integer getCurrentTabIndex() {
+        try {
+            return (Integer) callMethod(getTabModel(), "indexOf", getCurrentTab());
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+            return -1;
+        }
+    }
+
+    Boolean tabExistsAtIndex(Integer i) {
+        try {
+            return callMethod(getTabModel(), "getTabAt", getCurrentTabIndex() + i) != null;
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return callMethod(getTabModel(), "getTab", getCurrentTabIndex() + i) != null;
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+            return false;
+        }
+    }
+
+    void showTabByIndex(int index) {
+        try {
+            callMethod(getTabModel(), "setIndex", index);
+            return;
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        Class<?> modelUtils;
+        try {
+            modelUtils = XposedHelpers.findClass("org.chromium.chrome.browser.tabmodel.TabModelUtils", mClassLoader);
+        } catch (ClassNotFoundError cnfe) {
+            modelUtils = XposedHelpers.findClass("com.google.android.apps.chrome.tabmodel.TabModelUtils", mClassLoader);
+        }
+        try {
+            XposedHelpers.callStaticMethod(modelUtils, "setIndex", getTabModel(), index);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+    }
+
     void loadUrl(String url) {
         Object tab = getCurrentTab();
         try {

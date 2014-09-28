@@ -27,6 +27,8 @@
         <item>@string/settings</item>
         <item>@string/help</item>
         <item>@string/exit</item>
+        <item>@string/next_tab</item>
+        <item>@string/previous_tab</item>
     </string-array>
     
     <string-array name="pie_item_values" translatable="false">
@@ -55,6 +57,8 @@
         <item>settings</item>
         <item>help</item>
         <item>exit</item>
+        <item>next_tab</item>
+        <item>previous_tab</item>
     </string-array>
 
     <string-array name="pie_item_dark_drawables" translatable="false">
@@ -83,6 +87,8 @@
         <item>ic_action_settings</item>
         <item>ic_action_help</item>
         <item>ic_action_exit</item>
+        <item>ic_action_next_item</item>
+        <item>ic_action_previous_item</item>
     </string-array>
     
     <string-array name="pie_item_actions" translatable="false">
@@ -110,6 +116,8 @@
         <item>print_id</item>
         <item>preferences_id</item>
         <item>help_id</item>
+        <item></item>
+        <item></item>
         <item></item>
     </string-array>
 
