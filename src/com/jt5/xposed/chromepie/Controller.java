@@ -188,7 +188,7 @@ public class Controller {
     void closeCurrentTab() {
         Object model = getTabModel();
         try {
-            callMethod(model, "closeCurrentTab");
+            callMethod(model, "closeTab", getCurrentTab(), true, false, true);
             return;
         } catch (NoSuchMethodError nsme) {
 
@@ -198,7 +198,6 @@ public class Controller {
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
-
     }
 
     public int getTabCount() {
