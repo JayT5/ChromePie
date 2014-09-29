@@ -32,8 +32,11 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
         addPreferencesFromResource(R.xml.main_preferences);
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        pieSlicesCat = (PreferenceCategory) findPreference("pie_slices_cat");
+        if (!mSharedPrefs.contains("screen_slice_1")) {
+            loadDefaultValues(false);
+        }
 
+        pieSlicesCat = (PreferenceCategory) findPreference("pie_slices_cat");
         final Preference killChrome = findPreference("kill_chrome");
         killChrome.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
@@ -56,6 +59,11 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
         });
 
         loadPreferences();
+    }
+
+    @SuppressWarnings("deprecation")
+    private void loadDefaultValues(boolean readAgain) {
+        PreferenceManager.setDefaultValues(getActivity(), getPreferenceManager().getSharedPreferencesName(), Context.MODE_WORLD_READABLE, R.xml.aosp_preferences, readAgain);
     }
 
     private void loadPreferences() {
