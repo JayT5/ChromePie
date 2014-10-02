@@ -71,8 +71,9 @@ public class PieSettings extends PreferenceActivity {
             case R.id.menu_help:
                 showHelpDialog();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private void showHelpDialog() {

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -16,6 +17,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.view.MenuItem;
 import android.widget.BaseAdapter;
 
 import com.jt5.xposed.chromepie.preference.PieMainPreference;
@@ -29,6 +31,7 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
         addPreferencesFromResource(R.xml.main_preferences);
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -63,7 +66,16 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
 
     @SuppressWarnings("deprecation")
     private void loadDefaultValues(boolean readAgain) {
-        PreferenceManager.setDefaultValues(getActivity(), getPreferenceManager().getSharedPreferencesName(), Context.MODE_WORLD_READABLE, R.xml.aosp_preferences, readAgain);
+        PreferenceManager.setDefaultValues(getActivity(), getPreferenceManager().getSharedPreferencesName(),
+                Context.MODE_WORLD_READABLE, R.xml.aosp_preferences, readAgain);
+
+        if (readAgain) {
+            Editor editor = mSharedPrefs.edit();
+            for (int i = 1; i < 6; i++) {
+                editor.putBoolean("screen_slice_" + i, true);
+            }
+            editor.putBoolean("screen_slice_6", false).apply();
+        }
     }
 
     private void loadPreferences() {
@@ -80,6 +92,19 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
 
         final ListPreference triggerSide = (ListPreference) findPreference("trigger_side");
         triggerSide.setSummary(triggerSide.getEntry());
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_load_defaults:
+                pieSlicesCat.removeAll();
+                loadDefaultValues(true);
+                loadPreferences();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override

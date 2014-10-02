@@ -6,6 +6,11 @@
         android:icon="@drawable/ic_action_refresh"
         android:title="@string/menu_kill"
         android:showAsAction="always" />
+                
+    <item
+        android:id="@+id/menu_load_defaults"
+        android:title="@string/load_defaults_title"
+        android:showAsAction="withText" />
     
     <item
         android:id="@+id/menu_help"

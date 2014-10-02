@@ -18,6 +18,7 @@
     </string>
     <string name="app_version">Version: %s</string>
     <string name="app_help_title">Help</string>
+    <string name="load_defaults_title">Load default values</string>
 
     <string name="kill_chrome">Restart Chrome</string>
     <string name="kill_chrome_summary">Changes require Chrome to be restarted</string>
