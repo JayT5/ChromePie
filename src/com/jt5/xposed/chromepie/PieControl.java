@@ -36,8 +36,10 @@ import android.widget.TextView;
 import com.jt5.xposed.chromepie.view.PieItem;
 import com.jt5.xposed.chromepie.view.PieMenu;
 
+import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
+import de.robv.android.xposed.XposedHelpers;
 
 /**
  * Controller for Quick Controls pie menu
@@ -51,6 +53,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private final Map<String,Action> mActionMap = new HashMap<String,Action>();
     private final int mItemSize;
     private final XSharedPreferences mXPreferences;
+    private XC_MethodHook mOnPageLoad;
     private static final String PACKAGE_NAME = PieControl.class.getPackage().getName();
     private static final String TAG = "ChromePie:PieControl: ";
 
@@ -91,6 +94,9 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
 
     @Override
     public boolean onOpen() {
+        if (mOnPageLoad == null) {
+            hookOnPageLoad();
+        }
         View icon;
         List<PieItem> items = mPie.getItems();
         for (PieItem item : items) {
@@ -270,6 +276,29 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         LayoutParams lp = new LayoutParams(mItemSize, mItemSize);
         view.setLayoutParams(lp);
         return view;
+    }
+
+    private void hookOnPageLoad() {
+        mOnPageLoad = new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+                List<PieItem> items = mPie.findItemsById("refresh");
+                if (items.size() != 0) {
+                    for (PieItem item : items) {
+                        ((ImageView) item.getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_refresh));
+                    }
+                    mPie.invalidate();
+                }
+            }
+        };
+
+        try {
+            XposedHelpers.findAndHookMethod(mController.getCurrentTab().getClass(),
+                    "didFinishPageLoad", mOnPageLoad);
+        } catch (NoSuchMethodError nsme) {
+            XposedHelpers.findAndHookMethod(mController.getCurrentTab().getClass(),
+                    "didFinishPageLoad", String.class, mOnPageLoad);
+        }
     }
 
     static class ItemInfo {

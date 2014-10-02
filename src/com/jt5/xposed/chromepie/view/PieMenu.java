@@ -198,13 +198,14 @@ public class PieMenu extends FrameLayout {
         return mItems.get(pos);
     }
 
-    public PieItem findItem(String id) {
+    public List<PieItem> findItemsById(String id) {
+        List<PieItem> items = new ArrayList<PieItem>();
         for (PieItem item : getItems()) {
             if (item.getId() != null && item.getId().equals(id)) {
-                return item;
+                items.add(item);
             }
         }
-        return null;
+        return items;
     }
 
     public void removeItem(PieItem item) {
