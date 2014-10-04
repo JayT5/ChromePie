@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -79,6 +80,8 @@ public class PieSettings extends PreferenceActivity {
     private void showHelpDialog() {
         View helpView;
         helpView = getLayoutInflater().inflate(R.layout.help_dialog, null);
+
+        ((TextView) helpView.findViewById(R.id.about_thread)).setMovementMethod(LinkMovementMethod.getInstance());
 
         // Display the correct version
         try {

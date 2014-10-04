@@ -3,6 +3,8 @@
 
     <string name="app_name">ChromePie</string>
     <string name="app_description">Add Pie Controls to Google Chrome</string>
+    <string name="app_thread_link">Check out the <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">official 
+    thread at XDA Developers</a> for support and feedback</string>
     <string name="app_about">ChromePie is an Xposed module which adds customisable Pie Controls 
         to Google Chrome and Google Chrome Beta.\n\n
         Actions include:
