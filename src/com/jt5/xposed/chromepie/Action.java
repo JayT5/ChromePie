@@ -59,12 +59,15 @@ class Action_refresh implements Action {
 class Action_edit_url implements Action {
     @Override
     public void execute(Controller control) {
-        Activity activity = control.getChromeActivity();
-        try {
-            Object locationBar = callMethod(activity, "getLocationBar");
-            callMethod(locationBar, "requestUrlFocus");
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        int id = control.getResIdentifier("focus_url_bar");
+        if (!control.itemSelected(id)) {
+            Activity activity = control.getChromeActivity();
+            try {
+                Object locationBar = callMethod(activity, "getLocationBar");
+                callMethod(locationBar, "requestUrlFocus");
+            } catch (NoSuchMethodError nsme) {
+                XposedBridge.log(TAG + nsme);
+            }
         }
     }
 }
