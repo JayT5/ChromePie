@@ -93,7 +93,7 @@
     
     <string-array name="pie_item_actions" translatable="false">
         <item></item>
-        <item>back_menu_id</item>
+        <item></item>
         <item>forward_menu_id</item>
         <item></item>
         <item>new_tab_menu_id</item>

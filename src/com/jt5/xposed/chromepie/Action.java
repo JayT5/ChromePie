@@ -20,9 +20,15 @@ class Action_main implements Action {
 
     public void executeMain(Controller control, String action) {
         int id = control.getResIdentifier(action);
-        Boolean success = control.itemSelected(id);
-        // back_menu_id removed from Chrome Beta, trigger back manually
-        if (!success && action.equals("back_menu_id")) {
+        control.itemSelected(id);
+    }
+}
+
+class Action_back implements Action {
+    @Override
+    public void execute(Controller control) {
+        int id = control.getResIdentifier("back_menu_id");
+        if (!control.itemSelected(id)) {
             Activity activity = control.getChromeActivity();
             try {
                 callMethod(activity, "goBack");
