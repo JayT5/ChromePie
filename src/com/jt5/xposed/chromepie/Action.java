@@ -49,15 +49,18 @@ class Action_back implements Action {
 class Action_refresh implements Action {
     @Override
     public void execute(Controller control) {
-        Object tab = control.getCurrentTab();
-        try {
-            if (control.isLoading()) {
-                callMethod(tab, "stopLoading");
-            } else {
-                callMethod(tab, "reload");
+        int id = control.getResIdentifier("reload_menu_id");
+        if (!control.itemSelected(id)) {
+            Object tab = control.getCurrentTab();
+            try {
+                if (control.isLoading()) {
+                    callMethod(tab, "stopLoading");
+                } else {
+                    callMethod(tab, "reload");
+                }
+            } catch (NoSuchMethodError nsme) {
+                XposedBridge.log(TAG + nsme);
             }
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
         }
     }
 }
