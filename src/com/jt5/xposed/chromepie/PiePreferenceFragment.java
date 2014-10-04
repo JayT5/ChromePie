@@ -3,14 +3,17 @@ package com.jt5.xposed.chromepie;
 import java.util.Map;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
@@ -57,6 +60,18 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
                     PieMainPreference mainPref = new PieMainPreference(getActivity(), null, (pieSlicesCat.getPreferenceCount() + 1));
                     pieSlicesCat.addPreference(mainPref);
                 }
+                return true;
+            }
+        });
+
+        final Preference hideIcon = findPreference("hide_launcher_icon");
+        hideIcon.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                int state = (Boolean) newValue ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED : PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+                PackageManager pm = getActivity().getPackageManager();
+                pm.setComponentEnabledSetting(new ComponentName(getActivity(),
+                        "com.jt5.xposed.chromepie.PieSettings_Alias"), state, PackageManager.DONT_KILL_APP);
                 return true;
             }
         });

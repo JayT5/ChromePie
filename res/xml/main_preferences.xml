@@ -19,5 +19,12 @@
         android:key="new_slice"
         android:title="@string/new_slice"
         android:icon="@drawable/ic_action_new" />
+    <PreferenceCategory
+        android:key="other_cat"
+        android:title="@string/other_cat_title" />
+    <CheckBoxPreference
+        android:key="hide_launcher_icon"
+        android:title="@string/hide_launcher_icon_title"
+        android:defaultValue="false" />
 
 </PreferenceScreen>

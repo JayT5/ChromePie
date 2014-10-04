@@ -20,9 +20,21 @@
             android:configChanges="orientation|screenSize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
             </intent-filter>
         </activity>
+
+        <activity-alias
+                android:name="com.jt5.xposed.chromepie.PieSettings_Alias"
+                android:label="@string/app_name"
+                android:icon="@drawable/ic_launcher"
+                android:enabled="true"
+                android:targetActivity="com.jt5.xposed.chromepie.PieSettings" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
 
         <meta-data
             android:name="xposedmodule"

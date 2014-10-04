@@ -26,6 +26,8 @@
     
     <string name="new_slice">Add new slice</string>
     <string name="pie_slices_cat">Pie Slices</string>
+    <string name="other_cat_title">Other</string>
+    <string name="hide_launcher_icon_title">Hide launcher icon</string>
     
     <string name="trigger_side">Trigger side</string>
     <string name="ts_right">Right</string>
