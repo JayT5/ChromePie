@@ -4,6 +4,7 @@ import static de.robv.android.xposed.XposedHelpers.callMethod;
 import android.app.Activity;
 import android.os.Build;
 import android.view.View;
+import android.view.WindowManager;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
@@ -304,16 +305,11 @@ public class Controller {
 
     Boolean isFullscreen() {
         if (android.os.Build.VERSION.SDK_INT >= 19) {
-            View decorView = mActivity.getWindow().getDecorView();
-            return decorView.getSystemUiVisibility() == 2054;
+            int visibility = mActivity.getWindow().getDecorView().getSystemUiVisibility();
+            return (visibility & View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) != 0;
         } else {
-            try {
-                Object fullscreenManager = callMethod(mActivity, "getFullscreenManager");
-                return (Boolean) callMethod(fullscreenManager, "getPersistentFullscreenMode");
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
-                return false;
-            }
+            int flags = mActivity.getWindow().getAttributes().flags;
+            return (flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0;
         }
     }
 
