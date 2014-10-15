@@ -88,13 +88,16 @@ public class Controller {
     }
 
     private Object getLoadUrlParams(String url) {
+        Class<?> loadUrlParams;
         try {
-            Class<?> loadUrlParams = XposedHelpers.findClass("org.chromium.content.browser.LoadUrlParams", mClassLoader);
-            return XposedHelpers.newInstance(loadUrlParams, url, 2);
+            loadUrlParams = XposedHelpers.findClass("org.chromium.content.browser.LoadUrlParams", mClassLoader);
         } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            loadUrlParams = XposedHelpers.findClass("org.chromium.content_public.browser.LoadUrlParams", mClassLoader);
+        }
+        try {
+            return XposedHelpers.newInstance(loadUrlParams, url);
+        } catch (Throwable t) {
+            XposedBridge.log(TAG + t);
         }
         return null;
     }
