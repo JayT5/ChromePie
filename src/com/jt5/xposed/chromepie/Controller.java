@@ -179,6 +179,12 @@ public class Controller {
     public void requestTabFocus() {
         try {
             callMethod(getCurrentTab(), "requestFocus", true);
+            return;
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            callMethod(getCurrentTab(), "requestFocus");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
