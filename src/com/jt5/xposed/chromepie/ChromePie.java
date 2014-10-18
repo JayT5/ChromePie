@@ -1,5 +1,6 @@
 package com.jt5.xposed.chromepie;
 
+import android.app.Activity;
 import android.content.res.XModuleResources;
 import android.widget.FrameLayout;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
@@ -21,11 +22,14 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     private String MODULE_PATH;
     private XModuleResources mModRes;
     private FrameLayout mContentContainer;
-    private Object mMainObj;
+    private Activity mChromeActivity;
     private PieControl mPieControl;
 
-    private static final String CHROME_MAIN_CLASS = "com.google.android.apps.chrome.Main";
-    private static final String CHROME_TABBED_ACTIVITY_CLASS = "com.google.android.apps.chrome.ChromeTabbedActivity";
+    private static final String[] CHROME_ACTIVITY_CLASSES = {
+        "com.google.android.apps.chrome.ChromeTabbedActivity",
+        "com.google.android.apps.chrome.ChromeActivity",
+        "com.google.android.apps.chrome.Main"
+    };
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -49,9 +53,73 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         });
     }
 
+    @Override
+    public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
+        if (!(lpparam.packageName.equals("com.android.chrome") || lpparam.packageName.equals("com.chrome.beta"))) {
+            return;
+        }
+
+        final ClassLoader classLoader = lpparam.classLoader;
+        Class<?> chromeActivityClass;
+
+        for (int i = 0; i < CHROME_ACTIVITY_CLASSES.length; i++) {
+            try {
+                chromeActivityClass = XposedHelpers.findClass(CHROME_ACTIVITY_CLASSES[i], classLoader);
+            } catch (ClassNotFoundError cnfe) {
+                continue;
+            }
+            if (findActivityClass(chromeActivityClass)) {
+                hookChrome(chromeActivityClass, classLoader);
+                return;
+            }
+        }
+
+        XposedBridge.log("Failed to initialise ChromePie, could not find hookable method");
+    }
+
+    private boolean findActivityClass(Class<?> activityClass) {
+        try {
+            XposedHelpers.findMethodExact(activityClass, "onStart");
+            try {
+                XposedHelpers.findMethodExact(activityClass, "onMenuOrKeyboardAction", int.class);
+                ITEM_SELECTED_METHOD = "onMenuOrKeyboardAction";
+            } catch (NoSuchMethodError nsme) {
+                XposedHelpers.findMethodExact(activityClass, "onOptionsItemSelected", int.class);
+            }
+        } catch (NoSuchMethodError nsme) {
+            return false;
+        }
+        return true;
+    }
+
+    private void hookChrome(Class<?> activityClass, final ClassLoader classLoader) {
+        try {
+
+            XposedHelpers.findAndHookMethod(activityClass, "onStart", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    if (mChromeActivity == null) {
+                        mChromeActivity = (Activity) param.thisObject;
+                        createPie(classLoader);
+                    }
+                }
+            });
+
+            XposedHelpers.findAndHookMethod(activityClass, "onDestroy", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    removePie();
+                }
+            });
+
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log("Could not initialise ChromePie: " + nsme);
+        }
+    }
+
     private void createPie(ClassLoader classLoader) {
         if (mContentContainer != null) {
-            mPieControl = new PieControl(mMainObj, mModRes, classLoader);
+            mPieControl = new PieControl(mChromeActivity, mModRes, classLoader);
             mPieControl.attachToContainer(mContentContainer);
         } else {
             XposedBridge.log("Failed to initialise ChromePie, could not find Chrome content container");
@@ -63,76 +131,7 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             mPieControl.removeFromContainer(mContentContainer);
         }
         mPieControl = null;
-        mMainObj = null;
+        mChromeActivity = null;
     }
 
-    @Override
-    public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-        if (!(lpparam.packageName.equals("com.android.chrome") || lpparam.packageName.equals("com.chrome.beta"))) {
-            return;
-        }
-
-        final ClassLoader classLoader = lpparam.classLoader;
-        final Class<?> chromeMainClass = XposedHelpers.findClass(CHROME_MAIN_CLASS, classLoader);
-
-        try {
-            // see if onOptionsItemSelected method exists in Main class
-            XposedHelpers.findMethodExact(chromeMainClass, "onOptionsItemSelected", int.class);
-            XposedHelpers.findAndHookMethod(chromeMainClass, "onStart", new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (mMainObj == null) {
-                        mMainObj = param.thisObject;
-                        createPie(classLoader);
-                    }
-                }
-            });
-
-            XposedHelpers.findAndHookMethod(chromeMainClass, "onDestroy", new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    removePie();
-                }
-            });
-
-        } catch (NoSuchMethodError nsme1) {
-
-            try {
-
-                final Class<?> chromeActivityClass = XposedHelpers.findClass(CHROME_TABBED_ACTIVITY_CLASS, classLoader);
-
-                // Newest Chrome Beta now using different item selected method
-                try {
-                    XposedHelpers.findMethodExact(chromeActivityClass, "onOptionsItemSelected", int.class);
-                } catch (NoSuchMethodError nsme) {
-                    XposedHelpers.findMethodExact(chromeActivityClass, "onMenuOrKeyboardAction", int.class);
-                    ITEM_SELECTED_METHOD = "onMenuOrKeyboardAction";
-                }
-
-                XposedHelpers.findAndHookMethod(chromeActivityClass, "onStart", new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        if (mMainObj == null) {
-                            mMainObj = param.thisObject;
-                            createPie(classLoader);
-                        }
-                    }
-                });
-
-                XposedHelpers.findAndHookMethod(chromeActivityClass, "onDestroy", new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        removePie();
-                    }
-                });
-
-            } catch (NoSuchMethodError nsme2) {
-                XposedBridge.log("Could not initialise ChromePie: " + nsme1);
-                XposedBridge.log("" + nsme2);
-            } catch (ClassNotFoundError cnfe) {
-                XposedBridge.log("Could not initialise ChromePie: " + cnfe);
-            }
-
-        }
-    }
 }
