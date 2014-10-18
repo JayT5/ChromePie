@@ -88,6 +88,10 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         }
     }
 
+    XSharedPreferences getXPreferences() {
+        return mXPreferences;
+    }
+
     String getTriggerSide() {
         return mXPreferences.getString("trigger_side", "both");
     }

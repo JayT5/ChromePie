@@ -34,6 +34,7 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,8 @@ import android.widget.FrameLayout;
 
 import com.jt5.xposed.chromepie.Controller;
 import com.jt5.xposed.chromepie.R;
+
+import de.robv.android.xposed.XSharedPreferences;
 
 public class PieMenu extends FrameLayout {
 
@@ -140,9 +143,15 @@ public class PieMenu extends FrameLayout {
         mItems = new ArrayList<PieItem>();
         mLevels = 0;
         mCounts = new int[MAX_LEVELS];
-        mRadius = (int) mXRes.getDimension(R.dimen.qc_radius_start);
-        mRadiusInc = (int) mXRes.getDimension(R.dimen.qc_radius_increment);
-        mSlop = (int) mXRes.getDimension(R.dimen.qc_slop);
+        XSharedPreferences prefs = mControl.getXPreferences();
+        int defRadiusInc = mXRes.getInteger(R.integer.qc_radius_increment);
+        int tmpRadiusInc = prefs.getInt("pie_radius_inc", defRadiusInc);
+        mRadiusInc = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, tmpRadiusInc, mXRes.getDisplayMetrics());
+        // Set start radius to 80% of radius increment
+        mRadius = (int) Math.round(0.8 * mRadiusInc);
+        int defSlop = mXRes.getInteger(R.integer.qc_slop);
+        int tmpSlop = prefs.getInt("pie_slop", defSlop);
+        mSlop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, tmpSlop, mXRes.getDisplayMetrics());
         mTouchOffset = (int) mXRes.getDimension(R.dimen.qc_touch_offset);
         mOpen = false;
         setWillNotDraw(false);

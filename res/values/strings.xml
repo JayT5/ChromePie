@@ -36,6 +36,9 @@
     <string name="ts_left">Left</string>
     <string name="ts_both">Right &amp; left</string>
     
+    <string name="pie_size_title">Pie menu size</string>
+    <string name="trigger_area_title">Trigger area size</string>
+    
     <!-- Pie items -->
     <string name="none">None</string>
     <string name="back">Back</string>

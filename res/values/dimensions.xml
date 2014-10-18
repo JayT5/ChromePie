@@ -15,8 +15,8 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="qc_radius_start">65dp</dimen>
-    <dimen name="qc_radius_increment">80dp</dimen>
-    <dimen name="qc_slop">10dp</dimen>
+    <integer name="qc_radius_increment">80</integer>
+    <integer name="qc_slop">10</integer>
     <dimen name="qc_touch_offset">15dp</dimen>
     <dimen name="qc_tab_title_height">24dp</dimen>
     <dimen name="qc_thumb_width">150dp</dimen>

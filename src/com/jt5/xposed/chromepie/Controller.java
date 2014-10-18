@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
@@ -20,6 +21,10 @@ public class Controller {
         mClassLoader = classLoader;
         mActivity = (Activity) mainObj;
         mPieControl = pieControl;
+    }
+
+    public XSharedPreferences getXPreferences() {
+        return mPieControl.getXPreferences();
     }
 
     Activity getChromeActivity() {
