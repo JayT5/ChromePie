@@ -65,21 +65,21 @@
         <item>null_icon</item>
         <item>ic_action_back</item>
         <item>ic_action_forward</item>
-        <item>ic_action_refresh</item>
+        <item>ic_action_reload</item>
         <item>ic_action_new</item>
         <item>ic_new_incognito_holo_dark</item>
         <item>ic_action_remove</item>
         <item>ic_close_all_holo_dark</item>
         <item>ic_bookmarks_holo_dark</item>
         <item>ic_action_not_important</item>
-        <item>ic_history_holo_dark</item>
+        <item>ic_action_history</item>
         <item>ic_action_view_as_grid</item>
         <item>ic_action_collection</item>
         <item>ic_windows_holo_dark</item>
         <item>ic_action_home</item>
         <item>ic_action_search</item>
         <item>ic_action_web_site</item>
-        <item>ic_desktop_holo_dark</item>
+        <item>ic_action_desktop_site</item>
         <item>ic_action_full_screen</item>
         <item>ic_action_collapse</item>
         <item>ic_action_share</item>

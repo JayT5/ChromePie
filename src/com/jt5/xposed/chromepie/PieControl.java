@@ -118,15 +118,15 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 item.setEnabled(mController.canGoBack());
             } else if (item.getId().equals("desktop_site")) {
                 if (mController.isDesktopUserAgent()) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_mobile));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_mobile_site));
                 } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_desktop_holo_dark));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_desktop_site));
                 }
             } else if (item.getId().equals("refresh")) {
                 if (mController.isLoading()) {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_cancel));
                 } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_refresh));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_reload));
                 }
             } else if (item.getId().equals("fullscreen")) {
                 if (mController.isFullscreen()) {
@@ -289,7 +289,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 List<PieItem> items = mPie.findItemsById("refresh");
                 if (items.size() != 0) {
                     for (PieItem item : items) {
-                        ((ImageView) item.getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_refresh));
+                        ((ImageView) item.getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_reload));
                     }
                     mPie.invalidate();
                 }
