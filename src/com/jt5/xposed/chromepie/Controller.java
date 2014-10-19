@@ -336,6 +336,11 @@ public class Controller {
         }
     }
 
+    Boolean isOnNewTabPage() {
+        String url = getUrl();
+        return (url.startsWith("chrome://") || url.startsWith("chrome-native://"));
+    }
+
     private Boolean isNativeNTPEnabled() {
         try {
             Class<?> newTabPage = XposedHelpers.findClass("com.google.android.apps.chrome.ntp.NewTabPage", mClassLoader);

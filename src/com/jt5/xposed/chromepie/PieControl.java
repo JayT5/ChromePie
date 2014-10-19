@@ -140,9 +140,9 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             } else if (item.getId().equals("find_in_page")) {
                 item.setEnabled(mController.tabSupportsFinding());
             } else if (item.getId().equals("print")) {
-                item.setEnabled(mController.printingSupported());
+                item.setEnabled(mController.printingSupported() && !mController.isOnNewTabPage());
             } else if (item.getId().equals("recent_tabs")) {
-                item.setEnabled(mController.syncSupported());
+                item.setEnabled(mController.syncSupported() && !mController.isIncognito());
             } else if (item.getId().equals("add_bookmark")) {
                 if (mController.bookmarkExists()) {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_not_important));
@@ -155,14 +155,11 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             } else if (item.getId().equals("previous_tab")) {
                 item.setEnabled(mController.tabExistsAtIndex(-1));
             } else if (item.getId().equals("add_to_home")) {
-                item.setEnabled(mController.addToHomeSupported());
-            }
-            if (item.getId().equals("add_to_home") || item.getId().equals("recent_tabs") || item.getId().equals("most_visited")) {
+                item.setEnabled(mController.addToHomeSupported() && !mController.isIncognito() && !mController.isOnNewTabPage());
+            } else if (item.getId().equals("most_visited")) {
                 item.setEnabled(!mController.isIncognito());
-            }
-            if (item.getId().equals("add_to_home") || item.getId().equals("share") || item.getId().equals("print")) {
-                String str = mController.getUrl();
-                item.setEnabled(!(str.startsWith("chrome://") || str.startsWith("chrome-native://")));
+            } else if (item.getId().equals("share")) {
+                item.setEnabled(!mController.isOnNewTabPage());
             }
         }
         return true;
