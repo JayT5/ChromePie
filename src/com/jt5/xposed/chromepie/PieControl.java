@@ -157,7 +157,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             if (item.getId().equals("add_to_home") || item.getId().equals("recent_tabs") || item.getId().equals("most_visited")) {
                 item.setEnabled(!mController.isIncognito());
             }
-            if (item.getId().equals("add_to_home") || item.getId().equals("share")) {
+            if (item.getId().equals("add_to_home") || item.getId().equals("share") || item.getId().equals("print")) {
                 String str = mController.getUrl();
                 item.setEnabled(!(str.startsWith("chrome://") || str.startsWith("chrome-native://")));
             }
