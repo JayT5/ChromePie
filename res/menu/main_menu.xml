@@ -5,7 +5,7 @@
         android:id="@+id/actionbar_kill"
         android:icon="@drawable/ic_action_refresh"
         android:title="@string/menu_kill"
-        android:showAsAction="always" />
+        android:showAsAction="ifRoom" />
                 
     <item
         android:id="@+id/menu_load_defaults"
