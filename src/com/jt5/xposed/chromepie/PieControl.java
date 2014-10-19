@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
+import android.content.res.TypedArray;
 import android.content.res.XModuleResources;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -166,22 +167,22 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     }
 
     private void populateMenu() {
-        String[] actions = mXResources.getStringArray(R.array.pie_item_actions);
-        String[] values = mXResources.getStringArray(R.array.pie_item_values);
-        String[] drawables = mXResources.getStringArray(R.array.pie_item_dark_drawables);
+        final String[] actions = mXResources.getStringArray(R.array.pie_item_actions);
+        final String[] values = mXResources.getStringArray(R.array.pie_item_values);
+        final TypedArray drawables = mXResources.obtainTypedArray(R.array.pie_item_dark_drawables);
         mPie.clearItems();
         mXPreferences.reload();
-        Map<String, ?> keys = mXPreferences.getAll();
+        final Map<String, ?> keys = mXPreferences.getAll();
         mActionMap.put("Action_main", new Action_main());
         for (int i = 1; i < 7; i++) {
             if (mXPreferences.getBoolean("screen_slice_" + i, false)) {
                 String key = "slice_" + i + "_item_" + i;
                 if (keys.containsKey(key)) {
                     String value = (String) keys.get(key);
-                    int pos = Arrays.asList(values).indexOf(value);
-                    PieItem item = makeItem(value, actions[pos], drawables[pos], 1);
+                    int index = Arrays.asList(values).indexOf(value);
+                    PieItem item = makeItem(value, actions[index], drawables.getResourceId(index, 0), 1);
                     mPie.addItem(item);
-                    addAction(actions[pos], value);
+                    addAction(actions[index], value);
                     for (int j = 1; j < 7; j++) {
                         if (i == j) {
                             continue;
@@ -189,9 +190,9 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                         key = "slice_" + i + "_item_" + j;
                         if (keys.containsKey(key)) {
                             value = (String) keys.get(key);
-                            pos = Arrays.asList(values).indexOf(value);
-                            item.addItem(makeItem(value, actions[pos], drawables[pos], 1));
-                            addAction(actions[pos], value);
+                            index = Arrays.asList(values).indexOf(value);
+                            item.addItem(makeItem(value, actions[index], drawables.getResourceId(index, 0), 1));
+                            addAction(actions[index], value);
                         } else {
                             item.addItem(makeFiller());
                         }
@@ -201,6 +202,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 }
             }
         }
+        drawables.recycle();
     }
 
     private void addAction(String action, String id) {
@@ -232,7 +234,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         }
     }
 
-    private PieItem makeItem(String id, String action, String icon, int level) {
+    private PieItem makeItem(String id, String action, int iconRes, int level) {
         if (id.equals("none")) {
             return makeFiller();
         }
@@ -247,7 +249,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             return tabsItem;
         }
         ImageView view = new ImageView(mChromeActivity);
-        view.setImageDrawable(mXResources.getDrawable(mXResources.getIdentifier(icon, "drawable", PACKAGE_NAME)));
+        view.setImageDrawable(mXResources.getDrawable(iconRes));
         view.setMinimumWidth(mItemSize);
         view.setMinimumHeight(mItemSize);
         view.setTag(info);

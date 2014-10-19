@@ -1,15 +1,13 @@
 package com.jt5.xposed.chromepie.preference;
 
 import android.content.Context;
-import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.preference.ListPreference;
 import android.util.AttributeSet;
 
 import com.jt5.xposed.chromepie.R;
 
 public class PieListPreference extends ListPreference {
-
-    private static String PACKAGE_NAME;
 
     public PieListPreference(Context context) {
         super(context);
@@ -22,7 +20,6 @@ public class PieListPreference extends ListPreference {
     public PieListPreference(Context context, int item, int slice) {
         super(context);
         initialise(item, slice);
-        PACKAGE_NAME = getContext().getApplicationContext().getPackageName();
     }
 
     @Override
@@ -58,9 +55,9 @@ public class PieListPreference extends ListPreference {
     private void updateState(String newValue) {
         final int index = findIndexOfValue(newValue);
         setSummary(getEntry());
-        final Resources res = getContext().getResources();
-        final String identifier = res.getStringArray(R.array.pie_item_dark_drawables)[index];
-        setIcon(res.getIdentifier(identifier, "drawable", PACKAGE_NAME));
+        final TypedArray drawables = getContext().getResources().obtainTypedArray(R.array.pie_item_dark_drawables);
+        setIcon(drawables.getResourceId(index, 0));
+        drawables.recycle();
     }
 
 }
