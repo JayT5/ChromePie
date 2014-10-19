@@ -154,6 +154,8 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 item.setEnabled(mController.tabExistsAtIndex(1));
             } else if (item.getId().equals("previous_tab")) {
                 item.setEnabled(mController.tabExistsAtIndex(-1));
+            } else if (item.getId().equals("add_to_home")) {
+                item.setEnabled(mController.addToHomeSupported());
             }
             if (item.getId().equals("add_to_home") || item.getId().equals("recent_tabs") || item.getId().equals("most_visited")) {
                 item.setEnabled(!mController.isIncognito());

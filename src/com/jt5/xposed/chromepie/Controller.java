@@ -390,4 +390,18 @@ public class Controller {
         }
         return true;
     }
+
+    Boolean addToHomeSupported() {
+        try {
+            Class<?> bookmarkUtils = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarkUtils", mClassLoader);
+            Boolean canAddToHome = (Boolean) XposedHelpers.callStaticMethod(bookmarkUtils, "isAddToHomeIntentSupported", mActivity);
+            return canAddToHome;
+        } catch (ClassNotFoundError cnfe) {
+
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        return true;
+    }
+
 }
