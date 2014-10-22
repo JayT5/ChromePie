@@ -172,6 +172,10 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mPie.clearItems();
         mXPreferences.reload();
         final Map<String, ?> keys = mXPreferences.getAll();
+        if (keys.isEmpty()) {
+            XposedBridge.log(TAG + "Failed to load preferences. Can read file: " + mXPreferences.getFile().canRead());
+            return;
+        }
         mActionMap.put("Action_main", new Action_main());
         for (int i = 1; i < 7; i++) {
             if (mXPreferences.getBoolean("screen_slice_" + i, false)) {
