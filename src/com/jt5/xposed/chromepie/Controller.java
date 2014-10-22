@@ -354,6 +354,33 @@ public class Controller {
         return true;
     }
 
+    Boolean isTablet() {
+        try {
+            return (Boolean) callMethod(mActivity, "isTablet");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            Class<?> formFactor = XposedHelpers.findClass("org.chromium.ui.base.DeviceFormFactor", mClassLoader);
+            Boolean isTablet = (Boolean) XposedHelpers.callStaticMethod(formFactor, "isTablet", mActivity);
+            return isTablet;
+        } catch (ClassNotFoundError cnfe) {
+
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            Class<?> deviceUtils = XposedHelpers.findClass("org.chromium.content.browser.DeviceUtils", mClassLoader);
+            Boolean isTablet = (Boolean) XposedHelpers.callStaticMethod(deviceUtils, "isTablet", mActivity);
+            return isTablet;
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return false;
+    }
+
     Boolean syncSupported() {
         Class<?> featureUtils = null;
         try {

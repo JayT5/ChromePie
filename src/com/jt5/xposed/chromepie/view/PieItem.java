@@ -80,16 +80,16 @@ public class PieItem {
     @SuppressWarnings("deprecation")
     public void setAlpha(float alpha) {
         mAlpha = alpha;
+        final int alphaInt = Math.round(alpha * (mEnabled ? 255 : 77));
         if (mView != null) {
             if (mId.equals("show_tabs")) {
                 final ImageView iv = (ImageView) ((ViewGroup) mView).getChildAt(0);
                 final TextView tv = (TextView) ((ViewGroup) mView).getChildAt(1);
-                final int alphaInt = Math.round(alpha * 255);
                 iv.setAlpha(alphaInt);
                 tv.setTextColor(Color.argb(alphaInt, 255, 255, 255));
                 tv.getBackground().setAlpha(alphaInt);
             } else {
-                ((ImageView) mView).setAlpha(Math.round(alpha * (mEnabled ? 255 : 77)));
+                ((ImageView) mView).setAlpha(alphaInt);
             }
         }
     }

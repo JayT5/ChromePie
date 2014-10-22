@@ -136,6 +136,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_full_screen));
                 }
             } else if (item.getId().equals("show_tabs")) {
+                item.setEnabled(!mController.isTablet());
                 ((TextView) icon).setText(Integer.toString(mController.getTabCount()));
             } else if (item.getId().equals("find_in_page")) {
                 item.setEnabled(mController.tabSupportsFinding());
