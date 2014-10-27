@@ -41,6 +41,8 @@
     <string name="pie_size_title">Pie menu size</string>
     <string name="trigger_area_title">Trigger area size</string>
     
+    <string name="donate_title">Donate</string>
+    <string name="donate_summary">Touch to support development by donating via PayPal</string>
     
     <string name="slice">Slice</string>
     <string name="pie_item">Pie Item</string>
