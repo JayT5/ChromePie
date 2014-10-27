@@ -25,7 +25,7 @@ public class SubPreferenceFragment extends PreferenceFragment {
         mCount = extras.getInt("count");
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActivity().getActionBar().setTitle("Slice " + mSlice);
+        getActivity().getActionBar().setTitle(getResources().getString(R.string.slice) + " " + mSlice);
         loadPreferences();
     }
 

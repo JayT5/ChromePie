@@ -41,9 +41,9 @@ public class PieListPreference extends ListPreference {
 
     private void initialise(int item, int slice) {
         setKey("slice_" + slice + "_item_" + item);
-        setTitle("Pie Item " + item);
+        setTitle(getContext().getResources().getString(R.string.pie_item) + " " + item);
         if (item == slice) {
-            setTitle(getTitle() + " (Main item)");
+            setTitle(getTitle() + " (" + getContext().getResources().getString(R.string.main_item) + ")");
         }
         setEntries(R.array.pie_item_entries);
         setEntryValues(R.array.pie_item_values);

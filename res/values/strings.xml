@@ -25,6 +25,8 @@
     <string name="kill_chrome">Restart Chrome</string>
     <string name="kill_chrome_summary">Changes require Chrome to be restarted</string>
     <string name="menu_kill">Kill Chrome</string>
+    <string name="chrome_killed">Chrome killed</string>
+    <string name="cannot_launch_chrome">Cannot launch Chrome</string>
     
     <string name="new_slice">Add new slice</string>
     <string name="pie_slices_cat">Pie Slices</string>
@@ -38,6 +40,11 @@
     
     <string name="pie_size_title">Pie menu size</string>
     <string name="trigger_area_title">Trigger area size</string>
+    
+    
+    <string name="slice">Slice</string>
+    <string name="pie_item">Pie Item</string>
+    <string name="main_item">Main item</string>
     
     <!-- Pie items -->
     <string name="none">None</string>

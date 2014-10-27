@@ -5,6 +5,7 @@ import java.util.Arrays;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Resources;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
@@ -20,6 +21,7 @@ public class PieMainPreference extends Preference implements View.OnClickListene
     private int mSlice;
     private SharedPreferences mSharedPrefs;
     private Boolean mIsRemoved = false;
+    private Resources mResources;
 
     public PieMainPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -28,6 +30,7 @@ public class PieMainPreference extends Preference implements View.OnClickListene
     public PieMainPreference(Context context, AttributeSet attrs, int slice) {
         super(context, attrs);
         mSlice = slice;
+        mResources = getContext().getResources();
         initialise();
     }
 
@@ -57,8 +60,8 @@ public class PieMainPreference extends Preference implements View.OnClickListene
 
     private void initialise() {
         setKey("screen_slice_" + mSlice);
-        setTitle("Slice " + mSlice);
-        setSummary("None");
+        setTitle(mResources.getString(R.string.slice) + " " + mSlice);
+        setSummary(mResources.getString(R.string.none));
         setOrder(mSlice);
         setFragment(SubPreferenceFragment.class.getName());
         setWidgetLayoutResource(R.layout.mainpref_remove);
@@ -68,8 +71,8 @@ public class PieMainPreference extends Preference implements View.OnClickListene
     }
 
     private void updateSummary() {
-        String[] values = getContext().getResources().getStringArray(R.array.pie_item_values);
-        String[] entries = getContext().getResources().getStringArray(R.array.pie_item_entries);
+        String[] values = mResources.getStringArray(R.array.pie_item_values);
+        String[] entries = mResources.getStringArray(R.array.pie_item_entries);
         String value = mSharedPrefs.getString("slice_" + mSlice + "_item_" + mSlice, "none");
         int i = Arrays.asList(values).indexOf(value);
         String summary = Arrays.asList(entries).get(i);
@@ -83,7 +86,7 @@ public class PieMainPreference extends Preference implements View.OnClickListene
     private void preferenceRemoved(int newSlice) {
         mSlice = newSlice;
         setKey("screen_slice_" + mSlice);
-        setTitle("Slice " + mSlice);
+        setTitle(mResources.getString(R.string.slice) + " " + mSlice);
         setOrder(mSlice);
         updateSummary();
     }

@@ -107,7 +107,7 @@ public class PieSettings extends PreferenceActivity {
         List<Intent> chromeApps = getInstalledApps(am, pm);
         if (launch) {
             if (chromeApps.size() == 0) {
-                Toast.makeText(this, "Cannot launch Chrome", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getResources().getString(R.string.cannot_launch_chrome), Toast.LENGTH_SHORT).show();
             } else if (chromeApps.size() == 1) {
                 startActivity(chromeApps.get(0));
             } else if (chromeApps.size() == 2) {
@@ -116,7 +116,7 @@ public class PieSettings extends PreferenceActivity {
                 startActivity(launchIntent);
             }
         } else {
-            Toast.makeText(this, "Chrome killed", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getResources().getString(R.string.chrome_killed), Toast.LENGTH_SHORT).show();
         }
     }
 
