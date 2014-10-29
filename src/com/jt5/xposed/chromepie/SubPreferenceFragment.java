@@ -7,6 +7,7 @@ import android.preference.ListPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.jt5.xposed.chromepie.preference.PieListPreference;
@@ -60,6 +61,11 @@ public class SubPreferenceFragment extends PreferenceFragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.removeItem(R.id.menu_load_defaults);
     }
 
 }

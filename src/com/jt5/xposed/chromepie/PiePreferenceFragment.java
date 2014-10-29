@@ -12,6 +12,7 @@ import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.view.Menu;
 
 public class PiePreferenceFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
 
@@ -22,6 +23,7 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
+        setHasOptionsMenu(true);
         addPreferencesFromResource(R.xml.main_preferences);
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -57,6 +59,11 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
             ListPreference pref = (ListPreference) findPreference(key);
             pref.setSummary(pref.getEntry());
         }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.removeItem(R.id.menu_load_defaults);
     }
 
     @Override
