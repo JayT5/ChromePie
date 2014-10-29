@@ -33,12 +33,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         addPreferencesFromResource(R.xml.menu_preferences);
-
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        if (!mSharedPrefs.contains("screen_slice_1")) {
-            loadDefaultValues(false);
-        }
-
         mPieMenuCat = (PreferenceCategory) findPreference("pie_slices_cat");
 
         final Preference newSlice = findPreference("new_slice");

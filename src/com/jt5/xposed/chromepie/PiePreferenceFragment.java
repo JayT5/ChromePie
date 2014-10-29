@@ -27,6 +27,13 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
         addPreferencesFromResource(R.xml.main_preferences);
         mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
+        // If SharedPreferences does not contain this preference,
+        // we can presume this is a new install
+        if (!mSharedPrefs.contains("screen_slice_1")) {
+            PreferenceManager.setDefaultValues(getActivity(), getPreferenceManager().getSharedPreferencesName(),
+                    Context.MODE_WORLD_READABLE, R.xml.aosp_preferences, false);
+        }
+
         final Preference killChrome = findPreference("kill_chrome");
         killChrome.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
