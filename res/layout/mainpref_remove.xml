@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:id="@+id/prefscreen_remove"
-  android:layout_width="fill_parent"
-  android:layout_height="@dimen/item_height"
-  android:orientation="horizontal"
-  android:descendantFocusability="blocksDescendants" >
-  <ImageButton
-    android:id="@+id/click_remove"
-    android:src="@drawable/ic_action_remove"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/prefscreen_remove"
     android:layout_width="@dimen/item_height"
-    android:layout_height="@dimen/item_height"
-    android:contentDescription="@null" />
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:descendantFocusability="blocksDescendants" >
+    <ImageButton
+        android:id="@+id/click_remove"
+        android:src="@drawable/ic_action_remove"
+        android:layout_width="@dimen/item_height"
+        android:layout_height="fill_parent"
+        android:contentDescription="@null" />
 </LinearLayout>
