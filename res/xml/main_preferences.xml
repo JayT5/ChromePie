@@ -6,6 +6,11 @@
         android:key="kill_chrome"
         android:title="@string/kill_chrome"
         android:summary="@string/kill_chrome_summary" />
+    <Preference
+        android:key="edit_pie_menu"
+        android:title="@string/edit_pie_menu_title"
+        android:summary="@string/edit_pie_menu_summary"
+        android:fragment="com.jt5.xposed.chromepie.MenuPreferenceFragment" />
     <ListPreference
         android:key="trigger_side"
         android:title="@string/trigger_side"
@@ -24,16 +29,6 @@
         android:defaultValue="@integer/qc_slop"
         minimum="5"
         maximum="30" />
-    <PreferenceCategory
-        android:key="pie_slices_cat"
-        android:title="@string/pie_slices_cat" />
-    <Preference
-        android:key="new_slice"
-        android:title="@string/new_slice"
-        android:icon="@drawable/ic_action_new" />
-    <PreferenceCategory
-        android:key="other_cat"
-        android:title="@string/other_cat_title" />
     <CheckBoxPreference
         android:key="hide_launcher_icon"
         android:title="@string/hide_launcher_icon_title"

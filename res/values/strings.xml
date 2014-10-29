@@ -28,9 +28,11 @@
     <string name="chrome_killed">Chrome killed</string>
     <string name="cannot_launch_chrome">Cannot launch Chrome</string>
     
+    <string name="edit_pie_menu_title">Pie menu</string>
+    <string name="edit_pie_menu_summary">Edit Pie menu items</string>
+    
     <string name="new_slice">Add new slice</string>
     <string name="pie_slices_cat">Pie Slices</string>
-    <string name="other_cat_title">Other</string>
     <string name="hide_launcher_icon_title">Hide launcher icon</string>
     
     <string name="trigger_side">Trigger side</string>

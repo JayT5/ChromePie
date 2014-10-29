@@ -51,7 +51,8 @@ public class PieSettings extends PreferenceActivity {
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-      if (SubPreferenceFragment.class.getName().equals(fragmentName)) {
+      if (SubPreferenceFragment.class.getName().equals(fragmentName) ||
+              MenuPreferenceFragment.class.getName().equals(fragmentName) ) {
           return true;
       }
       return false;
