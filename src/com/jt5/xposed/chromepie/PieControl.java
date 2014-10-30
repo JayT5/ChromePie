@@ -57,6 +57,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private XC_MethodHook mOnPageLoad;
     private static final String PACKAGE_NAME = PieControl.class.getPackage().getName();
     private static final String TAG = "ChromePie:PieControl: ";
+    public static final int MAX_SLICES = 6;
 
     PieControl(Object mainObj, XModuleResources mModRes, ClassLoader classLoader) {
         mChromeActivity = (Activity) mainObj;
@@ -178,7 +179,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             return;
         }
         mActionMap.put("Action_main", new Action_main());
-        for (int i = 1; i < 7; i++) {
+        for (int i = 1; i <= MAX_SLICES; i++) {
             if (mXPreferences.getBoolean("screen_slice_" + i, false)) {
                 String key = "slice_" + i + "_item_" + i;
                 if (keys.containsKey(key)) {
@@ -187,7 +188,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                     PieItem item = makeItem(value, actions[index], drawables.getResourceId(index, 0), 1);
                     mPie.addItem(item);
                     addAction(actions[index], value);
-                    for (int j = 1; j < 7; j++) {
+                    for (int j = 1; j <= MAX_SLICES; j++) {
                         if (i == j) {
                             continue;
                         }

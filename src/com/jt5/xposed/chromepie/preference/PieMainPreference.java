@@ -12,6 +12,7 @@ import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.jt5.xposed.chromepie.PieControl;
 import com.jt5.xposed.chromepie.R;
 import com.jt5.xposed.chromepie.SubPreferenceFragment;
 
@@ -45,7 +46,7 @@ public class PieMainPreference extends Preference implements View.OnClickListene
     protected void onAttachedToHierarchy(PreferenceManager preferenceManager) {
         super.onAttachedToHierarchy(preferenceManager);
         mPreferenceCategory = (PreferenceCategory) preferenceManager.findPreference("pie_slices_cat");
-        preferenceManager.findPreference("new_slice").setEnabled(mPreferenceCategory.getPreferenceCount() < 6);
+        preferenceManager.findPreference("new_slice").setEnabled(mPreferenceCategory.getPreferenceCount() < PieControl.MAX_SLICES);
         updateSummary();
     }
 
@@ -98,7 +99,7 @@ public class PieMainPreference extends Preference implements View.OnClickListene
         int count = mPreferenceCategory.getPreferenceCount();
 
         for (int i = mSlice; i < count; i++) {
-            for (int j = 1; j < 7; j++) {
+            for (int j = 1; j <= PieControl.MAX_SLICES; j++) {
                 editor.putString("slice_" + i + "_item_" + j, mSharedPrefs.getString("slice_" + (i + 1) + "_item_" + j, "none"));
             }
 
@@ -109,12 +110,12 @@ public class PieMainPreference extends Preference implements View.OnClickListene
         }
 
         // remove final screen's preferences after they have been shifted
-        for (int i = 1; i < 7; i++) {
+        for (int i = 1; i <= PieControl.MAX_SLICES; i++) {
             editor.remove("slice_" + count + "_item_" + i);
         }
         editor.putBoolean("screen_slice_" + count, false).apply();
 
-        getPreferenceManager().findPreference("new_slice").setEnabled(mPreferenceCategory.getPreferenceCount() < 7);
+        getPreferenceManager().findPreference("new_slice").setEnabled(mPreferenceCategory.getPreferenceCount() <= PieControl.MAX_SLICES);
     }
 
 }

@@ -40,7 +40,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
         newSlice.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                if (mPieMenuCat.getPreferenceCount() < 6) {
+                if (mPieMenuCat.getPreferenceCount() < PieControl.MAX_SLICES) {
                     PieMainPreference mainPref = new PieMainPreference(getActivity(), null, (mPieMenuCat.getPreferenceCount() + 1));
                     mPieMenuCat.addPreference(mainPref);
                 }
@@ -59,10 +59,10 @@ public class MenuPreferenceFragment extends PreferenceFragment {
 
         if (readAgain) {
             Editor editor = mSharedPrefs.edit();
-            for (int i = 1; i < 6; i++) {
+            for (int i = 1; i < PieControl.MAX_SLICES; i++) {
                 editor.putBoolean("screen_slice_" + i, true);
             }
-            editor.putBoolean("screen_slice_6", false).apply();
+            editor.putBoolean("screen_slice_" + PieControl.MAX_SLICES, false).apply();
         }
     }
 
