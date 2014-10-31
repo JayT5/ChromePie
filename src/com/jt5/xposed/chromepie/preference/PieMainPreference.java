@@ -2,6 +2,7 @@ package com.jt5.xposed.chromepie.preference;
 
 import java.util.Arrays;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -42,9 +43,15 @@ public class PieMainPreference extends Preference implements View.OnClickListene
         remover.setOnClickListener(this);
     }
 
+    @SuppressLint("WorldReadableFiles")
+    @SuppressWarnings("deprecation")
     @Override
     protected void onAttachedToHierarchy(PreferenceManager preferenceManager) {
         super.onAttachedToHierarchy(preferenceManager);
+        preferenceManager.setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
+        mSharedPrefs = getContext().getSharedPreferences(
+                preferenceManager.getSharedPreferencesName(), Context.MODE_WORLD_READABLE);
+        persistBoolean(true);
         mPreferenceCategory = (PreferenceCategory) preferenceManager.findPreference("pie_slices_cat");
         preferenceManager.findPreference("new_slice").setEnabled(mPreferenceCategory.getPreferenceCount() < PieControl.MAX_SLICES);
         updateSummary();
@@ -66,9 +73,6 @@ public class PieMainPreference extends Preference implements View.OnClickListene
         setOrder(mSlice);
         setFragment(SubPreferenceFragment.class.getName());
         setWidgetLayoutResource(R.layout.mainpref_remove);
-        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        Editor editor = mSharedPrefs.edit();
-        editor.putBoolean(getKey(), true).apply();
     }
 
     private void updateSummary() {

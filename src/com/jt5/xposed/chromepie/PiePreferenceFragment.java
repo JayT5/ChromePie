@@ -1,5 +1,6 @@
 package com.jt5.xposed.chromepie;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,14 +19,21 @@ public class PiePreferenceFragment extends PreferenceFragment implements OnShare
 
     private SharedPreferences mSharedPrefs;
 
+    @SuppressLint("WorldReadableFiles")
     @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
-        setHasOptionsMenu(true);
         addPreferencesFromResource(R.xml.main_preferences);
-        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mSharedPrefs = getActivity().getSharedPreferences(
+                getPreferenceManager().getSharedPreferencesName(), Context.MODE_WORLD_READABLE);
+
+        // Committing a value to shared preferences ensures they are
+        // world readable in case readability was reset somehow
+        boolean readable = mSharedPrefs.getBoolean("readable", true);
+        mSharedPrefs.edit().putBoolean("readable", !readable).commit();
+        setHasOptionsMenu(true);
 
         // If SharedPreferences does not contain this preference,
         // we can presume this is a new install

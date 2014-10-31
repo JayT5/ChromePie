@@ -2,6 +2,7 @@ package com.jt5.xposed.chromepie;
 
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,15 +26,17 @@ public class MenuPreferenceFragment extends PreferenceFragment {
     private SharedPreferences mSharedPrefs;
     private PreferenceCategory mPieMenuCat;
 
+    @SuppressLint("WorldReadableFiles")
     @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
+        addPreferencesFromResource(R.xml.menu_preferences);
+        mSharedPrefs = getActivity().getSharedPreferences(
+                getPreferenceManager().getSharedPreferencesName(), Context.MODE_WORLD_READABLE);
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
-        addPreferencesFromResource(R.xml.menu_preferences);
-        mSharedPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         mPieMenuCat = (PreferenceCategory) findPreference("pie_slices_cat");
 
         final Preference newSlice = findPreference("new_slice");
