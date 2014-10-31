@@ -1,4 +1,4 @@
-package com.jt5.xposed.chromepie.preference;
+package com.jt5.xposed.chromepie.settings.preference;
 
 import android.content.Context;
 import android.content.res.TypedArray;

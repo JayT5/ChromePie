@@ -1,4 +1,4 @@
-package com.jt5.xposed.chromepie.preference;
+package com.jt5.xposed.chromepie.settings.preference;
 
 import java.util.Arrays;
 
@@ -15,7 +15,7 @@ import android.view.View;
 
 import com.jt5.xposed.chromepie.PieControl;
 import com.jt5.xposed.chromepie.R;
-import com.jt5.xposed.chromepie.SubPreferenceFragment;
+import com.jt5.xposed.chromepie.settings.SubPreferenceFragment;
 
 public class PieMainPreference extends Preference implements View.OnClickListener {
 

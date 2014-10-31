@@ -1,4 +1,4 @@
-package com.jt5.xposed.chromepie;
+package com.jt5.xposed.chromepie.settings;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.jt5.xposed.chromepie.R;
 
 public class PieSettings extends PreferenceActivity {
 

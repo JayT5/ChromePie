@@ -1,4 +1,4 @@
-package com.jt5.xposed.chromepie;
+package com.jt5.xposed.chromepie.settings;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,7 +10,8 @@ import android.preference.PreferenceScreen;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.jt5.xposed.chromepie.preference.PieListPreference;
+import com.jt5.xposed.chromepie.R;
+import com.jt5.xposed.chromepie.settings.preference.PieListPreference;
 
 public class SubPreferenceFragment extends PreferenceFragment {
 

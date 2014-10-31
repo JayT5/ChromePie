@@ -10,20 +10,20 @@
         android:key="edit_pie_menu"
         android:title="@string/edit_pie_menu_title"
         android:summary="@string/edit_pie_menu_summary"
-        android:fragment="com.jt5.xposed.chromepie.MenuPreferenceFragment" />
+        android:fragment="com.jt5.xposed.chromepie.settings.MenuPreferenceFragment" />
     <ListPreference
         android:key="trigger_side"
         android:title="@string/trigger_side"
         android:entries="@array/trigger_side_entries"
         android:entryValues="@array/trigger_side_values"
         android:defaultValue="both" />
-    <com.jt5.xposed.chromepie.preference.PieSeekBarPreference
+    <com.jt5.xposed.chromepie.settings.preference.PieSeekBarPreference
         android:key="pie_radius_inc"
         android:title="@string/pie_size_title"
         android:defaultValue="@integer/qc_radius_increment"
         minimum="60"
         maximum="200" />
-    <com.jt5.xposed.chromepie.preference.PieSeekBarPreference
+    <com.jt5.xposed.chromepie.settings.preference.PieSeekBarPreference
         android:key="pie_slop"
         android:title="@string/trigger_area_title"
         android:defaultValue="@integer/qc_slop"
