@@ -17,9 +17,9 @@ public class Controller {
     private final Activity mActivity;
     private final PieControl mPieControl;
 
-    Controller(PieControl pieControl, Object mainObj, ClassLoader classLoader) {
+    Controller(PieControl pieControl, Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
-        mActivity = (Activity) mainObj;
+        mActivity = chromeActivity;
         mPieControl = pieControl;
     }
 

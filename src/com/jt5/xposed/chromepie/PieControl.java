@@ -59,8 +59,8 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
 
-    PieControl(Object mainObj, XModuleResources mModRes, ClassLoader classLoader) {
-        mChromeActivity = (Activity) mainObj;
+    PieControl(Activity chromeActivity, XModuleResources mModRes, ClassLoader classLoader) {
+        mChromeActivity = chromeActivity;
         mController = new Controller(this, mChromeActivity, classLoader);
         mXResources = mModRes;
         mXPreferences = new XSharedPreferences(PACKAGE_NAME);
@@ -273,7 +273,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     @SuppressWarnings("deprecation")
     private View makeTabsView() {
         LayoutInflater li = mChromeActivity.getLayoutInflater();
-        View view = li.inflate(mXResources.getLayout(com.jt5.xposed.chromepie.R.layout.qc_tabs_view), null);
+        View view = li.inflate(mXResources.getLayout(R.layout.qc_tabs_view), null);
         // findViewById returns null on some versions of Chrome
         // (some sort of resource conflict?) - so use getChildAt
         //TextView count = (TextView) view.findViewById(R.id.count_label);

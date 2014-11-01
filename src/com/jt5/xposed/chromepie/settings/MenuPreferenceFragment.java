@@ -46,7 +46,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 if (mPieMenuCat.getPreferenceCount() < PieControl.MAX_SLICES) {
-                    PieMainPreference mainPref = new PieMainPreference(getActivity(), null, (mPieMenuCat.getPreferenceCount() + 1));
+                    PieMainPreference mainPref = new PieMainPreference(getActivity(), (mPieMenuCat.getPreferenceCount() + 1));
                     mPieMenuCat.addPreference(mainPref);
                 }
                 return true;
@@ -77,7 +77,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
             String key = entry.getKey();
             if (key.startsWith("screen_") && (Boolean) entry.getValue()) {
                 int slice = Character.getNumericValue(key.charAt(key.length() - 1));
-                PieMainPreference mainPref = new PieMainPreference(getActivity(), null, slice);
+                PieMainPreference mainPref = new PieMainPreference(getActivity(), slice);
                 mPieMenuCat.addPreference(mainPref);
             }
         }

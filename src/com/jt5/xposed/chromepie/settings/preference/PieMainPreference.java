@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.preference.Preference;
 import android.preference.PreferenceCategory;
 import android.preference.PreferenceManager;
-import android.util.AttributeSet;
 import android.view.View;
 
 import com.jt5.xposed.chromepie.PieControl;
@@ -23,14 +22,10 @@ public class PieMainPreference extends Preference implements View.OnClickListene
     private int mSlice;
     private SharedPreferences mSharedPrefs;
     private Boolean mIsRemoved = false;
-    private Resources mResources;
+    private final Resources mResources;
 
-    public PieMainPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public PieMainPreference(Context context, AttributeSet attrs, int slice) {
-        super(context, attrs);
+    public PieMainPreference(Context context, int slice) {
+        super(context);
         mSlice = slice;
         mResources = getContext().getResources();
         initialise();
@@ -53,7 +48,8 @@ public class PieMainPreference extends Preference implements View.OnClickListene
                 preferenceManager.getSharedPreferencesName(), Context.MODE_WORLD_READABLE);
         persistBoolean(true);
         mPreferenceCategory = (PreferenceCategory) preferenceManager.findPreference("pie_slices_cat");
-        preferenceManager.findPreference("new_slice").setEnabled(mPreferenceCategory.getPreferenceCount() < PieControl.MAX_SLICES);
+        preferenceManager.findPreference("new_slice").setEnabled(
+                mPreferenceCategory.getPreferenceCount() < PieControl.MAX_SLICES);
         updateSummary();
     }
 
@@ -104,7 +100,8 @@ public class PieMainPreference extends Preference implements View.OnClickListene
 
         for (int i = mSlice; i < count; i++) {
             for (int j = 1; j <= PieControl.MAX_SLICES; j++) {
-                editor.putString("slice_" + i + "_item_" + j, mSharedPrefs.getString("slice_" + (i + 1) + "_item_" + j, "none"));
+                editor.putString("slice_" + i + "_item_" + j,
+                        mSharedPrefs.getString("slice_" + (i + 1) + "_item_" + j, "none"));
             }
 
             // apply changes now so that the summary can be updated
@@ -119,7 +116,8 @@ public class PieMainPreference extends Preference implements View.OnClickListene
         }
         editor.putBoolean("screen_slice_" + count, false).apply();
 
-        getPreferenceManager().findPreference("new_slice").setEnabled(mPreferenceCategory.getPreferenceCount() <= PieControl.MAX_SLICES);
+        getPreferenceManager().findPreference("new_slice").setEnabled(
+                mPreferenceCategory.getPreferenceCount() <= PieControl.MAX_SLICES);
     }
 
 }

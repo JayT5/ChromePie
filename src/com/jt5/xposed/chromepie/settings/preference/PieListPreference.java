@@ -3,19 +3,10 @@ package com.jt5.xposed.chromepie.settings.preference;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.ListPreference;
-import android.util.AttributeSet;
 
 import com.jt5.xposed.chromepie.R;
 
 public class PieListPreference extends ListPreference {
-
-    public PieListPreference(Context context) {
-        super(context);
-    }
-
-    public PieListPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
 
     public PieListPreference(Context context, int item, int slice) {
         super(context);
