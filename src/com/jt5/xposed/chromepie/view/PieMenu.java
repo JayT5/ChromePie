@@ -113,6 +113,11 @@ public class PieMenu extends FrameLayout {
 
     private XModuleResources mXRes;
 
+    private int mTriggerPosition;
+    private static final int TRIGGER_LEFT = 0;
+    private static final int TRIGGER_RIGHT = 1;
+    private static final int TRIGGER_BOTTOM = 2;
+
     /**
      * @param context
      * @param attrs
@@ -226,7 +231,18 @@ public class PieMenu extends FrameLayout {
     }
 
     private boolean onTheLeft() {
-        return mCenter.x < mSlop;
+        return mTriggerPosition == TRIGGER_LEFT;
+    }
+
+    private int getTriggerPosition(float x, float y) {
+        if ((x > mSlop) && (x < getWidth() - mSlop) && (y > getHeight() - mSlop)) {
+            return TRIGGER_BOTTOM;
+        } else if (x > getWidth() - mSlop) {
+            return TRIGGER_RIGHT;
+        } else if (x < mSlop) {
+            return TRIGGER_LEFT;
+        }
+        return -1;
     }
 
     /**
@@ -234,13 +250,8 @@ public class PieMenu extends FrameLayout {
      * @param show
      */
     private void show(boolean show) {
-        mOpen = show && (mControl.getTabCount() > 0) && !mControl.isInOverview() && !mControl.isInFullscreenVideo();
-        String side = mControl.getTriggerSide();
-        if (side.equals("left")) {
-            mOpen &= onTheLeft();
-        } else if (side.equals("right")) {
-            mOpen &= !onTheLeft();
-        }
+        mOpen = show && mControl.getTriggerSide().contains(mTriggerPosition)
+                && (mControl.getTabCount() > 0) && !mControl.isInOverview() && !mControl.isInFullscreenVideo();
         if (mOpen) {
             // ensure clean state
             if (mAnimator != null) {
@@ -285,12 +296,17 @@ public class PieMenu extends FrameLayout {
     }
 
     private void setCenter(int x, int y) {
-        if (x < mSlop) {
-            mCenter.x = 0;
+        if (mTriggerPosition == TRIGGER_BOTTOM) {
+            mCenter.x = x;
+            mCenter.y = getHeight();
         } else {
-            mCenter.x = getWidth();
+            if (onTheLeft()) {
+                mCenter.x = 0;
+            } else {
+                mCenter.x = getWidth();
+            }
+            mCenter.y = y;
         }
-        mCenter.y = y;
     }
 
     private void layoutPie() {
@@ -356,6 +372,8 @@ public class PieMenu extends FrameLayout {
                 state = canvas.save();
                 if (onTheLeft()) {
                     canvas.scale(-1, 1);
+                } else if (mTriggerPosition == TRIGGER_BOTTOM) {
+                    canvas.rotate(90, mCenter.x, mCenter.y);
                 }
                 mBackground.draw(canvas);
                 canvas.restoreToCount(state);
@@ -388,6 +406,8 @@ public class PieMenu extends FrameLayout {
             int state = canvas.save();
             if (onTheLeft()) {
                 canvas.scale(-1, 1);
+            } else if (mTriggerPosition == TRIGGER_BOTTOM) {
+                canvas.rotate(90, mCenter.x, mCenter.y);
             }
             float r = getDegrees(item.getStartAngle()) - 270; // degrees(0)
             canvas.rotate(r, mCenter.x, mCenter.y);
@@ -396,6 +416,11 @@ public class PieMenu extends FrameLayout {
             // draw the item view
             View view = item.getView();
             state = canvas.save();
+            if (mTriggerPosition == TRIGGER_BOTTOM) {
+                canvas.rotate(90, mCenter.x, mCenter.y);
+                canvas.rotate(-90, view.getX(), view.getY());
+                canvas.translate(-view.getWidth(), 0);
+            }
             canvas.translate(view.getX(), view.getY());
             view.draw(canvas);
             canvas.restoreToCount(state);
@@ -424,7 +449,8 @@ public class PieMenu extends FrameLayout {
         float y = evt.getY();
         int action = evt.getActionMasked();
         if (MotionEvent.ACTION_DOWN == action) {
-            if ((x > getWidth() - mSlop) || (x < mSlop)) {
+            mTriggerPosition = getTriggerPosition(x, y);
+            if (mTriggerPosition != -1) {
                 setCenter((int) x, (int) y);
                 show(true);
                 return true;
@@ -664,15 +690,19 @@ public class PieMenu extends FrameLayout {
         // get angle and radius from x/y
         res.x = (float) Math.PI / 2;
         x = mCenter.x - x;
-        if (mCenter.x < mSlop) {
+        if (onTheLeft()) {
             x = -x;
         }
         y = mCenter.y - y;
         res.y = (float) Math.sqrt(x * x + y * y);
-        if (y > 0) {
-            res.x = (float) Math.asin(x / res.y);
-        } else if (y < 0) {
-            res.x = (float) (Math.PI - Math.asin(x / res.y ));
+        if (mTriggerPosition == TRIGGER_BOTTOM) {
+            res.x = (float) (Math.asin(x / res.y) + (Math.PI / 2));
+        } else {
+            if (y > 0) {
+                res.x = (float) Math.asin(x / res.y);
+            } else if (y < 0) {
+                res.x = (float) (Math.PI - Math.asin(x / res.y ));
+            }
         }
         return res;
     }

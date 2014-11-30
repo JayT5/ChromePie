@@ -19,7 +19,6 @@
     <string name="trigger_side">Сторона запуска</string>
     <string name="ts_right">Правая</string>
     <string name="ts_left">Левая</string>
-    <string name="ts_both">Правая и левая</string>
     <string name="none">Нет</string>
     <string name="back">Назад</string>
     <string name="forward">Вперед</string>

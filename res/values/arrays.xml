@@ -122,15 +122,15 @@
     </string-array>
 
     <string-array name="trigger_side_entries" translatable="false">
-        <item>@string/ts_right</item>
         <item>@string/ts_left</item>
-        <item>@string/ts_both</item>
+        <item>@string/ts_right</item>
+        <item>@string/ts_bottom</item>
     </string-array>
     
     <string-array name="trigger_side_values" translatable="false">
-        <item>right</item>
-        <item>left</item>
-        <item>both</item>
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
 
 </resources>

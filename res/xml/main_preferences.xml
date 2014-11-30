@@ -11,12 +11,12 @@
         android:title="@string/edit_pie_menu_title"
         android:summary="@string/edit_pie_menu_summary"
         android:fragment="com.jt5.xposed.chromepie.settings.MenuPreferenceFragment" />
-    <ListPreference
-        android:key="trigger_side"
+    <MultiSelectListPreference
+        android:key="trigger_side_set"
         android:title="@string/trigger_side"
         android:entries="@array/trigger_side_entries"
         android:entryValues="@array/trigger_side_values"
-        android:defaultValue="both" />
+        android:defaultValue="@array/trigger_side_values" />
     <com.jt5.xposed.chromepie.settings.preference.PieSeekBarPreference
         android:key="pie_radius_inc"
         android:title="@string/pie_size_title"

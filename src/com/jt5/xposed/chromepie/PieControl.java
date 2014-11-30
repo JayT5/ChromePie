@@ -16,10 +16,13 @@
 
 package com.jt5.xposed.chromepie;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import android.app.Activity;
 import android.content.res.TypedArray;
@@ -94,8 +97,13 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         return mXPreferences;
     }
 
-    String getTriggerSide() {
-        return mXPreferences.getString("trigger_side", "both");
+    List<Integer> getTriggerSide() {
+        Set<String> triggerSet = mXPreferences.getStringSet("trigger_side_set", new HashSet<String>());
+        List<Integer> triggerInt = new ArrayList<Integer>();
+        for (String trigger : triggerSet) {
+            triggerInt.add(Integer.valueOf(trigger));
+        }
+        return triggerInt;
     }
 
     @Override

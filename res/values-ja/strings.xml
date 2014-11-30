@@ -28,7 +28,6 @@
     <string name="trigger_side">トリガー領域</string>
     <string name="ts_right">右</string>
     <string name="ts_left">左</string>
-    <string name="ts_both">左右</string>
     
     <!-- Pie items -->
     <string name="none">なし</string>

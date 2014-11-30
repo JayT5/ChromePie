@@ -35,10 +35,10 @@
     <string name="pie_slices_cat">Pie Slices</string>
     <string name="hide_launcher_icon_title">Hide launcher icon</string>
     
-    <string name="trigger_side">Trigger side</string>
+    <string name="trigger_side">Trigger positions</string>
     <string name="ts_right">Right</string>
     <string name="ts_left">Left</string>
-    <string name="ts_both">Right &amp; left</string>
+    <string name="ts_bottom">Bottom</string>
     
     <string name="pie_size_title">Pie menu size</string>
     <string name="trigger_area_title">Trigger area size</string>

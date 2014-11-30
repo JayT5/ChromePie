@@ -1,6 +1,9 @@
 package com.jt5.xposed.chromepie;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
+
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Build;
 import android.view.View;
@@ -31,7 +34,7 @@ public class Controller {
         return mActivity;
     }
 
-    public String getTriggerSide() {
+    public List<Integer> getTriggerSide() {
         return mPieControl.getTriggerSide();
     }
 
