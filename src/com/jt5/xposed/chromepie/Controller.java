@@ -274,8 +274,16 @@ public class Controller {
     }
 
     Boolean tabSupportsFinding() {
+        Object tab = getCurrentTab();
         try {
-            return (Boolean) callMethod(getCurrentTab(), "supportsFinding");
+            return (Boolean) callMethod(tab, "supportsFinding");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            Boolean isNativePage = (Boolean) callMethod(tab, "isNativePage");
+            Object webContents = callMethod(tab, "getWebContents");
+            return !isNativePage && (webContents != null);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return true;
