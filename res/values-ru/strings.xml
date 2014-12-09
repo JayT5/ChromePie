@@ -2,23 +2,38 @@
 <resources>
     <string name="app_name">ChromePie</string>
     <string name="app_description">Добавление элементов управления в Google Chrome</string>
-    <string name="app_about">"ChromePie представляет собой Xposed модуль, который добавляет настраиваемые элементы управления в Google Chrome и Google Chrome Beta.
+    <string name="app_thread_link">Check out the <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">official thread at XDA Developers</a> for support and feedback</string>
+    <string name="app_about">"ChromePie - это Xposed модуль, который добавляет настраиваемые элементы управления в Google Chrome и Google Chrome Beta.
 
 Действия:
 • Назад, вперед, обновить, новая вкладка, новая вкладка инкогнито, закрыть вкладку
 • Добавить закладку, история, переход на полную версию, поиск на странице
 • Добавить на главный экран, отправить, перейти к началу, на весь экран и  т.д."</string>
-    <string name="app_help">"Нажмите \"Добавить новый элемент\", чтобы добавить основной элемент, который будет изначально отображаться при открытии меню. Основные элементы могут содержать подпункты, которые появляются, когда Вы перемещаете палец на основной элемент. Количество отображаемых подпунктов равно числу основных элементов. Для выполнения действий выберите элемент и поднимите палец. Для применения любых изменений требуются перезапуск Chrome."</string>
+    <string name="app_help">"Нажмите \"Добавить новый элемент\", чтобы добавить основной элемент, который будет изначально отображаться при открытии меню. Основные элементы могут содержать пункты, которые появляются, когда Вы перемещаете палец на основной элемент. Количество отображаемых пунктов равно числу основных элементов. Для выполнения действий выберите элемент и поднимите палец. Для применения любых изменений требуются перезапуск Chrome."</string>
     <string name="app_version">Версия: %s</string>
     <string name="app_help_title">Справка</string>
+    <string name="load_defaults_title">Загрузить значения по умолчанию</string>
     <string name="kill_chrome">Перезапуск Chrome</string>
     <string name="kill_chrome_summary">Перезапуск Chrome для применения изменений</string>
     <string name="menu_kill">Закрыть Chrome</string>
+    <string name="chrome_killed">Chrome закрыт</string>
+    <string name="cannot_launch_chrome">Не удается запустить Chrome</string>
+    <string name="edit_pie_menu_title">Меню элементов</string>
+    <string name="edit_pie_menu_summary">Изменить элементы</string>
     <string name="new_slice">Добавить новый элемент</string>
     <string name="pie_slices_cat">Элементы</string>
+    <string name="hide_launcher_icon_title">Скрыть иконку в лаунчере</string>
     <string name="trigger_side">Сторона запуска</string>
     <string name="ts_right">Правая</string>
     <string name="ts_left">Левая</string>
+    <string name="ts_both">Правая и левая</string>
+    <string name="pie_size_title">Размер элемента</string>
+    <string name="trigger_area_title">Размер зоны  запуска</string>
+    <string name="donate_title">Помочь проекту</string>
+    <string name="donate_summary">Нажмите, чтобы поддержать развитие, пожертвовав через PayPal</string>
+    <string name="slice">Элемент</string>
+    <string name="pie_item">Пункт</string>
+    <string name="main_item">основной</string>
     <string name="none">Нет</string>
     <string name="back">Назад</string>
     <string name="forward">Вперед</string>
@@ -43,4 +58,7 @@
     <string name="print">Печать</string>
     <string name="help">Справка</string>
     <string name="scroll_to_top">Перейти к началу</string>
+    <string name="exit">Выход</string>
+    <string name="next_tab">Следующая вкладка</string>
+    <string name="previous_tab">Предыдущая вкладка</string>
 </resources>
