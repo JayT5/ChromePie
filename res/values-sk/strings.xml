@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ChromePie</string>
+    <string name="app_description">Pridá koláčové ovládanie Google Chrome</string>
+    <string name="app_thread_link">Prejdite na <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">oficálnu 
+    tému na XDA Developers</a> pre podporu a spätnú väzbu</string>
+    <string name="app_about">ChromePie je Xposed module, ktorý pridá upraviteľné koláčové ovládanie 
+        do Google Chrome a Google Chrome Beta.\n\n
+        Akcia zahŕňajú:
+        \n•   Dozadu, dopredu, obnoviť, nová karta, nová karta inkognito, zavrieť kartu
+        \n•   Pridať záložku, história, vyžiadať desktopovú stránku, nájsť na stránke
+        \n•   Pridať domov, zdieľať, prejsť nahor, celá obrazovka &amp; ďalšie
+    </string>
+    <string name="app_help">Kliknite na \'Pridať nový plátok\' pre pridanie hlavnej položky,
+	    ktorá sa zobrazí pri otvorení ponuky. Tieto hlavné položky môžu obsahovať podpoložky, 
+        ktoré sa objavia, keď pohnete prstom na hlavnú položku. Počet zobrazených podpoložiek 
+        sa rovná počtu vytvorených hlavných položiek. Ak chcete vykonať akciu, zdvihnite prst 
+		z danej položky. Akékoľvek zmeny vyžadujú reštartovanie aplikácie Chrome.
+    </string>
+    <string name="app_version">Verzia: %s</string>
+    <string name="app_help_title">Pomocník</string>
+    <string name="load_defaults_title">Načítať predvolené hodnoty</string>
+
+    <string name="kill_chrome">Reštartovať Chrome</string>
+    <string name="kill_chrome_summary">Zmeny vyžadujú reštartovanie aplikácie Chrome</string>
+    <string name="menu_kill">Ukončiť Chrome</string>
+    <string name="chrome_killed">Chrome sa ukončil</string>
+    <string name="cannot_launch_chrome">Nemožno spustiť Chrome</string>
+    
+    <string name="edit_pie_menu_title">Koláčová ponuka</string>
+    <string name="edit_pie_menu_summary">Upraviť položky v koláčovej ponuke</string>
+    
+    <string name="new_slice">Pridať nový plátok</string>
+    <string name="pie_slices_cat">Plátky koláča</string>
+    <string name="hide_launcher_icon_title">Skryť ikonu v spúšťači</string>
+    
+    <string name="trigger_side">Pozície spustenia</string>
+    <string name="ts_right">Vľavo</string>
+    <string name="ts_left">Vpravo</string>
+    <string name="ts_bottom">Dole</string>
+    
+    <string name="pie_size_title">Veľkosť koláčovej ponuky</string>
+    <string name="trigger_area_title">Veľkosť oblasti spustenia</string>
+    
+    <string name="donate_title">Prispieť</string>
+    <string name="donate_summary">Dotykom podporte vývoj aplikácie darom cez PayPal</string>
+    
+    <string name="slice">Plátok</string>
+    <string name="pie_item">Položka koláča</string>
+    <string name="main_item">Hlavná položka</string>
+    
+    <!-- Pie items -->
+    <string name="none">Žiadna</string>
+    <string name="back">Dozadu</string>
+    <string name="forward">Dopredu</string>
+    <string name="refresh">Obnoviť</string>
+    <string name="edit_url">Upraviť URL</string>
+    <string name="find_in_page">Nájsť na stránke</string>
+    <string name="share">Zdieľať</string>
+    <string name="bookmarks">Záložky</string>
+    <string name="add_bookmark">Pridať záložku</string>
+    <string name="history">História</string>
+    <string name="new_tab">Nová karta</string>
+    <string name="close_tab">Zavrieť kartu</string>
+    <string name="new_incognito_tab">Nová karta inkognito</string>
+    <string name="close_all">Zavrieť všetky</string>
+    <string name="show_tabs">Zobraziť karty</string>
+    <string name="fullscreen">Celá obrazovka</string>
+    <string name="settings">Nastavenia</string>
+    <string name="desktop_site">Vyžiadať dekstopovú stránku</string>
+    <string name="add_to_home">Pridať domov</string>
+    <string name="recent_tabs">Nedávne karty</string>
+    <string name="most_visited">Najnavštevovanejšie</string>
+    <string name="print">Vytlačiť</string>
+    <string name="help">Pomocník</string>
+    <string name="scroll_to_top">Prejsť nahor</string>
+    <string name="exit">Ukončiť</string>
+    <string name="next_tab">Ďalšia karta</string>
+    <string name="previous_tab">Predchádzajúca karta</string>
+
+</resources>
