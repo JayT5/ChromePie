@@ -98,7 +98,8 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     }
 
     List<Integer> getTriggerSide() {
-        Set<String> triggerSet = mXPreferences.getStringSet("trigger_side_set", new HashSet<String>());
+        Set<String> triggerSet = mXPreferences.getStringSet("trigger_side_set",
+                new HashSet<String>(Arrays.asList("0", "1", "2")));
         List<Integer> triggerInt = new ArrayList<Integer>();
         for (String trigger : triggerSet) {
             triggerInt.add(Integer.valueOf(trigger));
