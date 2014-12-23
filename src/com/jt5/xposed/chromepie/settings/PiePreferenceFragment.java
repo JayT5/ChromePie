@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -84,6 +86,17 @@ public class PiePreferenceFragment extends PreferenceFragment {
                 return true;
             }
         });
+
+        final Preference editMenu = findPreference("edit_pie_menu");
+        editMenu.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                ((PreferenceActivity) getActivity()).startWithFragment(
+                        MenuPreferenceFragment.class.getName(), null, null, Activity.RESULT_CANCELED);
+                return true;
+            }
+        });
+
     }
 
     @Override

@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">ChromePie</string>
     <string name="app_description">Google Chromeにパイ操作機能を追加します</string>
+    <string name="app_thread_link">サポートなどは<a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">XDA
+公式ページ</a> (英語)でしています。</string>
     <string name="app_about">ChromePieはカスタマイズできるパイ操作機能を、Google ChromeとGoogle Chrome Betaに追加するXposedモジュールです。\n\n
         内蔵している機能:
         \n•   戻る、進む、再読み込み、新しいタブ、新しいシークレットタブ、タブを閉じる
         \n•   ブックマークに追加、履歴、PC版サイトを見る、ページ内検索
-        \n•   ホーム画面に追加、共有、一番上へスクロール、全画面表示など
-    </string>
+        \n•   ホーム画面に追加、共有、一番上へスクロール、全画面表示など</string>
     <string name="app_help">「新しいスライスの追加」をタップすると、パイメニューを開いたとき最初に表示される
         メインアイテムを追加できます。メインアイテムに指をスライドしたときに
         表示されるサブアイテムを追加することもできます。作成したメインアイテムの数だけ
         サブアイテムを表示できます。アクションを実行するには、
-        アイテムを選んだ状態で指を離してください。スライスを変更した後はChromeを再起動しないといけません。
-    </string>
+        アイテムを選んだ状態で指を離してください。スライスを変更した後はChromeを再起動しないといけません。</string>
     <string name="app_version">バージョン: %s</string>
     <string name="app_help_title">ヘルプ</string>
-
+    <string name="load_defaults_title">デフォルトの値を読み込む</string>
     <string name="kill_chrome">Chromeの再起動</string>
     <string name="kill_chrome_summary">スライスを変更した後はこのオプションでChromeを再起動しないといけません。</string>
     <string name="menu_kill">Chromeのキル</string>
-    
+    <string name="chrome_killed">Chromeをキルしました</string>
+    <string name="cannot_launch_chrome">Chromeを起動できません</string>
+    <string name="edit_pie_menu_title">パイメニュー</string>
+    <string name="edit_pie_menu_summary">パイメニューアイテムの編集</string>
     <string name="new_slice">新しいスライスの追加</string>
     <string name="pie_slices_cat">パイスライス</string>
-    
+    <string name="hide_launcher_icon_title">ホームアプリのアイコンを隠す</string>
     <string name="trigger_side">トリガー領域</string>
     <string name="ts_right">右</string>
     <string name="ts_left">左</string>
-    
+    <string name="pie_size_title">パイメニューのサイズ</string>
+    <string name="trigger_area_title">トリガー領域のサイズ</string>
+    <string name="donate_title">寄付</string>
+    <string name="donate_summary">タッチしてPayPalで寄付をして、開発をサポートしてください。</string>
+    <string name="slice">スライス</string>
+    <string name="pie_item">パイアイテム</string>
+    <string name="main_item">メインアイテム</string>
     <!-- Pie items -->
     <string name="none">なし</string>
     <string name="back">戻る</string>
@@ -54,5 +62,7 @@
     <string name="print">印刷</string>
     <string name="help">ヘルプ</string>
     <string name="scroll_to_top">一番上へスクロール</string>
-
+    <string name="exit">終了</string>
+    <string name="next_tab">次のタブ</string>
+    <string name="previous_tab">前のタブ</string>
 </resources>

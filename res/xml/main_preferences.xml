@@ -9,8 +9,7 @@
     <Preference
         android:key="edit_pie_menu"
         android:title="@string/edit_pie_menu_title"
-        android:summary="@string/edit_pie_menu_summary"
-        android:fragment="com.jt5.xposed.chromepie.settings.MenuPreferenceFragment" />
+        android:summary="@string/edit_pie_menu_summary" />
     <MultiSelectListPreference
         android:key="trigger_side_set"
         android:title="@string/trigger_side"

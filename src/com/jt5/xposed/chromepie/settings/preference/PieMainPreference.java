@@ -14,7 +14,6 @@ import android.view.View;
 
 import com.jt5.xposed.chromepie.PieControl;
 import com.jt5.xposed.chromepie.R;
-import com.jt5.xposed.chromepie.settings.SubPreferenceFragment;
 
 public class PieMainPreference extends Preference implements View.OnClickListener {
 
@@ -67,7 +66,6 @@ public class PieMainPreference extends Preference implements View.OnClickListene
         setTitle(mResources.getString(R.string.slice) + " " + mSlice);
         setSummary(mResources.getString(R.string.none));
         setOrder(mSlice);
-        setFragment(SubPreferenceFragment.class.getName());
         setWidgetLayoutResource(R.layout.mainpref_remove);
     }
 

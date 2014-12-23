@@ -89,7 +89,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
             Bundle extras = new Bundle();
             extras.putInt("slice", ((PieMainPreference) preference).getSlice());
             extras.putInt("count", mPieMenuCat.getPreferenceCount());
-            ((PreferenceActivity) getActivity()).startWithFragment(preference.getFragment(), extras, this, 0);
+            ((PreferenceActivity) getActivity()).startWithFragment(SubPreferenceFragment.class.getName(), extras, this, Activity.RESULT_CANCELED);
             return true;
         }
         return false;
@@ -115,7 +115,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
                 loadPreferences();
                 return true;
             case android.R.id.home:
-                ((PreferenceActivity) getActivity()).finishPreferencePanel(this, Activity.RESULT_OK, null);
+                getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
