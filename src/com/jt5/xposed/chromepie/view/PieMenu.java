@@ -250,8 +250,8 @@ public class PieMenu extends FrameLayout {
      * @param show
      */
     private void show(boolean show) {
-        mOpen = show && mControl.getTriggerSide().contains(mTriggerPosition)
-                && (mControl.getTabCount() > 0) && !mControl.isInOverview() && !mControl.isInFullscreenVideo();
+        mOpen = show && mControl.getTriggerSide().contains(mTriggerPosition) && !mControl.isInFullscreenVideo()
+                && (mControl.isInOverview() == (mControl.getTabCount() == 0));
         if (mOpen) {
             // ensure clean state
             if (mAnimator != null) {

@@ -61,6 +61,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private static final String PACKAGE_NAME = PieControl.class.getPackage().getName();
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
+    private static List<String> actionNoTab;
 
     PieControl(Activity chromeActivity, XModuleResources mModRes, ClassLoader classLoader) {
         mChromeActivity = chromeActivity;
@@ -69,6 +70,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mXPreferences = new XSharedPreferences(PACKAGE_NAME);
         mXPreferences.makeWorldReadable();
         mItemSize = (int) mXResources.getDimension(R.dimen.qc_item_size);
+        actionNoTab = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit");
     }
 
     protected void attachToContainer(FrameLayout container) {
@@ -109,67 +111,70 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
 
     @Override
     public boolean onOpen() {
-        if (mOnPageLoad == null) {
+        if (mOnPageLoad == null && mController.getCurrentTab() != null) {
             hookOnPageLoad();
         }
-        View icon;
-        List<PieItem> items = mPie.getItems();
+        final int tabCount = mController.getTabCount();
+        final List<PieItem> items = mPie.getItems();
         for (PieItem item : items) {
-            icon = item.getView();
-            if (icon == null) {
-                continue;
-            }
-            if (!(icon instanceof ImageView)) {
+            View icon = item.getView();
+            String id = item.getId();
+            boolean disableNoTabs = (tabCount == 0) && !actionNoTab.contains(id);
+            item.setEnabled(!disableNoTabs);
+            if (id.equals("show_tabs")) {
                 //icon = icon.findViewById(R.id.count_label);
                 icon = ((ViewGroup) icon).getChildAt(1);
+                ((TextView) icon).setText(Integer.toString(tabCount));
             }
-            if (item.getId().equals("forward")) {
-                item.setEnabled(mController.canGoForward());
-            } else if (item.getId().equals("back")) {
-                item.setEnabled(mController.canGoBack());
-            } else if (item.getId().equals("desktop_site")) {
+            if (icon == null || disableNoTabs) {
+                continue;
+            }
+            if (id.equals("desktop_site")) {
                 if (mController.isDesktopUserAgent()) {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_mobile_site));
                 } else {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_desktop_site));
                 }
-            } else if (item.getId().equals("refresh")) {
+            } else if (id.equals("refresh")) {
                 if (mController.isLoading()) {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_cancel));
                 } else {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_reload));
                 }
-            } else if (item.getId().equals("fullscreen")) {
+            } else if (id.equals("fullscreen")) {
                 if (mController.isFullscreen()) {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_return_from_full_screen));
                 } else {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_full_screen));
                 }
-            } else if (item.getId().equals("show_tabs")) {
-                item.setEnabled(!mController.isTablet());
-                ((TextView) icon).setText(Integer.toString(mController.getTabCount()));
-            } else if (item.getId().equals("find_in_page")) {
-                item.setEnabled(mController.tabSupportsFinding());
-            } else if (item.getId().equals("print")) {
-                item.setEnabled(mController.printingSupported() && !mController.isOnNewTabPage());
-            } else if (item.getId().equals("recent_tabs")) {
-                item.setEnabled(mController.syncSupported() && !mController.isIncognito());
-            } else if (item.getId().equals("add_bookmark")) {
+            } else if (id.equals("add_bookmark")) {
                 if (mController.bookmarkExists()) {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_not_important));
                 } else {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_important));
                 }
                 item.setEnabled(mController.editBookmarksSupported());
-            } else if (item.getId().equals("next_tab")) {
+            } else if (id.equals("forward")) {
+                item.setEnabled(mController.canGoForward());
+            } else if (id.equals("back")) {
+                item.setEnabled(mController.canGoBack());
+            } else if (id.equals("show_tabs")) {
+                item.setEnabled(!mController.isTablet());
+            } else if (id.equals("find_in_page")) {
+                item.setEnabled(mController.tabSupportsFinding());
+            } else if (id.equals("print")) {
+                item.setEnabled(mController.printingSupported() && !mController.isOnNewTabPage());
+            } else if (id.equals("recent_tabs")) {
+                item.setEnabled(mController.syncSupported() && !mController.isIncognito());
+            } else if (id.equals("next_tab")) {
                 item.setEnabled(mController.tabExistsAtIndex(1));
-            } else if (item.getId().equals("previous_tab")) {
+            } else if (id.equals("previous_tab")) {
                 item.setEnabled(mController.tabExistsAtIndex(-1));
-            } else if (item.getId().equals("add_to_home")) {
+            } else if (id.equals("add_to_home")) {
                 item.setEnabled(mController.addToHomeSupported() && !mController.isIncognito() && !mController.isOnNewTabPage());
-            } else if (item.getId().equals("most_visited")) {
+            } else if (id.equals("most_visited")) {
                 item.setEnabled(!mController.isIncognito());
-            } else if (item.getId().equals("share")) {
+            } else if (id.equals("share")) {
                 item.setEnabled(!mController.isOnNewTabPage());
             }
         }
@@ -276,7 +281,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     }
 
     private PieItem makeFiller() {
-        return new PieItem(null, null, null, 1);
+        return new PieItem(null, "", null, 1);
     }
 
     @SuppressWarnings("deprecation")

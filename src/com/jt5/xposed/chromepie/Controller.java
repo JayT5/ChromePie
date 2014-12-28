@@ -231,14 +231,18 @@ public class Controller {
     }
 
     public void requestTabFocus() {
+        Object tab = getCurrentTab();
+        if (tab == null) {
+            return;
+        }
         try {
-            callMethod(getCurrentTab(), "requestFocus", true);
+            callMethod(tab, "requestFocus", true);
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            callMethod(getCurrentTab(), "requestFocus");
+            callMethod(tab, "requestFocus");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
