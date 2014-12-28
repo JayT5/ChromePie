@@ -29,6 +29,7 @@
         <item>@string/exit</item>
         <item>@string/next_tab</item>
         <item>@string/previous_tab</item>
+        <item>@string/reader_mode</item>
     </string-array>
     
     <string-array name="pie_item_values" translatable="false">
@@ -59,6 +60,7 @@
         <item>exit</item>
         <item>next_tab</item>
         <item>previous_tab</item>
+        <item>reader_mode</item>
     </string-array>
 
     <array name="pie_item_dark_drawables" translatable="false">
@@ -89,6 +91,7 @@
         <item>@drawable/ic_action_exit</item>
         <item>@drawable/ic_action_next_item</item>
         <item>@drawable/ic_action_previous_item</item>
+        <item>@drawable/ic_action_reader_mode</item>
     </array>
     
     <string-array name="pie_item_actions" translatable="false">
@@ -116,6 +119,7 @@
         <item>print_id</item>
         <item>preferences_id</item>
         <item>help_id</item>
+        <item></item>
         <item></item>
         <item></item>
         <item></item>

@@ -451,4 +451,48 @@ public class Controller {
         return true;
     }
 
+    Integer getReaderModeStatus() {
+        try {
+            return (Integer) callMethod(callMethod(getCurrentTab(), "getReaderModeManager"), "getReaderModeStatus");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        return 1;
+    }
+
+    Boolean isDistilledPage() {
+        Class<?> distillerUtils = getDomDistillerUtilsClass();
+        if (distillerUtils == null) {
+            return false;
+        }
+        try {
+            return (Boolean) XposedHelpers.callStaticMethod(distillerUtils, "isDistilledPage", getUrl());
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return false;
+    }
+
+    String getOriginalUrl() {
+        Class<?> distillerUtils = getDomDistillerUtilsClass();
+        if (distillerUtils == null) {
+            return "";
+        }
+        try {
+            return (String) XposedHelpers.callStaticMethod(distillerUtils, "getOriginalUrlFromDistillerUrl", getUrl());
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return "";
+    }
+
+    private Class<?> getDomDistillerUtilsClass() {
+        try {
+            return XposedHelpers.findClass("org.chromium.components.dom_distiller.core.DomDistillerUrlUtils", mClassLoader);
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
+        }
+        return null;
+    }
+
 }

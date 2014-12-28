@@ -78,5 +78,6 @@
     <string name="exit">Exit</string>
     <string name="next_tab">Next tab</string>
     <string name="previous_tab">Previous tab</string>
+    <string name="reader_mode">Reader mode</string>
 
 </resources>

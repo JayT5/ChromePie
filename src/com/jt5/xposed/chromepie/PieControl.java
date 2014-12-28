@@ -176,6 +176,8 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 item.setEnabled(!mController.isIncognito());
             } else if (id.equals("share")) {
                 item.setEnabled(!mController.isOnNewTabPage());
+            } else if (id.equals("reader_mode")) {
+                item.setEnabled(mController.getReaderModeStatus() != 1);
             }
         }
         return true;

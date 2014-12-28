@@ -249,3 +249,16 @@ class Action_previous_tab implements Action {
         control.showTabByIndex(index - 1);
     }
 }
+
+class Action_reader_mode implements Action {
+    @Override
+    public void execute(Controller control) {
+        if (control.isDistilledPage()) {
+            String originalUrl = control.getOriginalUrl();
+            control.loadUrl(originalUrl);
+        } else {
+            int id = control.getResIdentifier("reader_mode_id");
+            control.itemSelected(id);
+        }
+    }
+}
