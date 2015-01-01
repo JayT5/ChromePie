@@ -154,37 +154,6 @@ public class Controller {
         return null;
     }
 
-    String getMostVisitedUrl() {
-        if (isNativeNTPEnabled()) {
-            return "chrome-native://newtab/";
-        } else {
-            return "chrome://newtab/#most_visited";
-        }
-    }
-
-    Object getNTPSection(String getSection) {
-        try {
-            Class<?> ntpSection = XposedHelpers.findClass("com.google.android.apps.chrome.NewTabPageUtil.NTPSection", mClassLoader);
-            Object section = XposedHelpers.getStaticObjectField(ntpSection, getSection);
-            return section;
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-            return new Object();
-        }
-    }
-
-    Object findToolbar(Object contentView) {
-        try {
-            Class<?> toolbar = XposedHelpers.findClass("com.google.android.apps.chrome.tab.NewTabPageToolbar", mClassLoader);
-            return XposedHelpers.callStaticMethod(toolbar, "findToolbar", contentView);
-        } catch (ClassNotFoundError cnfe) {
-            //XposedBridge.log(TAG + cnfe);
-        } catch (NoSuchMethodError nsme) {
-            //XposedBridge.log(TAG + nsme);
-        }
-        return null;
-    }
-
     private Object getVideoView() {
         try {
             Class<?> contentVideoView = XposedHelpers.findClass("org.chromium.content.browser.ContentVideoView", mClassLoader);
@@ -356,17 +325,25 @@ public class Controller {
         return (url.startsWith("chrome://") || url.startsWith("chrome-native://"));
     }
 
-    private Boolean isNativeNTPEnabled() {
+    String getMostVisitedUrl() {
+        Class<?> urlConstants = null;
         try {
-            Class<?> newTabPage = XposedHelpers.findClass("com.google.android.apps.chrome.ntp.NewTabPage", mClassLoader);
-            Boolean isEnabled = (Boolean) XposedHelpers.callStaticMethod(newTabPage, "isNativeNTPEnabled", mActivity);
-            return isEnabled;
+            urlConstants = XposedHelpers.findClass("com.google.android.apps.chrome.UrlConstants", mClassLoader);
         } catch (ClassNotFoundError cnfe) {
-            //XposedBridge.log(TAG + cnfe);
-        } catch (NoSuchMethodError nsme) {
-            //XposedBridge.log(TAG + nsme);
+            XposedBridge.log(TAG + cnfe);
+            return "chrome-native://newtab/";
         }
-        return true;
+        try {
+            return (String) XposedHelpers.getStaticObjectField(urlConstants, "MOST_VISITED_URL");
+        } catch (NoSuchFieldError nsfe) {
+
+        }
+        try {
+            return (String) XposedHelpers.getStaticObjectField(urlConstants, "NTP_URL");
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
+        }
+        return "chrome-native://newtab/";
     }
 
     Boolean isTablet() {

@@ -108,20 +108,8 @@ class Action_show_tabs implements Action {
 class Action_most_visited implements Action {
     @Override
     public void execute(Controller control) {
-        Object tab = control.getCurrentTab();
-        Object toolbar = null;
-        try {
-            toolbar = control.findToolbar(callMethod(tab, "getContentView"));
-        } catch (NoSuchMethodError nsme) {
-            //XposedBridge.log(TAG + nsme);
-        }
-        if (toolbar != null) {
-            Object mVSection = control.getNTPSection("MOST_VISITED");
-            callMethod(toolbar, "loadNtpSection", mVSection);
-        } else {
-            String ntpUrl = control.getMostVisitedUrl();
-            control.loadUrl(ntpUrl);
-        }
+        String ntpUrl = control.getMostVisitedUrl();
+        control.loadUrl(ntpUrl);
     }
 }
 
