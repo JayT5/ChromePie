@@ -79,5 +79,6 @@
     <string name="next_tab">Next tab</string>
     <string name="previous_tab">Previous tab</string>
     <string name="reader_mode">Reader mode</string>
+    <string name="scroll_to_bottom">Scroll to bottom</string>
 
 </resources>
