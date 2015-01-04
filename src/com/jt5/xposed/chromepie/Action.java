@@ -117,22 +117,14 @@ class Action_scroll_to_top implements Action {
     @Override
     public void execute(Controller control) {
         Object tab = control.getCurrentTab();
-        Object contentView = null;
-        Integer scroll = 0;
-        String offsetMethod = "getContentScrollY";
         try {
-            contentView = callMethod(tab, "getContentView");
-        } catch (NoSuchMethodError e) {
-            contentView = callMethod(tab, "getContentViewCore");
-            offsetMethod = "computeVerticalScrollOffset";
-        }
-        if (contentView != null) {
-            try {
-                scroll = -(Integer) callMethod(contentView, offsetMethod);
-                callMethod(contentView, "scrollBy", 0, scroll);
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
+            Object contentViewCore = callMethod(tab, "getContentViewCore");
+            if (contentViewCore != null) {
+                Integer scrollY = (Integer) callMethod(contentViewCore, "computeVerticalScrollOffset");
+                callMethod(contentViewCore, "scrollBy", 0, -scrollY);
             }
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
     }
 }
