@@ -3,6 +3,7 @@ package com.jt5.xposed.chromepie;
 import static de.robv.android.xposed.XposedHelpers.callMethod;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.Window;
@@ -221,7 +222,10 @@ class Action_close_all implements Action {
 class Action_exit implements Action {
     @Override
     public void execute(Controller control) {
-        control.getChromeActivity().finish();
+        Intent homeIntent = new Intent(Intent.ACTION_MAIN);
+        homeIntent.addCategory(Intent.CATEGORY_HOME);
+        homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        control.getChromeActivity().startActivity(homeIntent);
     }
 }
 
