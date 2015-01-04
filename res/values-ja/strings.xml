@@ -21,7 +21,6 @@
     <string name="kill_chrome_summary">スライスを変更した後はこのオプションでChromeを再起動しないといけません。</string>
     <string name="menu_kill">Chromeのキル</string>
     <string name="chrome_killed">Chromeをキルしました</string>
-    <string name="cannot_launch_chrome">Chromeを起動できません</string>
     <string name="edit_pie_menu_title">パイメニュー</string>
     <string name="edit_pie_menu_summary">パイメニューアイテムの編集</string>
     <string name="new_slice">新しいスライスの追加</string>

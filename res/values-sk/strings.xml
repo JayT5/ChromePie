@@ -26,7 +26,6 @@
     <string name="kill_chrome_summary">Zmeny vyžadujú reštartovanie aplikácie Chrome</string>
     <string name="menu_kill">Ukončiť Chrome</string>
     <string name="chrome_killed">Chrome sa ukončil</string>
-    <string name="cannot_launch_chrome">Nemožno spustiť Chrome</string>
     
     <string name="edit_pie_menu_title">Koláčová ponuka</string>
     <string name="edit_pie_menu_summary">Upraviť položky v koláčovej ponuke</string>

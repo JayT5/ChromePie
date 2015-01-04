@@ -108,18 +108,20 @@ public class PieSettings extends PreferenceActivity {
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         PackageManager pm = getPackageManager();
         List<Intent> chromeApps = getInstalledApps(am, pm);
-        if (launch) {
-            if (chromeApps.size() == 0) {
-                Toast.makeText(this, getResources().getString(R.string.cannot_launch_chrome), Toast.LENGTH_SHORT).show();
-            } else if (chromeApps.size() == 1) {
-                startActivity(chromeApps.get(0));
-            } else if (chromeApps.size() == 2) {
-                String packageName = getMostRecentApp(am);
-                Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
-                startActivity(launchIntent);
-            }
+        if (chromeApps.isEmpty()) {
+            Toast.makeText(this, getResources().getString(R.string.chrome_not_found), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, getResources().getString(R.string.chrome_killed), Toast.LENGTH_SHORT).show();
+            if (launch) {
+                if (chromeApps.size() == 1) {
+                    startActivity(chromeApps.get(0));
+                } else if (chromeApps.size() == 2) {
+                    String packageName = getMostRecentApp(am);
+                    Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
+                    startActivity(launchIntent);
+                }
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.chrome_killed), Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
