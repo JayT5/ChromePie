@@ -25,8 +25,13 @@ import java.util.Map;
 import java.util.Set;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.content.res.XModuleResources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -62,6 +67,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
     private static List<String> actionNoTab;
+    private ComponentName mDirectShareComponentName;
 
     PieControl(Activity chromeActivity, XModuleResources mModRes, ClassLoader classLoader) {
         mChromeActivity = chromeActivity;
@@ -129,7 +135,27 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             if (icon == null || disableNoTabs) {
                 continue;
             }
-            if (id.equals("desktop_site")) {
+            if (id.equals("direct_share")) {
+                ComponentName compName = mController.getShareComponentName();
+                item.setEnabled(compName != null && !mController.isOnNewTabPage());
+                if (compName == null) {
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_direct_share));
+                } else {
+                    if (!compName.equals(mDirectShareComponentName)) {
+                        mDirectShareComponentName = compName;
+                        try {
+                            int shareSize = (int) mXResources.getDimension(R.dimen.qc_direct_share_icon_size);
+                            Drawable shareIcon = mController.getChromeActivity().getPackageManager().getActivityIcon(mDirectShareComponentName);
+                            Bitmap bitmap = ((BitmapDrawable) shareIcon).getBitmap();
+                            shareIcon = new BitmapDrawable(mXResources, Bitmap.createScaledBitmap(bitmap, shareSize, shareSize, true));
+                            ((ImageView) icon).setImageDrawable(shareIcon);
+                        } catch (PackageManager.NameNotFoundException nnfe) {
+                            ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_direct_share));
+                            item.setEnabled(false);
+                        }
+                    }
+                }
+            } else if (id.equals("desktop_site")) {
                 if (mController.isDesktopUserAgent()) {
                     ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_mobile_site));
                 } else {

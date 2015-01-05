@@ -5,6 +5,7 @@ import static de.robv.android.xposed.XposedHelpers.callMethod;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
@@ -468,6 +469,18 @@ public class Controller {
             return XposedHelpers.findClass("org.chromium.components.dom_distiller.core.DomDistillerUrlUtils", mClassLoader);
         } catch (ClassNotFoundError cnfe) {
             XposedBridge.log(TAG + cnfe);
+        }
+        return null;
+    }
+
+    ComponentName getShareComponentName() {
+        try {
+            Class<?> shareHelper = XposedHelpers.findClass("org.chromium.chrome.browser.share.ShareHelper", mClassLoader);
+            return (ComponentName) XposedHelpers.callStaticMethod(shareHelper, "getLastShareComponentName", mActivity);
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
         return null;
     }
