@@ -219,17 +219,23 @@ public class Controller {
     }
 
     public Boolean isInOverview() {
+        if (isTablet()) {
+            return getTabCount() == 0;
+        }
+        try {
+            return (Boolean) callMethod(mActivity, "isInOverviewMode");
+        } catch (NoSuchMethodError nsme) {
+
+        }
         try {
             Object ovLayout = callMethod(mActivity, "getAndSetupOverviewLayout");
             if (ovLayout != null) {
                 return (Boolean) callMethod(ovLayout, "overviewVisible");
-            } else {
-                return false;
             }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
-            return false;
         }
+        return false;
     }
 
     Boolean isDesktopUserAgent() {
