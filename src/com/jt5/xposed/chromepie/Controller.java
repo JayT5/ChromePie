@@ -6,6 +6,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.res.Resources;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
@@ -489,6 +490,43 @@ public class Controller {
             XposedBridge.log(TAG + nsme);
         }
         return null;
+    }
+
+    Object getContentViewCore() {
+        Object tab = getCurrentTab();
+        if (tab == null) {
+            return null;
+        }
+        try {
+            return callMethod(tab, "getContentViewCore");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return null;
+    }
+
+    public Integer getTopControlsHeight() {
+        Object contentViewCore = getContentViewCore();
+        if (contentViewCore == null) {
+            Resources res = mActivity.getResources();
+            int controlHeightId = res.getIdentifier("control_container_height", "dimen", ChromePie.CHROME_PACKAGE);
+            if (controlHeightId != 0) {
+                return (int) res.getDimension(controlHeightId);
+            } else {
+                return 0;
+            }
+        }
+        try {
+            return (Integer) callMethod(contentViewCore, "getTopControlsLayoutHeightPix");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return (Integer) callMethod(contentViewCore, "getViewportSizeOffsetHeightPix");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return 0;
     }
 
 }
