@@ -224,11 +224,6 @@ public class Controller {
             return getTabCount() == 0;
         }
         try {
-            return (Boolean) callMethod(mActivity, "isInOverviewMode");
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
             Object ovLayout = callMethod(mActivity, "getAndSetupOverviewLayout");
             if (ovLayout != null) {
                 return (Boolean) callMethod(ovLayout, "overviewVisible");
