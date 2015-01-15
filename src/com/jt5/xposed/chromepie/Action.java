@@ -117,13 +117,10 @@ class Action_most_visited implements Action {
 class Action_scroll_to_top implements Action {
     @Override
     public void execute(Controller control) {
-        Object tab = control.getCurrentTab();
+        Object contentViewCore = control.getContentViewCore();
         try {
-            Object contentViewCore = callMethod(tab, "getContentViewCore");
-            if (contentViewCore != null) {
-                Integer scrollY = (Integer) callMethod(contentViewCore, "computeVerticalScrollOffset");
-                callMethod(contentViewCore, "scrollBy", 0, -scrollY);
-            }
+            Integer scrollY = (Integer) callMethod(contentViewCore, "computeVerticalScrollOffset");
+            callMethod(contentViewCore, "scrollBy", 0, -scrollY);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -133,14 +130,11 @@ class Action_scroll_to_top implements Action {
 class Action_scroll_to_bottom implements Action {
     @Override
     public void execute(Controller control) {
-        Object tab = control.getCurrentTab();
+        Object contentViewCore = control.getContentViewCore();
         try {
-            Object contentViewCore = callMethod(tab, "getContentViewCore");
-            if (contentViewCore != null) {
-                Integer scrollRange = (Integer) callMethod(contentViewCore, "computeVerticalScrollRange");
-                Integer scrollX = (Integer) callMethod(contentViewCore, "computeHorizontalScrollOffset");
-                callMethod(contentViewCore, "scrollTo", scrollX, scrollRange);
-            }
+            Integer scrollRange = (Integer) callMethod(contentViewCore, "computeVerticalScrollRange");
+            Integer scrollX = (Integer) callMethod(contentViewCore, "computeHorizontalScrollOffset");
+            callMethod(contentViewCore, "scrollTo", scrollX, scrollRange);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }

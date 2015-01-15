@@ -204,6 +204,10 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 item.setEnabled(!mController.isOnNewTabPage());
             } else if (id.equals("reader_mode")) {
                 item.setEnabled(mController.getReaderModeStatus() != 1);
+            } else if (id.equals("scroll_to_top")) {
+                item.setEnabled(mController.getContentViewCore() != null);
+            } else if (id.equals("scroll_to_bottom")) {
+                item.setEnabled(mController.getContentViewCore() != null);
             }
         }
         return true;
