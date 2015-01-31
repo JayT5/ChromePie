@@ -33,7 +33,6 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -41,6 +40,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import com.jt5.xposed.chromepie.Controller;
+import com.jt5.xposed.chromepie.PieControl;
 import com.jt5.xposed.chromepie.R;
 
 import de.robv.android.xposed.XSharedPreferences;
@@ -88,7 +88,7 @@ public class PieMenu extends FrameLayout {
 
     private boolean mOpen;
     private PieController mController;
-    private Controller mControl;
+    private final Controller mControl;
     private ValueAnimator mAnimator;
 
     private List<PieItem> mItems;
@@ -111,65 +111,42 @@ public class PieMenu extends FrameLayout {
     private boolean mUseBackground = false;
     private boolean mAnimating;
 
-    private XModuleResources mXRes;
-
     private int mTriggerPosition;
     private static final int TRIGGER_LEFT = 0;
     private static final int TRIGGER_RIGHT = 1;
     private static final int TRIGGER_BOTTOM = 2;
 
-    /**
-     * @param context
-     * @param attrs
-     * @param defStyle
-     */
-    public PieMenu(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-        init(context);
-    }
-
-    /**
-     * @param context
-     * @param attrs
-     */
-    public PieMenu(Context context, AttributeSet attrs) {
-        super(context, attrs);
-        init(context);
-    }
-
-    public PieMenu(Context context, XModuleResources res, Controller control) {
+    public PieMenu(Context context, Controller control, XModuleResources res, XSharedPreferences prefs) {
         super(context);
         mControl = control;
-        mXRes = res;
-        init(context);
+        init(res, prefs);
     }
 
-    private void init(Context ctx) {
+    private void init(XModuleResources res, XSharedPreferences prefs) {
         mItems = new ArrayList<PieItem>();
         mLevels = 0;
         mCounts = new int[MAX_LEVELS];
-        XSharedPreferences prefs = mControl.getXPreferences();
-        int defRadiusInc = mXRes.getInteger(R.integer.qc_radius_increment);
+        int defRadiusInc = res.getInteger(R.integer.qc_radius_increment);
         int tmpRadiusInc = prefs.getInt("pie_radius_inc", defRadiusInc);
-        mRadiusInc = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, tmpRadiusInc, mXRes.getDisplayMetrics());
+        mRadiusInc = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, tmpRadiusInc, res.getDisplayMetrics());
         // Set start radius to 80% of radius increment
         mRadius = (int) Math.round(0.8 * mRadiusInc);
-        int defSlop = mXRes.getInteger(R.integer.qc_slop);
+        int defSlop = res.getInteger(R.integer.qc_slop);
         int tmpSlop = prefs.getInt("pie_slop", defSlop);
-        mSlop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, tmpSlop, mXRes.getDisplayMetrics());
-        mTouchOffset = (int) mXRes.getDimension(R.dimen.qc_touch_offset);
+        mSlop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, tmpSlop, res.getDisplayMetrics());
+        mTouchOffset = (int) res.getDimension(R.dimen.qc_touch_offset);
         mOpen = false;
         setWillNotDraw(false);
         setDrawingCacheEnabled(false);
         mCenter = new Point(0,0);
         mNormalPaint = new Paint();
-        mNormalPaint.setColor(mXRes.getColor(R.color.qc_normal));
+        mNormalPaint.setColor(res.getColor(R.color.qc_normal));
         mNormalPaint.setAntiAlias(true);
         mSelectedPaint = new Paint();
-        mSelectedPaint.setColor(mXRes.getColor(R.color.qc_selected));
+        mSelectedPaint.setColor(res.getColor(R.color.qc_selected));
         mSelectedPaint.setAntiAlias(true);
         mSubPaint = new Paint();
-        mSubPaint.setColor(mXRes.getColor(R.color.qc_sub));
+        mSubPaint.setColor(res.getColor(R.color.qc_sub));
         mSubPaint.setAntiAlias(true);
     }
 
@@ -459,7 +436,7 @@ public class PieMenu extends FrameLayout {
         int action = evt.getActionMasked();
         if (MotionEvent.ACTION_DOWN == action) {
             mTriggerPosition = getTriggerPosition(x, y);
-            boolean show = mTriggerPosition != -1 && mControl.getTriggerSide().contains(mTriggerPosition) &&
+            boolean show = mTriggerPosition != -1 && PieControl.getTriggerPositions().contains(mTriggerPosition) &&
                     !mControl.isInFullscreenVideo() && (mControl.isInOverview() == (mControl.getTabCount() == 0));
             if (show) {
                 setCenter((int) x, (int) y);

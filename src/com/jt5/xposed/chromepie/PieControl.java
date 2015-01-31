@@ -67,20 +67,22 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     public static final int MAX_SLICES = 6;
     private static List<String> actionNoTab;
     private ComponentName mDirectShareComponentName;
+    private static List<Integer> mTriggerPositions;
 
     PieControl(Activity chromeActivity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mChromeActivity = chromeActivity;
-        mController = new Controller(this, mChromeActivity, classLoader);
+        mController = new Controller(mChromeActivity, classLoader);
         mXResources = res;
         mXPreferences = prefs;
         mXPreferences.reload();
         mItemSize = (int) mXResources.getDimension(R.dimen.qc_item_size);
         actionNoTab = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit");
+        mTriggerPositions = initTriggerPositions();
     }
 
     protected void attachToContainer(FrameLayout container) {
         if (mPie == null) {
-            mPie = new PieMenu(mChromeActivity, mXResources, mController);
+            mPie = new PieMenu(mChromeActivity, mController, mXResources, mXPreferences);
             LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             mPie.setLayoutParams(lp);
             populateMenu();
@@ -100,11 +102,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         }
     }
 
-    XSharedPreferences getXPreferences() {
-        return mXPreferences;
-    }
-
-    List<Integer> getTriggerSide() {
+    List<Integer> initTriggerPositions() {
         Set<String> triggerSet = mXPreferences.getStringSet("trigger_side_set",
                 new HashSet<String>(Arrays.asList("0", "1", "2")));
         List<Integer> triggerInt = new ArrayList<Integer>();
@@ -112,6 +110,10 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             triggerInt.add(Integer.valueOf(trigger));
         }
         return triggerInt;
+    }
+
+    public static List<Integer> getTriggerPositions() {
+        return mTriggerPositions;
     }
 
     @Override

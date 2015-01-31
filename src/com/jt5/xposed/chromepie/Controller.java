@@ -1,16 +1,12 @@
 package com.jt5.xposed.chromepie;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
-
-import java.util.List;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.res.Resources;
 import android.os.Build;
 import android.view.View;
 import android.view.WindowManager;
-import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
@@ -20,24 +16,14 @@ public class Controller {
     private static final String TAG = "ChromePie:Controller: ";
     private final ClassLoader mClassLoader;
     private final Activity mActivity;
-    private final PieControl mPieControl;
 
-    Controller(PieControl pieControl, Activity chromeActivity, ClassLoader classLoader) {
+    Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
         mActivity = chromeActivity;
-        mPieControl = pieControl;
-    }
-
-    public XSharedPreferences getXPreferences() {
-        return mPieControl.getXPreferences();
     }
 
     Activity getChromeActivity() {
         return mActivity;
-    }
-
-    public List<Integer> getTriggerSide() {
-        return mPieControl.getTriggerSide();
     }
 
     int getResIdentifier(String id) {
