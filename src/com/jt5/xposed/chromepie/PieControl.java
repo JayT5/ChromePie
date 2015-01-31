@@ -63,18 +63,17 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private final int mItemSize;
     private final XSharedPreferences mXPreferences;
     private XC_MethodHook mOnPageLoad;
-    private static final String PACKAGE_NAME = PieControl.class.getPackage().getName();
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
     private static List<String> actionNoTab;
     private ComponentName mDirectShareComponentName;
 
-    PieControl(Activity chromeActivity, XModuleResources mModRes, ClassLoader classLoader) {
+    PieControl(Activity chromeActivity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mChromeActivity = chromeActivity;
         mController = new Controller(this, mChromeActivity, classLoader);
-        mXResources = mModRes;
-        mXPreferences = new XSharedPreferences(PACKAGE_NAME);
-        mXPreferences.makeWorldReadable();
+        mXResources = res;
+        mXPreferences = prefs;
+        mXPreferences.reload();
         mItemSize = (int) mXResources.getDimension(R.dimen.qc_item_size);
         actionNoTab = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit");
     }
@@ -218,7 +217,6 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         final String[] values = mXResources.getStringArray(R.array.pie_item_values);
         final TypedArray drawables = mXResources.obtainTypedArray(R.array.pie_item_dark_drawables);
         mPie.clearItems();
-        mXPreferences.reload();
         final Map<String, ?> keys = mXPreferences.getAll();
         if (keys.isEmpty()) {
             XposedBridge.log(TAG + "Failed to load preferences. Can read file: " + mXPreferences.getFile().canRead());
@@ -262,7 +260,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         }
         try {
             if (action.isEmpty()) {
-                mActionMap.put("Action_" + id, (Action) Class.forName(PACKAGE_NAME + ".Action_" + id).newInstance());
+                mActionMap.put("Action_" + id, (Action) Class.forName(ChromePie.PACKAGE_NAME + ".Action_" + id).newInstance());
             }
         } catch (InstantiationException ie) {
             XposedBridge.log(TAG + ie);

@@ -7,6 +7,7 @@ import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
@@ -16,11 +17,13 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
 
+    static final String PACKAGE_NAME = ChromePie.class.getPackage().getName();
     static String CHROME_PACKAGE;
     static String ITEM_SELECTED_METHOD = "onOptionsItemSelected";
 
     private String MODULE_PATH;
     private XModuleResources mModRes;
+    private XSharedPreferences mXPreferences;
     private FrameLayout mContentContainer;
     private Activity mChromeActivity;
     private PieControl mPieControl;
@@ -34,6 +37,8 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
+        mXPreferences = new XSharedPreferences(PACKAGE_NAME);
+        mXPreferences.makeWorldReadable();
     }
 
     @Override
@@ -119,7 +124,7 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
 
     private void createPie(ClassLoader classLoader) {
         if (mContentContainer != null) {
-            mPieControl = new PieControl(mChromeActivity, mModRes, classLoader);
+            mPieControl = new PieControl(mChromeActivity, mModRes, mXPreferences, classLoader);
             mPieControl.attachToContainer(mContentContainer);
         } else {
             XposedBridge.log("Failed to initialise ChromePie, could not find Chrome content container");
