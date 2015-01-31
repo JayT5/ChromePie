@@ -43,9 +43,13 @@ public class Controller {
     }
 
     Object getCurrentTab() {
-        Object model = getTabModel();
         try {
-            return callMethod(model, "getCurrentTab");
+            return callMethod(mActivity, "getActivityTab");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return callMethod(getTabModel(), "getCurrentTab");
         } catch (NoSuchMethodError nsme) {
 
         }
