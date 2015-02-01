@@ -222,6 +222,14 @@ public class Controller {
                 return (Boolean) callMethod(ovLayout, "overviewVisible");
             }
         } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            Object layoutMan = callMethod(mActivity, "getLayoutManager");
+            if (layoutMan != null) {
+                return (Boolean) callMethod(layoutMan, "overviewVisible");
+            }
+        } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
         return false;
