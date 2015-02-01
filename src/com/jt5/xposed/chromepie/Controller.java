@@ -334,8 +334,7 @@ public class Controller {
         try {
             urlConstants = XposedHelpers.findClass("com.google.android.apps.chrome.UrlConstants", mClassLoader);
         } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-            return "chrome-native://newtab/";
+            urlConstants = XposedHelpers.findClass("org.chromium.chrome.browser.UrlConstants", mClassLoader);
         }
         try {
             return (String) XposedHelpers.getStaticObjectField(urlConstants, "MOST_VISITED_URL");
