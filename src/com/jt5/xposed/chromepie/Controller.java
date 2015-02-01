@@ -31,15 +31,18 @@ public class Controller {
     }
 
     Boolean itemSelected(int id) {
-        Boolean success = false;
         if (id != 0) {
             try {
-                success = (Boolean) callMethod(mActivity, ChromePie.ITEM_SELECTED_METHOD, id);
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
+                if (ChromePie.sMenuActionMethod.getParameterTypes().length == 1) {
+                    return (Boolean) ChromePie.sMenuActionMethod.invoke(mActivity, id);
+                } else {
+                    return (Boolean) ChromePie.sMenuActionMethod.invoke(mActivity, id, false);
+                }
+            } catch (Throwable t) {
+                XposedBridge.log(TAG + t);
             }
         }
-        return success;
+        return false;
     }
 
     Object getCurrentTab() {

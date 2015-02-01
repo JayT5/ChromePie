@@ -1,5 +1,7 @@
 package com.jt5.xposed.chromepie;
 
+import java.lang.reflect.Method;
+
 import android.app.Activity;
 import android.content.res.XModuleResources;
 import android.widget.FrameLayout;
@@ -19,7 +21,7 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
 
     static final String PACKAGE_NAME = ChromePie.class.getPackage().getName();
     static String CHROME_PACKAGE;
-    static String ITEM_SELECTED_METHOD = "onOptionsItemSelected";
+    static Method sMenuActionMethod;
 
     private String MODULE_PATH;
     private XModuleResources mModRes;
@@ -73,7 +75,8 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             } catch (ClassNotFoundError cnfe) {
                 continue;
             }
-            if (findActivityClass(chromeActivityClass)) {
+            sMenuActionMethod = getMenuActionMethod(chromeActivityClass);
+            if (sMenuActionMethod != null) {
                 hookChrome(chromeActivityClass, classLoader);
                 return;
             }
@@ -82,19 +85,22 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         XposedBridge.log("Failed to initialise ChromePie, could not find hookable method");
     }
 
-    private boolean findActivityClass(Class<?> activityClass) {
+    private Method getMenuActionMethod(Class<?> activityClass) {
         try {
             XposedHelpers.findMethodExact(activityClass, "onStart");
             try {
-                XposedHelpers.findMethodExact(activityClass, "onMenuOrKeyboardAction", int.class);
-                ITEM_SELECTED_METHOD = "onMenuOrKeyboardAction";
+                return XposedHelpers.findMethodExact(activityClass, "onMenuOrKeyboardAction", int.class, boolean.class);
             } catch (NoSuchMethodError nsme) {
-                XposedHelpers.findMethodExact(activityClass, "onOptionsItemSelected", int.class);
+
+            }
+            try {
+                return XposedHelpers.findMethodExact(activityClass, "onMenuOrKeyboardAction", int.class);
+            } catch (NoSuchMethodError nsme) {
+                return XposedHelpers.findMethodExact(activityClass, "onOptionsItemSelected", int.class);
             }
         } catch (NoSuchMethodError nsme) {
-            return false;
+            return null;
         }
-        return true;
     }
 
     private void hookChrome(Class<?> activityClass, final ClassLoader classLoader) {
