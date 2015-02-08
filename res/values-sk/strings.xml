@@ -77,5 +77,8 @@
     <string name="exit">Ukončiť</string>
     <string name="next_tab">Ďalšia karta</string>
     <string name="previous_tab">Predchádzajúca karta</string>
+    <string name="reader_mode">Režim čítačky</string>
+    <string name="scroll_to_bottom">Posunúť nadol</string>
+    <string name="direct_share">Zdieľať priamo</string>
 
 </resources>
