@@ -65,7 +65,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private XC_MethodHook mOnPageLoad;
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
-    private static List<String> actionNoTab;
+    private static List<String> mNoTabActions;
     private ComponentName mDirectShareComponentName;
     private static List<Integer> mTriggerPositions;
 
@@ -76,7 +76,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mXPreferences = prefs;
         mXPreferences.reload();
         mItemSize = (int) mXResources.getDimension(R.dimen.qc_item_size);
-        actionNoTab = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit");
+        mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit");
         mTriggerPositions = initTriggerPositions();
     }
 
@@ -126,7 +126,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         for (PieItem item : items) {
             View icon = item.getView();
             String id = item.getId();
-            boolean disableNoTabs = (tabCount == 0) && !actionNoTab.contains(id);
+            boolean disableNoTabs = (tabCount == 0) && !mNoTabActions.contains(id);
             item.setEnabled(!disableNoTabs);
             if (id.equals("show_tabs")) {
                 //icon = icon.findViewById(R.id.count_label);

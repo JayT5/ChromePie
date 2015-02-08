@@ -81,8 +81,7 @@ public class PieSettings extends PreferenceActivity {
     }
 
     private void showHelpDialog() {
-        View helpView;
-        helpView = getLayoutInflater().inflate(R.layout.help_dialog, null);
+        View helpView = getLayoutInflater().inflate(R.layout.help_dialog, null);
 
         ((TextView) helpView.findViewById(R.id.about_thread)).setMovementMethod(LinkMovementMethod.getInstance());
 

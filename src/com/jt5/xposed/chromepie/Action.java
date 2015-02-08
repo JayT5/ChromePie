@@ -227,10 +227,9 @@ class Action_next_tab implements Action {
     @Override
     public void execute(Controller control) {
         Integer index = control.getCurrentTabIndex();
-        if (index == -1) {
-            return;
+        if (index != -1) {
+            control.showTabByIndex(index + 1);
         }
-        control.showTabByIndex(index + 1);
     }
 }
 
@@ -238,10 +237,9 @@ class Action_previous_tab implements Action {
     @Override
     public void execute(Controller control) {
         Integer index = control.getCurrentTabIndex();
-        if (index == -1) {
-            return;
+        if (index != -1) {
+            control.showTabByIndex(index - 1);
         }
-        control.showTabByIndex(index - 1);
     }
 }
 

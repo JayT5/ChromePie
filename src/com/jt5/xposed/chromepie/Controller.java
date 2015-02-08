@@ -357,8 +357,7 @@ public class Controller {
         }
         try {
             Class<?> formFactor = XposedHelpers.findClass("org.chromium.ui.base.DeviceFormFactor", mClassLoader);
-            Boolean isTablet = (Boolean) XposedHelpers.callStaticMethod(formFactor, "isTablet", mActivity);
-            return isTablet;
+            return (Boolean) XposedHelpers.callStaticMethod(formFactor, "isTablet", mActivity);
         } catch (ClassNotFoundError cnfe) {
 
         } catch (NoSuchMethodError nsme) {
@@ -366,8 +365,7 @@ public class Controller {
         }
         try {
             Class<?> deviceUtils = XposedHelpers.findClass("org.chromium.content.browser.DeviceUtils", mClassLoader);
-            Boolean isTablet = (Boolean) XposedHelpers.callStaticMethod(deviceUtils, "isTablet", mActivity);
-            return isTablet;
+            return (Boolean) XposedHelpers.callStaticMethod(deviceUtils, "isTablet", mActivity);
         } catch (ClassNotFoundError cnfe) {
             XposedBridge.log(TAG + cnfe);
         } catch (NoSuchMethodError nsme) {
@@ -384,8 +382,7 @@ public class Controller {
             featureUtils = XposedHelpers.findClass("org.chromium.chrome.browser.util.FeatureUtilities", mClassLoader);
         }
         try {
-            Boolean allowSync = (Boolean) XposedHelpers.callStaticMethod(featureUtils, "canAllowSync", mActivity);
-            return allowSync;
+            return (Boolean) XposedHelpers.callStaticMethod(featureUtils, "canAllowSync", mActivity);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -395,8 +392,7 @@ public class Controller {
     Boolean printingSupported() {
         try {
             Class<?> compatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
-            Boolean canPrint = (Boolean) XposedHelpers.callStaticMethod(compatUtils, "isPrintingSupported");
-            return canPrint;
+            return (Boolean) XposedHelpers.callStaticMethod(compatUtils, "isPrintingSupported");
         } catch (ClassNotFoundError cnfe) {
 
         } catch (NoSuchMethodError nsme) {
@@ -408,8 +404,7 @@ public class Controller {
     Boolean editBookmarksSupported() {
         try {
             Class<?> bookmarksBridge = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarksBridge", mClassLoader);
-            Boolean editBookmarks = (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled");
-            return editBookmarks;
+            return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled");
         } catch (ClassNotFoundError cnfe) {
             XposedBridge.log(TAG + cnfe);
         } catch (NoSuchMethodError nsme) {
@@ -421,8 +416,7 @@ public class Controller {
     Boolean addToHomeSupported() {
         try {
             Class<?> bookmarkUtils = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarkUtils", mClassLoader);
-            Boolean canAddToHome = (Boolean) XposedHelpers.callStaticMethod(bookmarkUtils, "isAddToHomeIntentSupported", mActivity);
-            return canAddToHome;
+            return (Boolean) XposedHelpers.callStaticMethod(bookmarkUtils, "isAddToHomeIntentSupported", mActivity);
         } catch (ClassNotFoundError cnfe) {
 
         } catch (NoSuchMethodError nsme) {
