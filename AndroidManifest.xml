@@ -4,7 +4,7 @@
     android:versionCode="6"
     android:versionName="0.3" >
 
-    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="19" />
+    <uses-sdk android:minSdkVersion="15" android:targetSdkVersion="21" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES"/>
     <uses-permission android:name="android.permission.GET_TASKS"/>
 
