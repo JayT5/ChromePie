@@ -28,6 +28,7 @@
         <item>@string/print</item>
         <item>@string/settings</item>
         <item>@string/help</item>
+        <item>@string/go_to_home</item>
         <item>@string/exit</item>
         <item>@string/next_tab</item>
         <item>@string/previous_tab</item>
@@ -61,6 +62,7 @@
         <item>print</item>
         <item>settings</item>
         <item>help</item>
+        <item>go_to_home</item>
         <item>exit</item>
         <item>next_tab</item>
         <item>previous_tab</item>
@@ -94,6 +96,7 @@
         <item>@drawable/ic_menu_add_print_job</item>
         <item>@drawable/ic_action_settings</item>
         <item>@drawable/ic_action_help</item>
+        <item>@drawable/ic_action_go_home</item>
         <item>@drawable/ic_action_exit</item>
         <item>@drawable/ic_action_next_item</item>
         <item>@drawable/ic_action_previous_item</item>
@@ -127,6 +130,7 @@
         <item>print_id</item>
         <item>preferences_id</item>
         <item>help_id</item>
+        <item></item>
         <item></item>
         <item></item>
         <item></item>

@@ -213,13 +213,20 @@ class Action_close_all implements Action {
     }
 }
 
-class Action_exit implements Action {
+class Action_go_to_home implements Action {
     @Override
     public void execute(Controller control) {
         Intent homeIntent = new Intent(Intent.ACTION_MAIN);
         homeIntent.addCategory(Intent.CATEGORY_HOME);
         homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         control.getChromeActivity().startActivity(homeIntent);
+    }
+}
+
+class Action_exit implements Action {
+    @Override
+    public void execute(Controller control) {
+        control.getChromeActivity().finish();
     }
 }
 
