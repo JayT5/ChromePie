@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import android.app.Activity;
 import android.content.res.XModuleResources;
-import android.widget.FrameLayout;
+import android.view.ViewGroup;
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -14,7 +14,6 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
-import de.robv.android.xposed.callbacks.XC_LayoutInflated;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
@@ -26,7 +25,6 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     private String MODULE_PATH;
     private XModuleResources mModRes;
     private XSharedPreferences mXPreferences;
-    private FrameLayout mContentContainer;
     private Activity mChromeActivity;
     private PieControl mPieControl;
 
@@ -50,14 +48,6 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         }
         mModRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
         CHROME_PACKAGE = resparam.packageName;
-
-        resparam.res.hookLayout(CHROME_PACKAGE, "layout", "main", new XC_LayoutInflated() {
-            @Override
-            public void handleLayoutInflated(LayoutInflatedParam liparam) throws Throwable {
-                mContentContainer = (FrameLayout) liparam.view.findViewById(
-                        liparam.res.getIdentifier("content_container", "id", CHROME_PACKAGE));
-            }
-        });
     }
 
     @Override
@@ -109,17 +99,15 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             XposedHelpers.findAndHookMethod(activityClass, "onStart", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (mChromeActivity == null) {
+                    if (!param.thisObject.equals(mChromeActivity)) {
                         mChromeActivity = (Activity) param.thisObject;
-                        createPie(classLoader);
+                        int containerId = mChromeActivity.getResources().getIdentifier("content_container", "id", CHROME_PACKAGE);
+                        ViewGroup container = (ViewGroup) mChromeActivity.findViewById(containerId);
+                        if (container == null) {
+                            container = (ViewGroup) mChromeActivity.findViewById(android.R.id.content);
+                        }
+                        createPie(container, classLoader);
                     }
-                }
-            });
-
-            XposedHelpers.findAndHookMethod(activityClass, "onDestroy", new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    removePie();
                 }
             });
 
@@ -128,21 +116,14 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         }
     }
 
-    private void createPie(ClassLoader classLoader) {
-        if (mContentContainer != null) {
+    private void createPie(ViewGroup container, ClassLoader classLoader) {
+        if (mPieControl == null) {
             mPieControl = new PieControl(mChromeActivity, mModRes, mXPreferences, classLoader);
-            mPieControl.attachToContainer(mContentContainer);
+            mPieControl.attachToContainer(container);
         } else {
-            XposedBridge.log("Failed to initialise ChromePie, could not find Chrome content container");
+            mPieControl.reattachToContainer(container);
+            mPieControl.setChromeActivity(mChromeActivity);
         }
-    }
-
-    private void removePie() {
-        if (mContentContainer != null) {
-            mPieControl.removeFromContainer(mContentContainer);
-        }
-        mPieControl = null;
-        mChromeActivity = null;
     }
 
 }

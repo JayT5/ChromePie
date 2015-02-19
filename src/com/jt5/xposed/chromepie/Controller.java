@@ -15,7 +15,7 @@ public class Controller {
 
     private static final String TAG = "ChromePie:Controller: ";
     private final ClassLoader mClassLoader;
-    private final Activity mActivity;
+    private Activity mActivity;
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
@@ -24,6 +24,10 @@ public class Controller {
 
     Activity getChromeActivity() {
         return mActivity;
+    }
+
+    void setChromeActivity(Activity activity) {
+        mActivity = activity;
     }
 
     int getResIdentifier(String id) {

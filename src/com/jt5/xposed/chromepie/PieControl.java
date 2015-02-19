@@ -37,7 +37,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
@@ -55,7 +54,7 @@ import de.robv.android.xposed.XposedHelpers;
  */
 public class PieControl implements PieMenu.PieController, OnClickListener {
 
-    private final Activity mChromeActivity;
+    private Activity mChromeActivity;
     private final XModuleResources mXResources;
     private PieMenu mPie;
     private final Controller mController;
@@ -80,7 +79,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mTriggerPositions = initTriggerPositions();
     }
 
-    protected void attachToContainer(FrameLayout container) {
+    protected void attachToContainer(ViewGroup container) {
         if (mPie == null) {
             mPie = new PieMenu(mChromeActivity, mController, mXResources, mXPreferences);
             LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -91,15 +90,20 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         container.addView(mPie);
     }
 
-    protected void removeFromContainer(FrameLayout container) {
-        container.removeView(mPie);
+    protected void reattachToContainer(ViewGroup container) {
+        removeFromParent();
+        container.addView(mPie);
     }
 
-    protected void forceToTop(FrameLayout container) {
+    protected void removeFromParent() {
         if (mPie.getParent() != null) {
-            container.removeView(mPie);
-            container.addView(mPie);
+            ((ViewGroup) mPie.getParent()).removeView(mPie);
         }
+    }
+
+    void setChromeActivity(Activity activity) {
+        mController.setChromeActivity(activity);
+        mChromeActivity = activity;
     }
 
     List<Integer> initTriggerPositions() {
