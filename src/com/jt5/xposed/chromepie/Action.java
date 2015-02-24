@@ -76,9 +76,8 @@ class Action_edit_url implements Action {
     public void execute(Controller control) {
         int id = control.getResIdentifier("focus_url_bar");
         if (!control.itemSelected(id)) {
-            Activity activity = control.getChromeActivity();
             try {
-                Object locationBar = callMethod(activity, "getLocationBar");
+                Object locationBar = control.getLocationBar();
                 callMethod(locationBar, "requestUrlFocus");
             } catch (NoSuchMethodError nsme) {
                 XposedBridge.log(TAG + nsme);
