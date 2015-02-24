@@ -213,6 +213,10 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 item.setEnabled(mController.getContentViewCore() != null);
             } else if (id.equals("scroll_to_bottom")) {
                 item.setEnabled(mController.getContentViewCore() != null);
+            } else if (id.equals("new_tab") && mController.isDocumentMode()) {
+                item.setEnabled(!mController.isOnNewTabPage() || mController.isIncognito());
+            } else if (id.equals("new_incognito_tab") && mController.isDocumentMode()) {
+                item.setEnabled(!(mController.isOnNewTabPage() && mController.isIncognito()));
             }
         }
         return true;
