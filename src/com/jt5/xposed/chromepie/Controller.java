@@ -534,4 +534,23 @@ public class Controller {
         return false;
     }
 
+    Object getLocationBar() {
+        try {
+            return callMethod(mActivity, "getLocationBar");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        Object locationBar = mActivity.findViewById(getResIdentifier("location_bar"));
+        return (locationBar == null) ? new Object() : locationBar;
+    }
+
+    Boolean isVoiceSearchEnabled() {
+        try {
+            return (Boolean) callMethod(getLocationBar(), "isVoiceSearchEnabled");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return true;
+    }
+
 }

@@ -262,3 +262,14 @@ class Action_reader_mode implements Action {
         }
     }
 }
+
+class Action_voice_search implements Action {
+    @Override
+    public void execute(Controller control) {
+        try {
+            XposedHelpers.callMethod(control.getLocationBar(), "startVoiceRecognition");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+    }
+}

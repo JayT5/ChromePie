@@ -217,6 +217,8 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 item.setEnabled(!mController.isOnNewTabPage() || mController.isIncognito());
             } else if (id.equals("new_incognito_tab") && mController.isDocumentMode()) {
                 item.setEnabled(!(mController.isOnNewTabPage() && mController.isIncognito()));
+            } else if (id.equals("voice_search")) {
+                item.setEnabled(mController.isVoiceSearchEnabled());
             }
         }
         return true;
