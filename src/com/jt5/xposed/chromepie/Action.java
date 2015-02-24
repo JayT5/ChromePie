@@ -203,13 +203,17 @@ class Action_share implements Action {
 class Action_close_all implements Action {
     @Override
     public void execute(Controller control) {
-        int id = 0;
-        if (control.isIncognito()) {
-            id = control.getResIdentifier("close_all_incognito_tabs_menu_id");
-        } else {
-            id = control.getResIdentifier("close_all_tabs_menu_id");
+        try {
+            callMethod(control.getTabModel(), "closeAllTabs");
+        } catch (NoSuchMethodError nsme) {
+            int id = 0;
+            if (control.isIncognito()) {
+                id = control.getResIdentifier("close_all_incognito_tabs_menu_id");
+            } else {
+                id = control.getResIdentifier("close_all_tabs_menu_id");
+            }
+            control.itemSelected(id);
         }
-        control.itemSelected(id);
     }
 }
 

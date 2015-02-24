@@ -68,13 +68,19 @@ public class Controller {
         }
     }
 
-    private Object getTabModel() {
+    Object getTabModel() {
         try {
-            return callMethod(mActivity, "getCurrentTabModel");
+            if (isDocumentMode()) {
+                return XposedHelpers.getObjectField(mActivity, "mTabModel");
+            } else {
+                return callMethod(mActivity, "getCurrentTabModel");
+            }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
-            return new Object();
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
         }
+        return new Object();
     }
 
     Integer getCurrentTabIndex() {
