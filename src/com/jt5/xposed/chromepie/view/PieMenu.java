@@ -437,7 +437,8 @@ public class PieMenu extends FrameLayout {
         if (MotionEvent.ACTION_DOWN == action) {
             mTriggerPosition = getTriggerPosition(x, y);
             boolean show = mTriggerPosition != -1 && PieControl.getTriggerPositions().contains(mTriggerPosition) &&
-                    !mControl.isInFullscreenVideo() && (mControl.isInOverview() == (mControl.getTabCount() == 0));
+                    !mControl.isInFullscreenVideo() && (mControl.isInOverview() == (mControl.getTabCount() == 0)) &&
+                    y > mControl.getTopControlsHeight();
             if (show) {
                 setCenter((int) x, (int) y);
                 show(true);
