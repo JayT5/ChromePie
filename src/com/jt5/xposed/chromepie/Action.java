@@ -97,11 +97,14 @@ class Action_close_tab implements Action {
 class Action_show_tabs implements Action {
     @Override
     public void execute(Controller control) {
-        Activity activity = control.getChromeActivity();
-        try {
-            callMethod(activity, "toggleOverview");
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        if (control.isDocumentMode()) {
+            control.toggleRecentApps();
+        } else {
+            try {
+                callMethod(control.getChromeActivity(), "toggleOverview");
+            } catch (NoSuchMethodError nsme) {
+                XposedBridge.log(TAG + nsme);
+            }
         }
     }
 }

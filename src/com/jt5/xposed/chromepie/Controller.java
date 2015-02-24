@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.res.Resources;
 import android.os.Build;
+import android.os.IBinder;
 import android.view.View;
 import android.view.WindowManager;
 import de.robv.android.xposed.XposedBridge;
@@ -69,16 +70,23 @@ public class Controller {
     }
 
     Object getTabModel() {
-        try {
-            if (isDocumentMode()) {
+        if (isDocumentMode()) {
+            try {
                 return XposedHelpers.getObjectField(mActivity, "mTabModel");
-            } else {
-                return callMethod(mActivity, "getCurrentTabModel");
+            } catch (NoSuchFieldError nsfe) {
+
             }
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
+            try {
+                return XposedHelpers.getObjectField(mActivity, "mTabList");
+            } catch (NoSuchFieldError nsfe) {
+                XposedBridge.log(TAG + nsfe);
+            }
+        } else {
+            try {
+                return callMethod(mActivity, "getCurrentTabModel");
+            } catch (NoSuchMethodError nsme) {
+                XposedBridge.log(TAG + nsme);
+            }
         }
         return new Object();
     }
@@ -223,7 +231,7 @@ public class Controller {
     }
 
     public Boolean isInOverview() {
-        if (isTablet()) {
+        if (isTablet() || isDocumentMode()) {
             return getTabCount() == 0;
         }
         try {
@@ -557,6 +565,18 @@ public class Controller {
             XposedBridge.log(TAG + nsme);
         }
         return true;
+    }
+
+    void toggleRecentApps() {
+        try {
+            Class<?> serviceClass = XposedHelpers.findClass("android.os.ServiceManager", mClassLoader);
+            IBinder statusBarBinder = (IBinder) XposedHelpers.callStaticMethod(serviceClass, "getService", "statusbar");
+            Class<?> statusBarClass = XposedHelpers.findClass(statusBarBinder.getInterfaceDescriptor(), mClassLoader).getClasses()[0];
+            Object statusBar = XposedHelpers.callStaticMethod(statusBarClass, "asInterface", statusBarBinder);
+            callMethod(statusBar, "toggleRecentApps");
+        } catch (Throwable t) {
+            XposedBridge.log(TAG + t);
+        }
     }
 
 }
