@@ -122,7 +122,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
 
     @Override
     public boolean onOpen() {
-        if (mOnPageLoad == null && mController.getCurrentTab() != null) {
+        if (mOnPageLoad == null) {
             hookOnPageLoad();
         }
         final int tabCount = mController.getTabCount();
@@ -349,6 +349,9 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mOnPageLoad = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+                if (!(Boolean) param.args[0]) {
+                    return;
+                }
                 List<PieItem> items = mPie.findItemsById("refresh");
                 if (items.size() != 0) {
                     for (PieItem item : items) {
@@ -360,11 +363,10 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         };
 
         try {
-            XposedHelpers.findAndHookMethod(mController.getCurrentTab().getClass(),
-                    "didFinishPageLoad", mOnPageLoad);
+            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(mController.getLocationBar().getClass(),
+                    "updateLoadingState", boolean.class), mOnPageLoad);
         } catch (NoSuchMethodError nsme) {
-            XposedHelpers.findAndHookMethod(mController.getCurrentTab().getClass(),
-                    "didFinishPageLoad", String.class, mOnPageLoad);
+            XposedBridge.log(TAG + nsme);
         }
     }
 
