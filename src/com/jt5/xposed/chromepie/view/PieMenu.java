@@ -272,13 +272,8 @@ public class PieMenu extends FrameLayout {
     }
 
     private void setCenter(int x, int y) {
-        int radius = mRadiusInc + mRadius;
         if (mTriggerPosition == TRIGGER_BOTTOM) {
-            if (getWidth() > 2 * radius) {
-                mCenter.x = Math.min(Math.max(x, radius), getWidth() - radius);
-            } else {
-                mCenter.x = x;
-            }
+            mCenter.x = x;
             mCenter.y = getHeight();
         } else {
             if (onTheLeft()) {
@@ -286,12 +281,7 @@ public class PieMenu extends FrameLayout {
             } else {
                 mCenter.x = getWidth();
             }
-            int topControlsHeight = mControl.getTopControlsHeight();
-            if (getHeight() - topControlsHeight > 2 * radius) {
-                mCenter.y = Math.min(Math.max(y, radius + topControlsHeight), getHeight() - radius);
-            } else {
-                mCenter.y = y;
-            }
+            mCenter.y = y;
         }
     }
 
