@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -74,14 +75,16 @@ class Action_refresh implements Action {
 class Action_edit_url implements Action {
     @Override
     public void execute(Controller control) {
-        int id = control.getResIdentifier("focus_url_bar");
-        if (!control.itemSelected(id)) {
-            try {
-                Object locationBar = control.getLocationBar();
+        try {
+            Object locationBar = control.getLocationBar();
+            int id = control.getResIdentifier("focus_url_bar");
+            if (!control.itemSelected(id)) {
                 callMethod(locationBar, "requestUrlFocus");
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
             }
+            EditText urlBar = (EditText) callMethod(locationBar, "getUrlBar");
+            urlBar.selectAll();
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
     }
 }
