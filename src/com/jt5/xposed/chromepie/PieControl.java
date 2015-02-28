@@ -75,7 +75,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mXPreferences = prefs;
         mXPreferences.reload();
         mItemSize = (int) mXResources.getDimension(R.dimen.qc_item_size);
-        mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit");
+        mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit", "go_to_home");
         mTriggerPositions = initTriggerPositions();
     }
 
