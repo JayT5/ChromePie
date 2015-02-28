@@ -73,37 +73,37 @@
 
     <array name="pie_item_dark_drawables" translatable="false">
         <item>@drawable/null_icon</item>
-        <item>@drawable/ic_action_back</item>
-        <item>@drawable/ic_action_forward</item>
-        <item>@drawable/ic_action_reload</item>
-        <item>@drawable/ic_action_new</item>
-        <item>@drawable/ic_new_incognito_holo_dark</item>
-        <item>@drawable/ic_action_remove</item>
-        <item>@drawable/ic_close_all_holo_dark</item>
-        <item>@drawable/ic_bookmarks_holo_dark</item>
-        <item>@drawable/ic_action_not_important</item>
-        <item>@drawable/ic_action_history</item>
-        <item>@drawable/ic_action_view_as_grid</item>
-        <item>@drawable/ic_action_collection</item>
-        <item>@drawable/ic_windows_holo_dark</item>
-        <item>@drawable/ic_action_home</item>
-        <item>@drawable/ic_action_search</item>
-        <item>@drawable/ic_action_web_site</item>
-        <item>@drawable/ic_action_desktop_site</item>
-        <item>@drawable/ic_action_full_screen</item>
-        <item>@drawable/ic_action_collapse</item>
-        <item>@drawable/ic_action_expand</item>
-        <item>@drawable/ic_action_share</item>
-        <item>@drawable/ic_action_direct_share</item>
-        <item>@drawable/ic_menu_add_print_job</item>
-        <item>@drawable/ic_action_settings</item>
-        <item>@drawable/ic_action_help</item>
-        <item>@drawable/ic_action_go_home</item>
-        <item>@drawable/ic_action_exit</item>
-        <item>@drawable/ic_action_next_item</item>
-        <item>@drawable/ic_action_previous_item</item>
-        <item>@drawable/ic_action_reader_mode</item>
-        <item>@drawable/ic_voice_search</item>
+        <item>@drawable/ic_back_white</item>
+        <item>@drawable/ic_forward_white</item>
+        <item>@drawable/ic_refresh_white</item>
+        <item>@drawable/ic_new_tab_white</item>
+        <item>@drawable/ic_new_incognito_white</item>
+        <item>@drawable/ic_close_tab_white</item>
+        <item>@drawable/ic_close_all_white</item>
+        <item>@drawable/ic_bookmarks_white</item>
+        <item>@drawable/ic_add_bookmark_white</item>
+        <item>@drawable/ic_history_white</item>
+        <item>@drawable/ic_most_visited_white</item>
+        <item>@drawable/ic_recent_tabs_white</item>
+        <item>@drawable/ic_show_tabs_white</item>
+        <item>@drawable/ic_add_home_white</item>
+        <item>@drawable/ic_find_white</item>
+        <item>@drawable/ic_edit_url_white</item>
+        <item>@drawable/ic_desktop_site_white</item>
+        <item>@drawable/ic_fullscreen_white</item>
+        <item>@drawable/ic_scroll_top_white</item>
+        <item>@drawable/ic_scroll_bottom_white</item>
+        <item>@drawable/ic_share_white</item>
+        <item>@drawable/ic_direct_share_white</item>
+        <item>@drawable/ic_print_white</item>
+        <item>@drawable/ic_settings_white</item>
+        <item>@drawable/ic_help_white</item>
+        <item>@drawable/ic_exit_home_white</item>
+        <item>@drawable/ic_exit_white</item>
+        <item>@drawable/ic_next_tab_white</item>
+        <item>@drawable/ic_prev_tab_white</item>
+        <item>@drawable/ic_reader_mode_white</item>
+        <item>@drawable/ic_voice_search_white</item>
     </array>
     
     <string-array name="pie_item_actions" translatable="false">

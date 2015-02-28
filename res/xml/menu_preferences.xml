@@ -8,6 +8,6 @@
     <Preference
         android:key="new_slice"
         android:title="@string/new_slice"
-        android:icon="@drawable/ic_action_new" />
+        android:icon="@drawable/ic_add_white" />
 
 </PreferenceScreen>

@@ -144,7 +144,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 ComponentName compName = mController.getShareComponentName();
                 item.setEnabled(compName != null && !mController.isOnNewTabPage());
                 if (compName == null) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_direct_share));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
                 } else {
                     if (!compName.equals(mDirectShareComponentName)) {
                         mDirectShareComponentName = compName;
@@ -155,34 +155,34 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                             shareIcon = new BitmapDrawable(mXResources, Bitmap.createScaledBitmap(bitmap, shareSize, shareSize, true));
                             ((ImageView) icon).setImageDrawable(shareIcon);
                         } catch (PackageManager.NameNotFoundException nnfe) {
-                            ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_direct_share));
+                            ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
                             item.setEnabled(false);
                         }
                     }
                 }
             } else if (id.equals("desktop_site")) {
                 if (mController.isDesktopUserAgent()) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_mobile_site));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_mobile_site_white));
                 } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_desktop_site));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_desktop_site_white));
                 }
             } else if (id.equals("refresh")) {
                 if (mController.isLoading()) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_cancel));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_stop_white));
                 } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_reload));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_refresh_white));
                 }
             } else if (id.equals("fullscreen")) {
                 if (mController.isFullscreen()) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_return_from_full_screen));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_fullscreen_exit_white));
                 } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_full_screen));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_fullscreen_white));
                 }
             } else if (id.equals("add_bookmark")) {
                 if (mController.bookmarkExists()) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_not_important));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_add_bookmark_white));
                 } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_important));
+                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_added_bookmark_white));
                 }
                 item.setEnabled(mController.editBookmarksSupported());
             } else if (id.equals("forward")) {
@@ -338,7 +338,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         count.setText(Integer.toString(mController.getTabCount()));
         //ImageView icon = (ImageView) view.findViewById(R.id.count_icon);
         ImageView icon = (ImageView) ((ViewGroup) view).getChildAt(0);
-        icon.setImageDrawable(mXResources.getDrawable(R.drawable.ic_windows_holo_dark));
+        icon.setImageDrawable(mXResources.getDrawable(R.drawable.ic_show_tabs_white));
         icon.setScaleType(ScaleType.CENTER);
         LayoutParams lp = new LayoutParams(mItemSize, mItemSize);
         view.setLayoutParams(lp);
@@ -355,7 +355,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 List<PieItem> items = mPie.findItemsById("refresh");
                 if (items.size() != 0) {
                     for (PieItem item : items) {
-                        ((ImageView) item.getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_action_reload));
+                        ((ImageView) item.getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_refresh_white));
                     }
                     mPie.invalidate();
                 }

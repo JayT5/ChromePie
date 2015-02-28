@@ -8,7 +8,7 @@
     android:descendantFocusability="blocksDescendants" >
     <ImageButton
         android:id="@+id/click_remove"
-        android:src="@drawable/ic_action_remove"
+        android:src="@drawable/ic_clear_white"
         android:layout_width="@dimen/item_height"
         android:layout_height="fill_parent"
         android:contentDescription="@null" />
