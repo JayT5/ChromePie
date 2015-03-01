@@ -67,6 +67,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private static List<String> mNoTabActions;
     private ComponentName mDirectShareComponentName;
     private static List<Integer> mTriggerPositions;
+    private int mThemeColor = 0;
 
     PieControl(Activity chromeActivity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mChromeActivity = chromeActivity;
@@ -128,6 +129,19 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         if (mOnPageLoad == null) {
             hookOnPageLoad();
         }
+
+        if (mXPreferences.getBoolean("apply_theme_color", true)) {
+            int color = mController.getThemeColor();
+            if (mThemeColor != color) {
+                mThemeColor = color;
+                if (mController.useThemeColor()) {
+                    mPie.setThemeColors(color);
+                } else {
+                    mPie.setDefaultColors(mXResources);
+                }
+            }
+        }
+
         final int tabCount = mController.getTabCount();
         final List<PieItem> items = mPie.getItems();
         for (PieItem item : items) {

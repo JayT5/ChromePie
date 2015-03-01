@@ -27,12 +27,14 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.content.res.XModuleResources;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
@@ -148,6 +150,46 @@ public class PieMenu extends FrameLayout {
         mSubPaint = new Paint();
         mSubPaint.setColor(res.getColor(R.color.qc_sub));
         mSubPaint.setAntiAlias(true);
+    }
+
+    public void setThemeColors(int themeColor) {
+        int statusColor = mControl.getStatusBarColor(themeColor);
+        int tintedColor = applyColorTint(themeColor, 0.2f);
+        mNormalPaint.setColor(applyColorAlpha(themeColor, 224));
+        mSelectedPaint.setColor(applyColorAlpha(statusColor, 224));
+        mSubPaint.setColor(applyColorAlpha(tintedColor, 240));
+        setTabCountBackgroundColor(applyColorTint(themeColor, 0.35f));
+    }
+
+    private void setTabCountBackgroundColor(int color) {
+        List<PieItem> items = findItemsById("show_tabs");
+        if (!items.isEmpty()) {
+            for (PieItem item : items) {
+                ((GradientDrawable) ((ViewGroup) item.getView()).getChildAt(1)
+                        .getBackground()).setColor(color);
+            }
+        }
+    }
+
+    public void setDefaultColors(XModuleResources res) {
+        mNormalPaint.setColor(res.getColor(R.color.qc_normal));
+        mSelectedPaint.setColor(res.getColor(R.color.qc_selected));
+        mSubPaint.setColor(res.getColor(R.color.qc_sub));
+        setTabCountBackgroundColor(res.getColor(R.color.qc_tab_nr));
+    }
+
+    private int applyColorTint(int color, float factor) {
+        int r1 = Color.red(color);
+        int g1 = Color.green(color);
+        int b1 = Color.blue(color);
+        int r2 = (int) (r1 + (factor * (255 - r1)));
+        int g2 = (int) (g1 + (factor * (255 - g1)));
+        int b2 = (int) (b1 + (factor * (255 - b1)));
+        return Color.rgb(r2, g2, b2);
+    }
+
+    private int applyColorAlpha(int color, int alpha) {
+        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
     public void setController(PieController ctl) {

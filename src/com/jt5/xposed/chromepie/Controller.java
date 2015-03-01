@@ -579,4 +579,39 @@ public class Controller {
         }
     }
 
+    Boolean useThemeColor() {
+        try {
+            return !(Boolean) XposedHelpers.callMethod(mActivity, "shouldUseDefaultStatusBarColor");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return false;
+    }
+
+    Integer getThemeColor() {
+        if (isDocumentMode() && !isIncognito()) {
+            try {
+                return (Integer) XposedHelpers.callMethod(mActivity, "getThemeColor");
+            } catch (NoSuchMethodError nsme) {
+                XposedBridge.log(TAG + nsme);
+            }
+        }
+        return 0;
+    }
+
+    public Integer getStatusBarColor(int color) {
+        Class<?> colorUtils;
+        try {
+            colorUtils = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.DocumentUtilities", mClassLoader);
+        } catch (ClassNotFoundError cnfe) {
+            colorUtils = XposedHelpers.findClass("org.chromium.chrome.browser.document.BrandColorUtils", mClassLoader);
+        }
+        try {
+            return (Integer) XposedHelpers.callStaticMethod(colorUtils, "computeStatusBarColor", color);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return color;
+    }
+
 }
