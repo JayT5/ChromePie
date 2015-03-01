@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ActivityManager;
-import android.app.ActivityManager.RunningTaskInfo;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.Fragment;
@@ -13,6 +12,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceActivity;
 import android.text.method.LinkMovementMethod;
 import android.view.Menu;
@@ -104,19 +104,17 @@ public class PieSettings extends PreferenceActivity {
     }
 
     void killChrome(boolean launch) {
-        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        PackageManager pm = getPackageManager();
-        List<Intent> chromeApps = getInstalledApps(am, pm);
+        List<Intent> chromeApps = getInstalledApps();
         if (chromeApps.isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.chrome_not_found), Toast.LENGTH_SHORT).show();
         } else {
             if (launch) {
                 if (chromeApps.size() == 1) {
                     startActivity(chromeApps.get(0));
-                } else if (chromeApps.size() == 2) {
-                    String packageName = getMostRecentApp(am);
-                    Intent launchIntent = pm.getLaunchIntentForPackage(packageName);
-                    startActivity(launchIntent);
+                } else {
+                    Intent chooserIntent = Intent.createChooser(chromeApps.remove(1), getResources().getString(R.string.chrome_app_chooser));
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, chromeApps.toArray(new Parcelable[]{}));
+                    startActivity(chooserIntent);
                 }
             } else {
                 Toast.makeText(this, getResources().getString(R.string.chrome_killed), Toast.LENGTH_SHORT).show();
@@ -124,7 +122,9 @@ public class PieSettings extends PreferenceActivity {
         }
     }
 
-    private List<Intent> getInstalledApps(ActivityManager am, PackageManager pm) {
+    private List<Intent> getInstalledApps() {
+        ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        PackageManager pm = getPackageManager();
         List<Intent> apps = new ArrayList<Intent>();
         Intent launch = pm.getLaunchIntentForPackage("com.android.chrome");
         if (launch != null) {
@@ -137,21 +137,6 @@ public class PieSettings extends PreferenceActivity {
             am.killBackgroundProcesses("com.chrome.beta");
         }
         return apps;
-    }
-
-    private String getMostRecentApp(ActivityManager am) {
-        String packageName = null;
-        for (RunningTaskInfo task: am.getRunningTasks(10)){
-            String pkg = task.topActivity.getPackageName();
-            if (pkg.equals("com.android.chrome") || pkg.equals("com.chrome.beta")) {
-                packageName = pkg;
-                break;
-            }
-        }
-        if (packageName == null) {
-            packageName = "com.android.chrome";
-        }
-        return packageName;
     }
 
 }

@@ -27,6 +27,7 @@
     <string name="menu_kill">Kill Chrome</string>
     <string name="chrome_killed">Chrome killed</string>
     <string name="chrome_not_found">Chrome not found</string>
+    <string name="chrome_app_chooser">Select app</string>
     
     <string name="edit_pie_menu_title">Pie menu</string>
     <string name="edit_pie_menu_summary">Edit Pie menu items</string>
