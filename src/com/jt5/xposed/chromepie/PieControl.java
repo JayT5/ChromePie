@@ -122,6 +122,9 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
 
     @Override
     public boolean onOpen() {
+        if (mController.getCurrentTab() == null && mController.isDocumentMode()) {
+            return false;
+        }
         if (mOnPageLoad == null) {
             hookOnPageLoad();
         }
