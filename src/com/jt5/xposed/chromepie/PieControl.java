@@ -68,6 +68,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private ComponentName mDirectShareComponentName;
     private static List<Integer> mTriggerPositions;
     private int mThemeColor = 0;
+    private final boolean mUseThemeColor;
 
     PieControl(Activity chromeActivity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mChromeActivity = chromeActivity;
@@ -78,6 +79,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mItemSize = (int) mXResources.getDimension(R.dimen.qc_item_size);
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit", "go_to_home");
         mTriggerPositions = initTriggerPositions();
+        mUseThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
     }
 
     protected void attachToContainer(ViewGroup container) {
@@ -130,11 +132,11 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             hookOnPageLoad();
         }
 
-        if (mXPreferences.getBoolean("apply_theme_color", true)) {
+        if (mController.isDocumentMode() && mUseThemeColor) {
             int color = mController.getThemeColor();
             if (mThemeColor != color) {
                 mThemeColor = color;
-                if (mController.useThemeColor()) {
+                if (!mController.isIncognito() && mController.shouldUseThemeColor()) {
                     mPie.setThemeColors(color);
                 } else {
                     mPie.setDefaultColors(mXResources);

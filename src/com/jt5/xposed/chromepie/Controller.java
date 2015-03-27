@@ -582,7 +582,7 @@ public class Controller {
         }
     }
 
-    Boolean useThemeColor() {
+    Boolean shouldUseThemeColor() {
         try {
             return !(Boolean) XposedHelpers.callMethod(mActivity, "shouldUseDefaultStatusBarColor");
         } catch (NoSuchMethodError nsme) {
@@ -592,12 +592,10 @@ public class Controller {
     }
 
     Integer getThemeColor() {
-        if (isDocumentMode() && !isIncognito()) {
-            try {
-                return (Integer) XposedHelpers.callMethod(mActivity, "getThemeColor");
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
-            }
+        try {
+            return (Integer) XposedHelpers.callMethod(mActivity, "getThemeColor");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
         return 0;
     }
