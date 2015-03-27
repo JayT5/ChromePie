@@ -537,11 +537,14 @@ public class Controller {
     }
 
     Boolean isDocumentMode() {
+        Class<?> featureUtils;
         try {
-            Class<?> featureUtils = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", mClassLoader);
-            return (Boolean) XposedHelpers.callStaticMethod(featureUtils, "isDocumentMode", mActivity);
+            featureUtils = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", mClassLoader);
         } catch (ClassNotFoundError cnfe) {
-
+            featureUtils = XposedHelpers.findClass("org.chromium.chrome.browser.util.FeatureUtilities", mClassLoader);
+        }
+        try {
+            return (Boolean) XposedHelpers.callStaticMethod(featureUtils, "isDocumentMode", mActivity);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
