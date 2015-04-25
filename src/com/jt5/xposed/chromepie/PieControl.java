@@ -136,7 +136,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             int color = mController.getThemeColor();
             if (mThemeColor != color) {
                 mThemeColor = color;
-                if (!mController.isIncognito() && mController.shouldUseThemeColor()) {
+                if (!mController.isIncognito() && mController.shouldUseThemeColor(mThemeColor)) {
                     mPie.setThemeColors(color);
                 } else {
                     mPie.setDefaultColors(mXResources);

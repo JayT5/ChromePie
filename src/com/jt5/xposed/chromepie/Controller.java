@@ -32,7 +32,11 @@ public class Controller {
     }
 
     int getResIdentifier(String id) {
-        return mActivity.getResources().getIdentifier(id, "id", ChromePie.CHROME_PACKAGE);
+        return getResIdentifier(id, "id");
+    }
+
+    private int getResIdentifier(String id, String type) {
+        return mActivity.getResources().getIdentifier(id, type, ChromePie.CHROME_PACKAGE);
     }
 
     Boolean itemSelected(int id) {
@@ -582,9 +586,10 @@ public class Controller {
         }
     }
 
-    Boolean shouldUseThemeColor() {
+    Boolean shouldUseThemeColor(int themeColor) {
         try {
-            return !(Boolean) XposedHelpers.callMethod(mActivity, "shouldUseDefaultStatusBarColor");
+            boolean isPrimary = themeColor == mActivity.getResources().getColor(getResIdentifier("default_primary_color", "color"));
+            return !(Boolean) XposedHelpers.callMethod(mActivity, "shouldUseDefaultStatusBarColor") && !isPrimary;
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
