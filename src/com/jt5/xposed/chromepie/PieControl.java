@@ -48,6 +48,7 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
+import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 
 /**
  * Controller for Quick Controls pie menu
@@ -61,7 +62,6 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     private final Map<String,Action> mActionMap = new HashMap<String,Action>();
     private final int mItemSize;
     private final XSharedPreferences mXPreferences;
-    private XC_MethodHook mOnPageLoad;
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
     private static List<String> mNoTabActions;
@@ -80,6 +80,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit", "go_to_home");
         mTriggerPositions = initTriggerPositions();
         mUseThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
+        initHooks(classLoader);
     }
 
     protected void attachToContainer(ViewGroup container) {
@@ -127,9 +128,6 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     public boolean onOpen() {
         if (mController.getCurrentTab() == null && mController.isDocumentMode()) {
             return false;
-        }
-        if (mOnPageLoad == null) {
-            hookOnPageLoad();
         }
 
         if (mController.isDocumentMode() && mUseThemeColor) {
@@ -364,15 +362,15 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         return view;
     }
 
-    private void hookOnPageLoad() {
-        mOnPageLoad = new XC_MethodHook() {
+    private void initHooks(ClassLoader classLoader) {
+        XC_MethodHook pageLoadHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
                 if (!(Boolean) param.args[0]) {
                     return;
                 }
                 List<PieItem> items = mPie.findItemsById("refresh");
-                if (items.size() != 0) {
+                if (!items.isEmpty()) {
                     for (PieItem item : items) {
                         ((ImageView) item.getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_refresh_white));
                     }
@@ -382,8 +380,10 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         };
 
         try {
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(mController.getLocationBar().getClass(),
-                    "updateLoadingState", boolean.class), mOnPageLoad);
+            Class<?> locationBarClass = XposedHelpers.findClass("com.google.android.apps.chrome.omnibox.LocationBar", classLoader);
+            XposedHelpers.findAndHookMethod(locationBarClass, "updateLoadingState", boolean.class, pageLoadHook);
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
