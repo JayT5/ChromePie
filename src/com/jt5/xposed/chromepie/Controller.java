@@ -424,15 +424,19 @@ public class Controller {
     }
 
     Boolean editBookmarksSupported() {
+        Class<?> bookmarksBridge;
         try {
-            Class<?> bookmarksBridge = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarksBridge", mClassLoader);
-            return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled");
+            bookmarksBridge = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarksBridge", mClassLoader);
         } catch (ClassNotFoundError cnfe) {
             XposedBridge.log(TAG + cnfe);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            return true;
         }
-        return true;
+        try {
+            Object profile = callMethod(callMethod(getCurrentTab(), "getProfile"), "getOriginalProfile");
+            return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled", profile);
+        } catch (NoSuchMethodError nsme) {
+            return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled");
+        }
     }
 
     Boolean addToHomeSupported() {
