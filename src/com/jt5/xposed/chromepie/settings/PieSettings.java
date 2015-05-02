@@ -1,6 +1,7 @@
 package com.jt5.xposed.chromepie.settings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.app.ActivityManager;
@@ -26,6 +27,12 @@ import com.jt5.xposed.chromepie.R;
 public class PieSettings extends PreferenceActivity {
 
     private Fragment mCurrentFragment;
+
+    public static final List<String> CHROME_PACKAGE_NAMES = Arrays.asList(
+        "com.android.chrome",
+        "com.chrome.beta",
+        "com.chrome.dev"
+    );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +119,8 @@ public class PieSettings extends PreferenceActivity {
                 if (chromeApps.size() == 1) {
                     startActivity(chromeApps.get(0));
                 } else {
-                    Intent chooserIntent = Intent.createChooser(chromeApps.remove(1), getResources().getString(R.string.chrome_app_chooser));
+                    Intent chooserIntent = Intent.createChooser(chromeApps.remove(chromeApps.size() - 1),
+                            getResources().getString(R.string.chrome_app_chooser));
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, chromeApps.toArray(new Parcelable[]{}));
                     startActivity(chooserIntent);
                 }
@@ -126,15 +134,12 @@ public class PieSettings extends PreferenceActivity {
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         PackageManager pm = getPackageManager();
         List<Intent> apps = new ArrayList<Intent>();
-        Intent launch = pm.getLaunchIntentForPackage("com.android.chrome");
-        if (launch != null) {
-            apps.add(launch);
-            am.killBackgroundProcesses("com.android.chrome");
-        }
-        launch = pm.getLaunchIntentForPackage("com.chrome.beta");
-        if (launch != null) {
-            apps.add(launch);
-            am.killBackgroundProcesses("com.chrome.beta");
+        for (String packageName : CHROME_PACKAGE_NAMES) {
+            Intent launch = pm.getLaunchIntentForPackage(packageName);
+            if (launch != null) {
+                am.killBackgroundProcesses(packageName);
+                apps.add(launch);
+            }
         }
         return apps;
     }

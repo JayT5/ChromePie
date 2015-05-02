@@ -1,12 +1,13 @@
 package com.jt5.xposed.chromepie;
 
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.res.XModuleResources;
 import android.view.ViewGroup;
+
+import com.jt5.xposed.chromepie.settings.PieSettings;
+
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -36,12 +37,6 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         "com.google.android.apps.chrome.Main"
     };
 
-    private final List<String> mChromePackageNames = Arrays.asList(
-        "com.android.chrome",
-        "com.chrome.beta",
-        "com.chrome.dev"
-    );
-
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
@@ -51,7 +46,7 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
 
     @Override
     public void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable {
-        if (!mChromePackageNames.contains(resparam.packageName)) {
+        if (!PieSettings.CHROME_PACKAGE_NAMES.contains(resparam.packageName)) {
             return;
         }
         mModRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
@@ -60,7 +55,7 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
 
     @Override
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-        if (!mChromePackageNames.contains(lpparam.packageName)) {
+        if (!PieSettings.CHROME_PACKAGE_NAMES.contains(lpparam.packageName)) {
             return;
         }
 
