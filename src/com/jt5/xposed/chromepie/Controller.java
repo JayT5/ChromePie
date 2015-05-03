@@ -1,6 +1,7 @@
 package com.jt5.xposed.chromepie;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -8,7 +9,11 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.IBinder;
 import android.view.View;
+import android.view.View.OnSystemUiVisibilityChangeListener;
+import android.view.Window;
 import android.view.WindowManager;
+import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodHook.Unhook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
@@ -18,6 +23,7 @@ public class Controller {
     private static final String TAG = "ChromePie:Controller: ";
     private final ClassLoader mClassLoader;
     private Activity mActivity;
+    private Unhook mFullscreenWindowFocusHook;
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
@@ -328,6 +334,61 @@ public class Controller {
         }
     }
 
+    @SuppressLint("InlinedApi")
+    void setFullscreen(boolean fullscreen) {
+        final Window window = mActivity.getWindow();
+        if (android.os.Build.VERSION.SDK_INT >= 19) {
+            // Immersive mode supported
+            final View decorView = window.getDecorView();
+            final int windowFlags = WindowManager.LayoutParams.FLAG_FULLSCREEN | (android.os.Build.VERSION.SDK_INT >= 21
+                                  ? WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS : 0);
+            if (fullscreen) {
+                window.addFlags(windowFlags);
+                final int fullscreenVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+                decorView.setSystemUiVisibility(fullscreenVisibility);
+
+                // Listener re-enables immersive mode after closing the soft keyboard
+                decorView.setOnSystemUiVisibilityChangeListener(new OnSystemUiVisibilityChangeListener() {
+                    @Override
+                    public void onSystemUiVisibilityChange(int visibility) {
+                        decorView.setSystemUiVisibility(fullscreenVisibility);
+                    }
+                });
+
+                if (mFullscreenWindowFocusHook == null) {
+                    // Hook re-enables immersive mode when returning to Chrome after leaving
+                    mFullscreenWindowFocusHook = XposedHelpers.findAndHookMethod(decorView.getClass(),
+                            "onWindowFocusChanged", boolean.class, new XC_MethodHook() {
+                        @Override
+                        protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+                            if (isFullscreen() && (Boolean) param.args[0]) {
+                                decorView.setSystemUiVisibility(fullscreenVisibility);
+                            }
+                        }
+                    });
+                }
+            } else {
+                window.clearFlags(windowFlags);
+                decorView.setSystemUiVisibility(0);
+                decorView.setOnSystemUiVisibilityChangeListener(null);
+                if (mFullscreenWindowFocusHook != null) {
+                    mFullscreenWindowFocusHook.unhook();
+                    mFullscreenWindowFocusHook = null;
+                }
+            }
+        } else {
+            if (fullscreen) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            }
+        }
+    }
+
+    @SuppressLint("InlinedApi")
     Boolean isFullscreen() {
         if (android.os.Build.VERSION.SDK_INT >= 19) {
             int visibility = mActivity.getWindow().getDecorView().getSystemUiVisibility();

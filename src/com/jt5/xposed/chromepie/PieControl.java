@@ -26,12 +26,14 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.content.res.XModuleResources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -81,6 +83,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mTriggerPositions = initTriggerPositions();
         mUseThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
         initHooks(classLoader);
+        applyFullscreen();
     }
 
     protected void attachToContainer(ViewGroup container) {
@@ -108,6 +111,12 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     void setChromeActivity(Activity activity) {
         mController.setChromeActivity(activity);
         mChromeActivity = activity;
+        applyFullscreen();
+    }
+
+    private void applyFullscreen() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mChromeActivity);
+        mController.setFullscreen(prefs.getBoolean("chromepie_apply_fullscreen", false));
     }
 
     List<Integer> initTriggerPositions() {

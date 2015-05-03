@@ -1,15 +1,11 @@
 package com.jt5.xposed.chromepie;
 
 import static de.robv.android.xposed.XposedHelpers.callMethod;
-import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Process;
-import android.view.View;
-import android.view.View.OnSystemUiVisibilityChangeListener;
-import android.view.Window;
-import android.view.WindowManager;
+import android.preference.PreferenceManager;
 import android.widget.EditText;
-import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
@@ -148,49 +144,10 @@ class Action_scroll_to_bottom implements Action {
 
 class Action_fullscreen implements Action {
     @Override
-    @SuppressLint("InlinedApi")
-    public void execute(final Controller control) {
-        final Window window = control.getChromeActivity().getWindow();
-        if (android.os.Build.VERSION.SDK_INT >= 19) {
-            // Immersive mode supported
-            final View decorView = window.getDecorView();
-            if (control.isFullscreen()) {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                decorView.setOnSystemUiVisibilityChangeListener(null);
-                decorView.setSystemUiVisibility(0);
-            } else {
-                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                final int fullscreenVisibility = (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                                                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                                                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                                                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-
-                decorView.setSystemUiVisibility(fullscreenVisibility);
-                // Listener re-enables immersive mode after closing the soft keyboard
-                decorView.setOnSystemUiVisibilityChangeListener(new OnSystemUiVisibilityChangeListener() {
-                    @Override
-                    public void onSystemUiVisibilityChange(int visibility) {
-                        decorView.setSystemUiVisibility(fullscreenVisibility);
-                    }
-                });
-
-                // Hook re-enables immersive mode when returning to Chrome after leaving
-                XposedHelpers.findAndHookMethod(decorView.getClass(), "onWindowFocusChanged", boolean.class, new XC_MethodHook() {
-                    @Override
-                    protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                        if (control.isFullscreen() && (Boolean) param.args[0]) {
-                            decorView.setSystemUiVisibility(fullscreenVisibility);
-                        }
-                    }
-                });
-            }
-        } else {
-            if (control.isFullscreen()) {
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            } else {
-                window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            }
-        }
+    public void execute(Controller control) {
+        control.setFullscreen(!control.isFullscreen());
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(control.getChromeActivity());
+        prefs.edit().putBoolean("chromepie_apply_fullscreen", control.isFullscreen()).apply();
     }
 }
 
