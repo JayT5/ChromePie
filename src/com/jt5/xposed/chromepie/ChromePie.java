@@ -32,6 +32,7 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     private PieControl mPieControl;
 
     private static final String[] CHROME_ACTIVITY_CLASSES = {
+        "org.chromium.chrome.browser.ChromeActivity",
         "com.google.android.apps.chrome.ChromeTabbedActivity",
         "com.google.android.apps.chrome.ChromeActivity",
         "com.google.android.apps.chrome.Main"
