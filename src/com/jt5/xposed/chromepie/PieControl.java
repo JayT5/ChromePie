@@ -50,7 +50,6 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 
 /**
  * Controller for Quick Controls pie menu
@@ -82,7 +81,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit", "go_to_home");
         mTriggerPositions = initTriggerPositions();
         mUseThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
-        initHooks(classLoader);
+        initializeUIHook(classLoader);
         applyFullscreen();
     }
 
@@ -371,13 +370,23 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         return view;
     }
 
+    private void initializeUIHook(final ClassLoader classLoader) {
+        try {
+            XposedHelpers.findAndHookMethod(mChromeActivity.getClass(), "initializeUI", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+                    initHooks(classLoader);
+                }
+            });
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+    }
+
     private void initHooks(ClassLoader classLoader) {
         XC_MethodHook pageLoadHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                if (!(Boolean) param.args[0]) {
-                    return;
-                }
                 List<PieItem> items = mPie.findItemsById("refresh");
                 if (!items.isEmpty()) {
                     for (PieItem item : items) {
@@ -389,10 +398,8 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         };
 
         try {
-            Class<?> locationBarClass = XposedHelpers.findClass("com.google.android.apps.chrome.omnibox.LocationBar", classLoader);
-            XposedHelpers.findAndHookMethod(locationBarClass, "updateLoadingState", boolean.class, pageLoadHook);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
+            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(
+                    mController.getCurrentTab().getClass(), "didFinishPageLoad"), pageLoadHook);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
