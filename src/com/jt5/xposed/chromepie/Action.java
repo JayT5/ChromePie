@@ -72,13 +72,14 @@ class Action_edit_url implements Action {
     @Override
     public void execute(Controller control) {
         try {
-            Object locationBar = control.getLocationBar();
             int id = control.getResIdentifier("focus_url_bar");
             if (!control.itemSelected(id)) {
-                callMethod(locationBar, "requestUrlFocus");
+                callMethod(control.getLocationBar(), "requestUrlFocus");
             }
-            EditText urlBar = (EditText) callMethod(locationBar, "getUrlBar");
-            urlBar.selectAll();
+            EditText urlBar = control.getUrlBar();
+            if (urlBar != null) {
+                urlBar.selectAll();
+            }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodHook.Unhook;
 import de.robv.android.xposed.XposedBridge;
@@ -634,6 +635,21 @@ public class Controller {
         }
         Object locationBar = mActivity.findViewById(getResIdentifier("location_bar"));
         return (locationBar == null) ? new Object() : locationBar;
+    }
+
+    EditText getUrlBar() {
+        Object locationBar = getLocationBar();
+        try {
+            return (EditText) callMethod(locationBar, "getUrlBar");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return (EditText) XposedHelpers.getObjectField(locationBar, "mUrlBar");
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
+        }
+        return null;
     }
 
     Boolean isVoiceSearchEnabled() {
