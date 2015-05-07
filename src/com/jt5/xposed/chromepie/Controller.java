@@ -611,7 +611,12 @@ public class Controller {
         try {
             featureUtils = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", mClassLoader);
         } catch (ClassNotFoundError cnfe) {
+
+        }
+        try {
             featureUtils = XposedHelpers.findClass("org.chromium.chrome.browser.util.FeatureUtilities", mClassLoader);
+        } catch (ClassNotFoundError cnfe) {
+            return false;
         }
         try {
             return (Boolean) XposedHelpers.callStaticMethod(featureUtils, "isDocumentMode", mActivity);
