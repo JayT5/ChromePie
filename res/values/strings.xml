@@ -49,9 +49,12 @@
     
     <string name="reposition_menu_title">Ensure pie menu fits on screen</string>
     <string name="reposition_menu_summary">Reposition the pie menu to prevent it getting cut off when activated too high or low on screen</string>
-    
-    <string name="theme_color_title">Use web page theme colours</string>
-    <string name="theme_color_summary">Only available with the \'merge tabs and apps\' setting enabled on supported sites</string>
+
+    <string name="pie_theme_color_title">Use site theme colours for pie menu</string>
+    <string name="pie_theme_color_summary">Only available on supported sites</string>
+        
+    <string name="toolbar_theme_color_title">Use site theme colours for toolbar</string>
+    <string name="toolbar_theme_color_summary">Applies to \'merge tabs and apps\' setting disabled on supported sites</string>
     
     <string name="slice">Slice</string>
     <string name="pie_item">Pie Item</string>

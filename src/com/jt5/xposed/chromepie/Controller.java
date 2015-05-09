@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.view.View;
@@ -25,6 +26,7 @@ public class Controller {
     private final ClassLoader mClassLoader;
     private Activity mActivity;
     private Unhook mFullscreenWindowFocusHook;
+    private int mBrandColor;
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
@@ -673,26 +675,62 @@ public class Controller {
         }
     }
 
+    void goToHomeScreen() {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mActivity.startActivity(intent);
+    }
+
     Boolean shouldUseThemeColor(int themeColor) {
         try {
-            boolean isPrimary = themeColor == mActivity.getResources().getColor(getResIdentifier("default_primary_color", "color"));
-            return !(Boolean) XposedHelpers.callMethod(mActivity, "shouldUseDefaultStatusBarColor") && !isPrimary;
+            if (isDocumentMode()) {
+                return !(Boolean) callMethod(mActivity, "shouldUseDefaultStatusBarColor") && !isDefaultPrimaryColor(themeColor);
+            } else {
+                return !isDefaultPrimaryColor(themeColor);
+            }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
         return false;
     }
 
+    private int getDefaultPrimaryColor() {
+        int color;
+        if (isIncognito()) {
+            color = getResIdentifier("incognito_primary_color", "color");
+        } else {
+            color = getResIdentifier("default_primary_color", "color");
+        }
+        return color == 0 ? 0 : mActivity.getResources().getColor(color);
+    }
+
+    private boolean isDefaultPrimaryColor(int color) {
+        return color == getDefaultPrimaryColor();
+    }
+
     Integer getThemeColor() {
         try {
-            return (Integer) XposedHelpers.callMethod(mActivity, "getThemeColor");
+            if (isDocumentMode()) {
+                return (Integer) callMethod(mActivity, "getThemeColor");
+            } else {
+                Object tab = getCurrentTab();
+                if (tab == null || isIncognito()) {
+                    return getDefaultPrimaryColor();
+                }
+                Object webContents = callMethod(tab, "getWebContents");
+                return (Integer) callMethod(webContents, "getThemeColor", getDefaultPrimaryColor());
+            }
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+
         }
         return 0;
     }
 
     public Integer getStatusBarColor(int color) {
+        if (isDefaultPrimaryColor(color)) {
+            return Color.BLACK;
+        }
         Class<?> colorUtils;
         try {
             colorUtils = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.DocumentUtilities", mClassLoader);
@@ -707,11 +745,29 @@ public class Controller {
         return color;
     }
 
-    void goToHomeScreen() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mActivity.startActivity(intent);
+    void applyThemeColors(Object toolbarManager) {
+        try {
+            int themeColor = getThemeColor();
+            if (mBrandColor != themeColor) {
+                mBrandColor = themeColor;
+                callMethod(toolbarManager, "updatePrimaryColor", themeColor);
+                setStatusBarColor(themeColor);
+            }
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+    }
+
+    private void setStatusBarColor(int themeColor) {
+        int statusColor = getStatusBarColor(themeColor);
+        try {
+            Class<?> apiCompatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
+            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity, statusColor);
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
     }
 
 }
