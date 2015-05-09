@@ -112,6 +112,7 @@ public class PieMenu extends FrameLayout {
 
     private boolean mUseBackground = false;
     private boolean mAnimating;
+    private boolean mRepositionMenu;
 
     private int mTriggerPosition;
     private static final int TRIGGER_LEFT = 0;
@@ -150,6 +151,7 @@ public class PieMenu extends FrameLayout {
         mSubPaint = new Paint();
         mSubPaint.setColor(res.getColor(R.color.qc_sub));
         mSubPaint.setAntiAlias(true);
+        mRepositionMenu = prefs.getBoolean("reposition_menu", false);
     }
 
     public void setThemeColors(int themeColor) {
@@ -314,8 +316,13 @@ public class PieMenu extends FrameLayout {
     }
 
     private void setCenter(int x, int y) {
+        int radius = mRadiusInc + mRadius;
         if (mTriggerPosition == TRIGGER_BOTTOM) {
-            mCenter.x = x;
+            if (mRepositionMenu && getWidth() > 2 * radius) {
+                mCenter.x = Math.min(Math.max(x, radius), getWidth() - radius);
+            } else {
+                mCenter.x = x;
+            }
             mCenter.y = getHeight();
         } else {
             if (onTheLeft()) {
@@ -323,7 +330,12 @@ public class PieMenu extends FrameLayout {
             } else {
                 mCenter.x = getWidth();
             }
-            mCenter.y = y;
+            int topControlsHeight = mControl.getTopControlsHeight();
+            if (mRepositionMenu && getHeight() - topControlsHeight > 2 * radius) {
+                mCenter.y = Math.min(Math.max(y, radius + topControlsHeight), getHeight() - radius);
+            } else {
+                mCenter.y = y;
+            }
         }
     }
 

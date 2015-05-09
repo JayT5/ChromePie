@@ -47,6 +47,9 @@
     <string name="donate_title">Donate</string>
     <string name="donate_summary">Touch to support development by donating via PayPal</string>
     
+    <string name="reposition_menu_title">Ensure pie menu fits on screen</string>
+    <string name="reposition_menu_summary">Reposition the pie menu to prevent it getting cut off when activated too high or low on screen</string>
+    
     <string name="theme_color_title">Use web page theme colours</string>
     <string name="theme_color_summary">Only available with the \'merge tabs and apps\' setting enabled on supported sites</string>
     

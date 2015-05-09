@@ -29,6 +29,11 @@
         minimum="5"
         maximum="30" />
     <CheckBoxPreference
+        android:key="reposition_menu"
+        android:title="@string/reposition_menu_title"
+        android:summary="@string/reposition_menu_summary"
+        android:defaultValue="false" />
+    <CheckBoxPreference
         android:key="apply_theme_color"
         android:title="@string/theme_color_title"
         android:summary="@string/theme_color_summary"
