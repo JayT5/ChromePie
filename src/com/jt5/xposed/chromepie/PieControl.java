@@ -410,8 +410,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
     }
 
     private void initColorHooks(ClassLoader classLoader) {
-        Class<?> contentsObserverClass;
-        final Object toolbarManager;
+        final Class<?> contentsObserverClass;
         final Object toolbarModel;
         final Object tabModelSelector;
         if (mController.getThemeColor() == 0) {
@@ -421,8 +420,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         try {
             contentsObserverClass = XposedHelpers.findClass("org.chromium.chrome.browser.Tab$TabWebContentsObserver", classLoader);
             tabModelSelector = XposedHelpers.getObjectField(mChromeActivity, "mTabModelSelectorImpl");
-            toolbarManager = XposedHelpers.getObjectField(mChromeActivity, "mToolbarManager");
-            toolbarModel = XposedHelpers.getObjectField(toolbarManager, "mToolbarModel");
+            toolbarModel = XposedHelpers.getObjectField(mController.getToolbarManager(), "mToolbarModel");
         } catch (ClassNotFoundError cnfe) {
             XposedBridge.log(TAG + cnfe);
             return;
@@ -435,7 +433,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(contentsObserverClass, "didChangeThemeColor", int.class), new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                    mController.applyThemeColors(toolbarManager);
+                    mController.applyThemeColors();
                 }
             });
 
@@ -444,15 +442,15 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
                 @Override
                 protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
                     if (!(Boolean) param.args[2]) {
-                        mController.applyThemeColors(toolbarManager);
+                        mController.applyThemeColors();
                     }
                 }
             });
 
             XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(tabModelSelector.getClass(), "notifyChanged"), new XC_MethodHook() {
                 @Override
-                protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
-                    mController.applyThemeColors(toolbarManager);
+                protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
+                    mController.applyThemeColors();
                 }
             });
 

@@ -683,16 +683,15 @@ public class Controller {
     }
 
     Boolean shouldUseThemeColor(int themeColor) {
-        try {
-            if (isDocumentMode()) {
-                return !(Boolean) callMethod(mActivity, "shouldUseDefaultStatusBarColor") && !isDefaultPrimaryColor(themeColor);
-            } else {
-                return !isDefaultPrimaryColor(themeColor);
+        boolean notDefault = !isDefaultPrimaryColor(themeColor);
+        if (isDocumentMode() && !isIncognito()) {
+            try {
+                return !(Boolean) callMethod(mActivity, "shouldUseDefaultStatusBarColor") && notDefault;
+            } catch (NoSuchMethodError nsme) {
+                XposedBridge.log(TAG + nsme);
             }
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
         }
-        return false;
+        return notDefault;
     }
 
     private int getDefaultPrimaryColor() {
@@ -745,28 +744,75 @@ public class Controller {
         return color;
     }
 
-    void applyThemeColors(Object toolbarManager) {
+    void applyThemeColors() {
         try {
             int themeColor = getThemeColor();
             if (mBrandColor != themeColor) {
                 mBrandColor = themeColor;
-                callMethod(toolbarManager, "updatePrimaryColor", themeColor);
                 setStatusBarColor(themeColor);
+                callMethod(getToolbarManager(), "updatePrimaryColor", themeColor);
+                updateToolbarVisuals();
             }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
     }
 
-    private void setStatusBarColor(int themeColor) {
-        int statusColor = getStatusBarColor(themeColor);
+    private void updateToolbarVisuals() {
+        Object toolbar = getToolbar();
         try {
-            Class<?> apiCompatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
-            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity, statusColor);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
+            callMethod(toolbar, "updateVisualsForToolbarState", isInOverview());
+            return;
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            Object toolbarDelegate = XposedHelpers.getObjectField(toolbar, "mToolbarDelegate");
+            callMethod(toolbarDelegate, "updateVisualsForToolbarState", isInOverview());
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
+        }
+
+    }
+
+    private void setStatusBarColor(int themeColor) {
+        int statusColor = getStatusBarColor(themeColor);
+        Class<?> apiCompatUtils = null;
+        try {
+            apiCompatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
+            return;
+        }
+        try {
+            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity, statusColor);
+        } catch (NoSuchMethodError nsme) {
+            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity.getWindow(), statusColor);
+        }
+    }
+
+    Object getToolbarManager() {
+        try {
+            return XposedHelpers.getObjectField(mActivity, "mToolbarManager");
+        } catch (NoSuchFieldError nsfe) {
+
+        }
+        try {
+            Object helper = XposedHelpers.getObjectField(mActivity, "mToolbarHelper");
+            return XposedHelpers.getObjectField(helper, "mToolbarManager");
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
+            return new Object();
+        }
+    }
+
+    private Object getToolbar() {
+        try {
+            return XposedHelpers.getObjectField(mActivity, "mToolbar");
+        } catch (NoSuchFieldError nsfe) {
+            return XposedHelpers.getObjectField(getToolbarManager(), "mToolbar");
         }
     }
 
