@@ -31,6 +31,7 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.content.res.XModuleResources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
@@ -142,7 +143,11 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
             int color = mController.getThemeColor();
             if (mThemeColor != color) {
                 mThemeColor = color;
-                if (mController.shouldUseThemeColor(mThemeColor)) {
+                boolean useThemeColor = mController.shouldUseThemeColor(mThemeColor) &&
+                        !(Color.red(mThemeColor) == Color.green(mThemeColor) &&
+                          Color.green(mThemeColor) == Color.blue(mThemeColor) &&
+                          Color.red(mThemeColor) > 230);
+                if (useThemeColor) {
                     mPie.setThemeColors(color);
                 } else {
                     mPie.setDefaultColors(mXResources);
