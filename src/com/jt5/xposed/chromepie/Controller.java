@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
@@ -588,13 +587,7 @@ public class Controller {
     public Integer getTopControlsHeight() {
         Object contentViewCore = getContentViewCore();
         if (contentViewCore == null) {
-            Resources res = mActivity.getResources();
-            int controlHeightId = res.getIdentifier("control_container_height", "dimen", ChromePie.CHROME_PACKAGE);
-            if (controlHeightId != 0) {
-                return (int) res.getDimension(controlHeightId);
-            } else {
-                return 0;
-            }
+            return getTopControlsDimen();
         }
         try {
             return (Integer) callMethod(contentViewCore, "getTopControlsLayoutHeightPix");
@@ -606,7 +599,12 @@ public class Controller {
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
-        return 0;
+        return getTopControlsDimen();
+    }
+
+    int getTopControlsDimen() {
+        int controlHeightId = getResIdentifier("control_container_height", "dimen");
+        return controlHeightId == 0 ? 0 : mActivity.getResources().getDimensionPixelSize(controlHeightId);
     }
 
     Boolean isDocumentMode() {

@@ -122,7 +122,7 @@ class Action_scroll_to_top implements Action {
         Object contentViewCore = control.getContentViewCore();
         try {
             Integer scrollX = (Integer) callMethod(contentViewCore, "computeHorizontalScrollOffset");
-            callMethod(contentViewCore, "scrollTo", scrollX, 0);
+            callMethod(contentViewCore, "scrollTo", scrollX, -control.getTopControlsDimen());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
