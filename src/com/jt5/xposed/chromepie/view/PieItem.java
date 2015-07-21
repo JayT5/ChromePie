@@ -80,7 +80,7 @@ public class PieItem {
     @SuppressWarnings("deprecation")
     public void setAlpha(float alpha) {
         mAlpha = alpha;
-        final int alphaInt = Math.round(alpha * (mEnabled ? 204 : 77));
+        final int alphaInt = Math.round(alpha * (mEnabled ? 255 : 77));
         if (mView != null) {
             if (mId.equals("show_tabs")) {
                 final ImageView iv = (ImageView) ((ViewGroup) mView).getChildAt(0);
