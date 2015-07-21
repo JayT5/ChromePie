@@ -31,7 +31,8 @@ public class PieSettings extends PreferenceActivity {
     public static final List<String> CHROME_PACKAGE_NAMES = Arrays.asList(
         "com.android.chrome",
         "com.chrome.beta",
-        "com.chrome.dev"
+        "com.chrome.dev",
+        "com.metalasfook.nochromo"
     );
 
     @Override
