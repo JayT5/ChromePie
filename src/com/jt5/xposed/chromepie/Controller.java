@@ -216,7 +216,7 @@ public class Controller {
         }
     }
 
-    public String getUrl() {
+    private String getUrl() {
         try {
             return (String) callMethod(getCurrentTab(), "getUrl");
         } catch (NoSuchMethodError nsme) {
@@ -622,7 +622,7 @@ public class Controller {
         try {
             return (Boolean) XposedHelpers.callStaticMethod(featureUtils, "isDocumentMode", mActivity);
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            //XposedBridge.log(TAG + nsme);
         }
         return false;
     }

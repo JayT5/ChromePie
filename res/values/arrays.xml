@@ -108,13 +108,13 @@
     
     <string-array name="pie_item_actions" translatable="false">
         <item></item>
-        <item></item>
+        <item>back_menu_id</item>
         <item>forward_menu_id</item>
-        <item></item>
+        <item>reload_menu_id</item>
         <item>new_tab_menu_id</item>
         <item>new_incognito_tab_menu_id</item>
         <item></item>
-        <item></item>
+        <item>close_all_tabs_menu_id</item>
         <item>all_bookmarks_menu_id</item>
         <item>bookmark_this_page_id</item>
         <item>open_history_menu_id</item>
@@ -123,12 +123,12 @@
         <item></item>
         <item>add_to_homescreen_id</item>
         <item>find_in_page_id</item>
-        <item></item>
+        <item>focus_url_bar</item>
         <item>request_desktop_site_id</item>
         <item></item>
         <item></item>
         <item></item>
-        <item></item>
+        <item>share_menu_id</item>
         <item>direct_share_menu_id</item>
         <item>print_id</item>
         <item>preferences_id</item>

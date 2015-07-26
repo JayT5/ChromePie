@@ -18,33 +18,26 @@ package com.jt5.xposed.chromepie;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.content.res.XModuleResources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
-import com.jt5.xposed.chromepie.view.PieItem;
+import com.jt5.xposed.chromepie.view.BaseItem;
 import com.jt5.xposed.chromepie.view.PieMenu;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -56,19 +49,17 @@ import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 /**
  * Controller for Quick Controls pie menu
  */
-public class PieControl implements PieMenu.PieController, OnClickListener {
+public class PieControl implements PieMenu.PieController {
 
     private Activity mChromeActivity;
     private final XModuleResources mXResources;
     private PieMenu mPie;
     private final Controller mController;
-    private final Map<String,Action> mActionMap = new HashMap<String,Action>();
     private final int mItemSize;
     private final XSharedPreferences mXPreferences;
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
     private static List<String> mNoTabActions;
-    private ComponentName mDirectShareComponentName;
     private static List<Integer> mTriggerPositions;
     private int mThemeColor = 0;
 
@@ -78,8 +69,8 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mXResources = res;
         mXPreferences = prefs;
         mXPreferences.reload();
-        mItemSize = (int) mXResources.getDimension(R.dimen.qc_item_size);
-        mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit", "go_to_home");
+        mItemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
+        mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit", "go_to_home", "show_tabs");
         mTriggerPositions = initTriggerPositions();
         initializeUIHook(classLoader);
         applyFullscreen();
@@ -101,7 +92,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         container.addView(mPie);
     }
 
-    protected void removeFromParent() {
+    private void removeFromParent() {
         if (mPie.getParent() != null) {
             ((ViewGroup) mPie.getParent()).removeView(mPie);
         }
@@ -118,7 +109,7 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         mController.setFullscreen(prefs.getBoolean("chromepie_apply_fullscreen", false));
     }
 
-    List<Integer> initTriggerPositions() {
+    private List<Integer> initTriggerPositions() {
         Set<String> triggerSet = mXPreferences.getStringSet("trigger_side_set",
                 new HashSet<String>(Arrays.asList("0", "1", "2")));
         List<Integer> triggerInt = new ArrayList<Integer>();
@@ -156,222 +147,91 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         }
 
         final int tabCount = mController.getTabCount();
-        final List<PieItem> items = mPie.getItems();
-        for (PieItem item : items) {
-            View icon = item.getView();
-            String id = item.getId();
-            boolean disableNoTabs = (tabCount == 0) && !mNoTabActions.contains(id);
-            item.setEnabled(!disableNoTabs);
-            if (id.equals("show_tabs")) {
-                //icon = icon.findViewById(R.id.count_label);
-                icon = ((ViewGroup) icon).getChildAt(1);
-                ((TextView) icon).setText(Integer.toString(tabCount));
-            }
-            if (icon == null || disableNoTabs) {
+        final List<BaseItem> items = mPie.getItems();
+        for (BaseItem item : items) {
+            boolean shouldEnable = (tabCount != 0) || mNoTabActions.contains(item.getId());
+            item.setEnabled(shouldEnable);
+            if (!shouldEnable || item.getView() == null) {
                 continue;
             }
-            if (id.equals("direct_share")) {
-                ComponentName compName = mController.getShareComponentName();
-                item.setEnabled(compName != null && !mController.isOnNewTabPage());
-                if (compName == null) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
-                } else {
-                    if (!compName.equals(mDirectShareComponentName)) {
-                        mDirectShareComponentName = compName;
-                        try {
-                            int shareSize = (int) mXResources.getDimension(R.dimen.qc_direct_share_icon_size);
-                            Drawable shareIcon = mController.getChromeActivity().getPackageManager().getActivityIcon(mDirectShareComponentName);
-                            Bitmap bitmap = ((BitmapDrawable) shareIcon).getBitmap();
-                            shareIcon = new BitmapDrawable(mXResources, Bitmap.createScaledBitmap(bitmap, shareSize, shareSize, true));
-                            ((ImageView) icon).setImageDrawable(shareIcon);
-                        } catch (PackageManager.NameNotFoundException nnfe) {
-                            ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
-                            item.setEnabled(false);
-                        }
-                    }
-                }
-            } else if (id.equals("desktop_site")) {
-                if (mController.isDesktopUserAgent()) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_mobile_site_white));
-                } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_desktop_site_white));
-                }
-            } else if (id.equals("refresh")) {
-                if (mController.isLoading()) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_stop_white));
-                } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_refresh_white));
-                }
-            } else if (id.equals("fullscreen")) {
-                if (mController.isFullscreen()) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_fullscreen_exit_white));
-                } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_fullscreen_white));
-                }
-            } else if (id.equals("add_bookmark")) {
-                if (mController.bookmarkExists()) {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_add_bookmark_white));
-                } else {
-                    ((ImageView) icon).setImageDrawable(mXResources.getDrawable(R.drawable.ic_added_bookmark_white));
-                }
-                item.setEnabled(mController.editBookmarksSupported());
-            } else if (id.equals("forward")) {
-                item.setEnabled(mController.canGoForward());
-            } else if (id.equals("back")) {
-                item.setEnabled(mController.canGoBack());
-            } else if (id.equals("show_tabs")) {
-                item.setEnabled(!mController.isTablet());
-            } else if (id.equals("find_in_page")) {
-                item.setEnabled(mController.tabSupportsFinding());
-            } else if (id.equals("print")) {
-                item.setEnabled(mController.printingSupported() && !mController.isOnNewTabPage());
-            } else if (id.equals("recent_tabs")) {
-                item.setEnabled(mController.syncSupported() && !mController.isIncognito());
-            } else if (id.equals("next_tab")) {
-                item.setEnabled(mController.tabExistsAtIndex(1));
-            } else if (id.equals("previous_tab")) {
-                item.setEnabled(mController.tabExistsAtIndex(-1));
-            } else if (id.equals("add_to_home")) {
-                item.setEnabled(mController.addToHomeSupported() && !mController.isIncognito() && !mController.isOnNewTabPage());
-            } else if (id.equals("most_visited")) {
-                item.setEnabled(!mController.isIncognito());
-            } else if (id.equals("share")) {
-                item.setEnabled(!mController.isOnNewTabPage());
-            } else if (id.equals("reader_mode")) {
-                item.setEnabled(mController.getReaderModeStatus() != 1);
-            } else if (id.equals("scroll_to_top")) {
-                item.setEnabled(mController.getContentViewCore() != null);
-            } else if (id.equals("scroll_to_bottom")) {
-                item.setEnabled(mController.getContentViewCore() != null);
-            } else if (id.equals("new_tab") && mController.isDocumentMode()) {
-                item.setEnabled(!mController.isOnNewTabPage() || mController.isIncognito());
-            } else if (id.equals("new_incognito_tab") && mController.isDocumentMode()) {
-                item.setEnabled(!(mController.isOnNewTabPage() && mController.isIncognito()));
-            } else if (id.equals("voice_search")) {
-                item.setEnabled(mController.isVoiceSearchEnabled());
-            }
+            ((PieItem) item).onOpen(mController, mXResources);
         }
         return true;
     }
 
     private void populateMenu() {
-        final String[] actions = mXResources.getStringArray(R.array.pie_item_actions);
-        final String[] values = mXResources.getStringArray(R.array.pie_item_values);
+        final List<String> values = Arrays.asList(mXResources.getStringArray(R.array.pie_item_values));
         final TypedArray drawables = mXResources.obtainTypedArray(R.array.pie_item_dark_drawables);
+        final String[] actions = mXResources.getStringArray(R.array.pie_item_actions);
         mPie.clearItems();
-        final Map<String, ?> keys = mXPreferences.getAll();
-        if (keys.isEmpty()) {
+        final Map<String, ?> keyMap = mXPreferences.getAll();
+        if (keyMap.isEmpty()) {
             XposedBridge.log(TAG + "Failed to load preferences. Can read file: " + mXPreferences.getFile().canRead());
             return;
         }
-        mActionMap.put("Action_main", new Action_main());
         for (int i = 1; i <= MAX_SLICES; i++) {
             if (mXPreferences.getBoolean("screen_slice_" + i, false)) {
                 String key = "slice_" + i + "_item_" + i;
-                if (keys.containsKey(key)) {
-                    String value = (String) keys.get(key);
-                    int index = Arrays.asList(values).indexOf(value);
-                    PieItem item = makeItem(value, actions[index], drawables.getResourceId(index, 0), 1);
-                    mPie.addItem(item);
-                    addAction(actions[index], value);
-                    for (int j = 1; j <= MAX_SLICES; j++) {
-                        if (i == j) {
-                            continue;
-                        }
-                        key = "slice_" + i + "_item_" + j;
-                        if (keys.containsKey(key)) {
-                            value = (String) keys.get(key);
-                            index = Arrays.asList(values).indexOf(value);
-                            item.addItem(makeItem(value, actions[index], drawables.getResourceId(index, 0), 1));
-                            addAction(actions[index], value);
-                        } else {
-                            item.addItem(makeFiller());
-                        }
+                BaseItem item = initItem(values, drawables, actions, keyMap, key);
+                mPie.addItem(item);
+                for (int j = 1; j <= MAX_SLICES; j++) {
+                    if (i == j) {
+                        continue;
                     }
-                } else {
-                    mPie.addItem(makeFiller());
+                    key = "slice_" + i + "_item_" + j;
+                    item.addItem(initItem(values, drawables, actions, keyMap, key));
                 }
             }
         }
         drawables.recycle();
     }
 
-    private void addAction(String action, String id) {
-        if (id.equals("none")) {
-            return;
-        }
-        try {
-            if (action.isEmpty()) {
-                mActionMap.put("Action_" + id, (Action) Class.forName(ChromePie.PACKAGE_NAME + ".Action_" + id).newInstance());
-            }
-        } catch (InstantiationException ie) {
-            XposedBridge.log(TAG + ie);
-        } catch (IllegalAccessException iae) {
-            XposedBridge.log(TAG + iae);
-        } catch (ClassNotFoundException cnfe) {
-            XposedBridge.log(TAG + cnfe);
-        }
-    }
-
-    @Override
-    public void onClick(View v) {
-        ItemInfo info = (ItemInfo) v.getTag();
-        if (mActionMap.containsKey("Action_" + info.id)) {
-            mActionMap.get("Action_" + info.id).execute(mController);
+    private BaseItem initItem(List<String> values, TypedArray drawables, String[] actions, Map<String, ?> keyMap, String key) {
+        String value = (String) keyMap.get(key);
+        if (!value.equals("none") && value != null) {
+            int index = values.indexOf(value);
+            String action = actions[index];
+            return makeItem(value, drawables.getResourceId(index, 0), mController.getResIdentifier(action));
         } else {
-            if (info.action != null) {
-                ((Action_main) mActionMap.get("Action_main")).executeMain(mController, info.action);
-            }
-        }
-    }
-
-    private PieItem makeItem(String id, String action, int iconRes, int level) {
-        if (id.equals("none")) {
             return makeFiller();
         }
-        ItemInfo info = new ItemInfo();
-        info.action = action;
-        info.id = id;
-        if (id.equals("show_tabs")) {
-            View tabs = makeTabsView();
-            tabs.setTag(info);
-            PieItem tabsItem = new PieItem(tabs, id, "", level);
-            tabs.setOnClickListener(this);
-            return tabsItem;
-        }
-        ImageView view = new ImageView(mChromeActivity);
-        view.setImageDrawable(mXResources.getDrawable(iconRes));
-        view.setMinimumWidth(mItemSize);
-        view.setMinimumHeight(mItemSize);
-        view.setTag(info);
-        view.setScaleType(ScaleType.CENTER);
-        LayoutParams lp = new LayoutParams(mItemSize, mItemSize);
-        view.setLayoutParams(lp);
-        view.setOnClickListener(this);
-        PieItem item = new PieItem(view, id, action, level);
-        return item;
     }
 
-    private PieItem makeFiller() {
-        return new PieItem(null, "", null, 1);
+    private BaseItem makeItem(String id, int iconRes, int action) {
+        View view;
+        if (id.equals("show_tabs")) {
+            view = makeTabsView(iconRes);
+        } else {
+            view = new ImageView(mChromeActivity);
+            ((ImageView) view).setImageDrawable(mXResources.getDrawable(iconRes));
+            view.setMinimumWidth(mItemSize);
+            view.setMinimumHeight(mItemSize);
+            ((ImageView) view).setScaleType(ScaleType.CENTER);
+            view.setLayoutParams(new LayoutParams(mItemSize, mItemSize));
+        }
+        try {
+            return (PieItem) Class.forName(ChromePie.PACKAGE_NAME + ".Item_" + id)
+                    .getConstructor(View.class, String.class, int.class).newInstance(view, id, action);
+        } catch (Throwable t) {
+            return new PieItem(view, id, action);
+        }
+    }
+
+    private BaseItem makeFiller() {
+        return new BaseItem(null, "");
     }
 
     @SuppressWarnings("deprecation")
-    private View makeTabsView() {
+    private View makeTabsView(int iconRes) {
         LayoutInflater li = mChromeActivity.getLayoutInflater();
-        View view = li.inflate(mXResources.getLayout(R.layout.qc_tabs_view), null);
-        // findViewById returns null on some versions of Chrome
-        // (some sort of resource conflict?) - so use getChildAt
-        //TextView count = (TextView) view.findViewById(R.id.count_label);
-        TextView count = (TextView) ((ViewGroup) view).getChildAt(1);
+        ViewGroup view = (ViewGroup) li.inflate(mXResources.getLayout(R.layout.qc_tabs_view), null);
+        TextView count = (TextView) view.getChildAt(1);
         count.setBackgroundDrawable(mXResources.getDrawable(R.drawable.tab_nr));
         count.setText(Integer.toString(mController.getTabCount()));
-        //ImageView icon = (ImageView) view.findViewById(R.id.count_icon);
-        ImageView icon = (ImageView) ((ViewGroup) view).getChildAt(0);
-        icon.setImageDrawable(mXResources.getDrawable(R.drawable.ic_show_tabs_white));
+        ImageView icon = (ImageView) view.getChildAt(0);
+        icon.setImageDrawable(mXResources.getDrawable(iconRes));
         icon.setScaleType(ScaleType.CENTER);
-        LayoutParams lp = new LayoutParams(mItemSize, mItemSize);
-        view.setLayoutParams(lp);
+        view.setLayoutParams(new LayoutParams(mItemSize, mItemSize));
         return view;
     }
 
@@ -477,11 +337,6 @@ public class PieControl implements PieMenu.PieController, OnClickListener {
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
-    }
-
-    static class ItemInfo {
-        private String id;
-        private String action;
     }
 
 }

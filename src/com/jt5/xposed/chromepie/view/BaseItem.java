@@ -19,18 +19,15 @@ package com.jt5.xposed.chromepie.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.graphics.Color;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.jt5.xposed.chromepie.view.PieMenu.PieView;
 
 /**
  * Pie menu item
  */
-public class PieItem {
+public class BaseItem {
 
     private final View mView;
     private PieView mPieView;
@@ -38,64 +35,58 @@ public class PieItem {
     private float start;
     private float sweep;
     private float animate;
-    private float mAlpha;
     private int inner;
     private int outer;
     private boolean mSelected;
     private boolean mEnabled;
-    private List<PieItem> mItems;
-    private String mAction;
+    private List<BaseItem> mItems;
+    private int mMenuActionId;
     private String mId;
 
-    public PieItem(View view, String id, String action, int level) {
+    public BaseItem(View view, String id) {
+        this(view, id, 0);
+    }
+
+    protected BaseItem(View view, String id, int action) {
+        this(view, id, action, 1);
+    }
+
+    private BaseItem(View view, String id, int action, int level) {
         mView = view;
         mId = id;
-        mAction = action;
+        mMenuActionId = action;
         this.level = level;
         mEnabled = true;
     }
 
-    public PieItem(View view, int level, PieView sym) {
+    public BaseItem(View view, int level, PieView sym) {
         mView = view;
         this.level = level;
         mPieView = sym;
         mEnabled = false;
     }
 
-    boolean hasItems() {
+    public boolean hasItems() {
         return mItems != null;
     }
 
-    public List<PieItem> getItems() {
+    public List<BaseItem> getItems() {
         return mItems;
     }
 
-    public void addItem(PieItem item) {
+    public void addItem(BaseItem item) {
         if (mItems == null) {
-            mItems = new ArrayList<PieItem>();
+            mItems = new ArrayList<BaseItem>();
         }
         mItems.add(item);
     }
 
     @SuppressWarnings("deprecation")
     public void setAlpha(float alpha) {
-        mAlpha = alpha;
         final int alphaInt = Math.round(alpha * (mEnabled ? 255 : 77));
         if (mView != null) {
-            if (mId.equals("show_tabs")) {
-                final ImageView iv = (ImageView) ((ViewGroup) mView).getChildAt(0);
-                final TextView tv = (TextView) ((ViewGroup) mView).getChildAt(1);
-                iv.setAlpha(alphaInt);
-                tv.setTextColor(Color.argb(alphaInt, 255, 255, 255));
-                tv.getBackground().setAlpha(alphaInt);
-            } else {
-                ((ImageView) mView).setAlpha(alphaInt);
-            }
+            ((ImageView) mView).setAlpha(alphaInt);
         }
-    }
-
-    public float getAlpha() {
-        return mAlpha;
     }
 
     public void setAnimationAngle(float a) {
@@ -118,8 +109,8 @@ public class PieItem {
         return mId;
     }
 
-    public String getAction() {
-        return mAction;
+    public int getMenuActionId() {
+        return mMenuActionId;
     }
 
     public void setSelected(boolean s) {
