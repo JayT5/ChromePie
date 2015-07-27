@@ -157,16 +157,14 @@ class Item_close_all extends PieItem {
 
     @Override
     public void onClick(Controller control) {
-        int id = getMenuActionId();
-        if (control.isIncognito()) {
-            id = control.getResIdentifier("close_all_incognito_tabs_menu_id");
-        }
-        if (!control.itemSelected(id)) {
-            try {
-                callMethod(control.getTabModel(), "closeAllTabs");
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
+        try {
+            callMethod(control.getTabModel(), "closeAllTabs", true, true);
+        } catch (NoSuchMethodError nsme) {
+            int id = getMenuActionId();
+            if (control.isIncognito()) {
+                id = control.getResIdentifier("close_all_incognito_tabs_menu_id");
             }
+            control.itemSelected(id);
         }
     }
 }
