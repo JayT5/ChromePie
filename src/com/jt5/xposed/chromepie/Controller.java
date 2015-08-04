@@ -27,9 +27,65 @@ public class Controller {
     private Unhook mFullscreenWindowFocusHook;
     private int mBrandColor;
 
+    private final Class<?> mTabModelUtilsClass;
+    private final Class<?> mLoadUrlParamsClass;
+    private final Class<?> mUrlConstantsClass;
+    private final Class<?> mDeviceUtilsClass;
+    private final Class<?> mFeatureUtilsClass;
+    private final Class<?> mDomDistillerUrlUtilsClass;
+    private final Class<?> mBrandColorUtilsClass;
+
+    private static final String[] CLASS_TAB_MODEL_UTILS = {
+        "org.chromium.chrome.browser.tabmodel.TabModelUtils",
+        "com.google.android.apps.chrome.tabmodel.TabModelUtils"
+    };
+    private static final String[] CLASS_LOAD_URL_PARAMS = {
+        "org.chromium.content_public.browser.LoadUrlParams",
+        "org.chromium.content.browser.LoadUrlParams"
+    };
+    private static final String[] CLASS_URL_CONSTANTS = {
+        "org.chromium.chrome.browser.UrlConstants",
+        "com.google.android.apps.chrome.UrlConstants"
+    };
+    private static final String[] CLASS_DEVICE_UTILS = {
+        "org.chromium.ui.base.DeviceFormFactor",
+        "org.chromium.content.browser.DeviceUtils"
+    };
+    private static final String[] CLASS_FEATURE_UTILS = {
+        "org.chromium.chrome.browser.util.FeatureUtilities",
+        "com.google.android.apps.chrome.utilities.FeatureUtilities"
+    };
+    private static final String[] CLASS_DOM_DISTILLER_UTILS = {
+        "org.chromium.components.dom_distiller.core.DomDistillerUrlUtils"
+    };
+    private static final String[] CLASS_BRAND_COLOR_UTILS = {
+        "org.chromium.chrome.browser.document.BrandColorUtils",
+        "com.google.android.apps.chrome.utilities.DocumentUtilities"
+    };
+
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
         mActivity = chromeActivity;
+
+        mTabModelUtilsClass = getClass(CLASS_TAB_MODEL_UTILS);
+        mLoadUrlParamsClass = getClass(CLASS_LOAD_URL_PARAMS);
+        mUrlConstantsClass = getClass(CLASS_URL_CONSTANTS);
+        mDeviceUtilsClass = getClass(CLASS_DEVICE_UTILS);
+        mFeatureUtilsClass = getClass(CLASS_FEATURE_UTILS);
+        mDomDistillerUrlUtilsClass = getClass(CLASS_DOM_DISTILLER_UTILS);
+        mBrandColorUtilsClass = getClass(CLASS_BRAND_COLOR_UTILS);
+    }
+
+    private Class<?> getClass(String[] classes) {
+        for (int i = 0; i < classes.length; i++) {
+            try {
+                return XposedHelpers.findClass(classes[i], mClassLoader);
+            } catch (ClassNotFoundError cnfe) {
+
+            }
+        }
+        XposedBridge.log(TAG + "ClassNotFoundError: " + classes[0]);
+        return null;
     }
 
     Activity getChromeActivity() {
@@ -134,14 +190,9 @@ public class Controller {
         } catch (NoSuchMethodError nsme) {
 
         }
-        Class<?> modelUtils;
+        if (mTabModelUtilsClass == null) return;
         try {
-            modelUtils = XposedHelpers.findClass("org.chromium.chrome.browser.tabmodel.TabModelUtils", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            modelUtils = XposedHelpers.findClass("com.google.android.apps.chrome.tabmodel.TabModelUtils", mClassLoader);
-        }
-        try {
-            XposedHelpers.callStaticMethod(modelUtils, "setIndex", getTabModel(), index);
+            XposedHelpers.callStaticMethod(mTabModelUtilsClass, "setIndex", getTabModel(), index);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -166,14 +217,9 @@ public class Controller {
     }
 
     private Object getLoadUrlParams(String url) {
-        Class<?> loadUrlParams;
+        if (mLoadUrlParamsClass == null) return null;
         try {
-            loadUrlParams = XposedHelpers.findClass("org.chromium.content.browser.LoadUrlParams", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            loadUrlParams = XposedHelpers.findClass("org.chromium.content_public.browser.LoadUrlParams", mClassLoader);
-        }
-        try {
-            return XposedHelpers.newInstance(loadUrlParams, url);
+            return XposedHelpers.newInstance(mLoadUrlParamsClass, url);
         } catch (Throwable t) {
             XposedBridge.log(TAG + t);
         }
@@ -416,19 +462,14 @@ public class Controller {
     }
 
     String getMostVisitedUrl() {
-        Class<?> urlConstants = null;
+        if (mUrlConstantsClass == null) return "chrome-native://newtab/";
         try {
-            urlConstants = XposedHelpers.findClass("com.google.android.apps.chrome.UrlConstants", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            urlConstants = XposedHelpers.findClass("org.chromium.chrome.browser.UrlConstants", mClassLoader);
-        }
-        try {
-            return (String) XposedHelpers.getStaticObjectField(urlConstants, "MOST_VISITED_URL");
+            return (String) XposedHelpers.getStaticObjectField(mUrlConstantsClass, "MOST_VISITED_URL");
         } catch (NoSuchFieldError nsfe) {
 
         }
         try {
-            return (String) XposedHelpers.getStaticObjectField(urlConstants, "NTP_URL");
+            return (String) XposedHelpers.getStaticObjectField(mUrlConstantsClass, "NTP_URL");
         } catch (NoSuchFieldError nsfe) {
             XposedBridge.log(TAG + nsfe);
         }
@@ -441,19 +482,9 @@ public class Controller {
         } catch (NoSuchMethodError nsme) {
 
         }
+        if (mDeviceUtilsClass == null) return false;
         try {
-            Class<?> formFactor = XposedHelpers.findClass("org.chromium.ui.base.DeviceFormFactor", mClassLoader);
-            return (Boolean) XposedHelpers.callStaticMethod(formFactor, "isTablet", mActivity);
-        } catch (ClassNotFoundError cnfe) {
-
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            Class<?> deviceUtils = XposedHelpers.findClass("org.chromium.content.browser.DeviceUtils", mClassLoader);
-            return (Boolean) XposedHelpers.callStaticMethod(deviceUtils, "isTablet", mActivity);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
+            return (Boolean) XposedHelpers.callStaticMethod(mDeviceUtilsClass, "isTablet", mActivity);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -461,14 +492,9 @@ public class Controller {
     }
 
     Boolean syncSupported() {
-        Class<?> featureUtils = null;
+        if (mFeatureUtilsClass == null) return true;
         try {
-            featureUtils = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilities", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            featureUtils = XposedHelpers.findClass("org.chromium.chrome.browser.util.FeatureUtilities", mClassLoader);
-        }
-        try {
-            return (Boolean) XposedHelpers.callStaticMethod(featureUtils, "canAllowSync", mActivity);
+            return (Boolean) XposedHelpers.callStaticMethod(mFeatureUtilsClass, "canAllowSync", mActivity);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -488,19 +514,17 @@ public class Controller {
     }
 
     Boolean editBookmarksSupported() {
-        Class<?> bookmarksBridge;
+        Class<?> bookmarksBridge = null;
         try {
             bookmarksBridge = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarksBridge", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-            return true;
-        }
-        try {
             Object profile = callMethod(callMethod(getCurrentTab(), "getProfile"), "getOriginalProfile");
             return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled", profile);
         } catch (NoSuchMethodError nsme) {
             return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled");
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
         }
+        return true;
     }
 
     Boolean addToHomeSupported() {
@@ -525,12 +549,9 @@ public class Controller {
     }
 
     Boolean isDistilledPage() {
-        Class<?> distillerUtils = getDomDistillerUtilsClass();
-        if (distillerUtils == null) {
-            return false;
-        }
+        if (mDomDistillerUrlUtilsClass == null) return false;
         try {
-            return (Boolean) XposedHelpers.callStaticMethod(distillerUtils, "isDistilledPage", getUrl());
+            return (Boolean) XposedHelpers.callStaticMethod(mDomDistillerUrlUtilsClass, "isDistilledPage", getUrl());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -538,25 +559,13 @@ public class Controller {
     }
 
     String getOriginalUrl() {
-        Class<?> distillerUtils = getDomDistillerUtilsClass();
-        if (distillerUtils == null) {
-            return "";
-        }
+        if (mDomDistillerUrlUtilsClass == null) return "";
         try {
-            return (String) XposedHelpers.callStaticMethod(distillerUtils, "getOriginalUrlFromDistillerUrl", getUrl());
+            return (String) XposedHelpers.callStaticMethod(mDomDistillerUrlUtilsClass, "getOriginalUrlFromDistillerUrl", getUrl());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
         return "";
-    }
-
-    private Class<?> getDomDistillerUtilsClass() {
-        try {
-            return XposedHelpers.findClass("org.chromium.components.dom_distiller.core.DomDistillerUrlUtils", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-        }
-        return null;
     }
 
     ComponentName getShareComponentName() {
@@ -608,21 +617,19 @@ public class Controller {
     }
 
     Boolean isDocumentMode() {
-        Class<?> featureUtils;
+        if (mFeatureUtilsClass == null) return false;
         try {
-            featureUtils = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
+            return (Boolean) XposedHelpers.callStaticMethod(mFeatureUtilsClass, "isDocumentMode", mActivity);
+        } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            featureUtils = XposedHelpers.findClass("org.chromium.chrome.browser.util.FeatureUtilities", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            return false;
-        }
-        try {
-            return (Boolean) XposedHelpers.callStaticMethod(featureUtils, "isDocumentMode", mActivity);
+            Class<?> featureUtilsInternal = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", mClassLoader);
+            return (Boolean) XposedHelpers.callStaticMethod(featureUtilsInternal, "isDocumentMode", mActivity);
         } catch (NoSuchMethodError nsme) {
-            //XposedBridge.log(TAG + nsme);
+            XposedBridge.log(TAG + nsme);
+        } catch (ClassNotFoundError cnfe) {
+
         }
         return false;
     }
@@ -728,14 +735,9 @@ public class Controller {
         if (isDefaultPrimaryColor(color)) {
             return Color.BLACK;
         }
-        Class<?> colorUtils;
+        if (mBrandColorUtilsClass == null) return color;
         try {
-            colorUtils = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.DocumentUtilities", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            colorUtils = XposedHelpers.findClass("org.chromium.chrome.browser.document.BrandColorUtils", mClassLoader);
-        }
-        try {
-            return (Integer) XposedHelpers.callStaticMethod(colorUtils, "computeStatusBarColor", color);
+            return (Integer) XposedHelpers.callStaticMethod(mBrandColorUtilsClass, "computeStatusBarColor", color);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -780,14 +782,11 @@ public class Controller {
         Class<?> apiCompatUtils = null;
         try {
             apiCompatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-            return;
-        }
-        try {
             XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity, statusColor);
         } catch (NoSuchMethodError nsme) {
             XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity.getWindow(), statusColor);
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
         }
     }
 
