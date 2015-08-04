@@ -719,7 +719,7 @@ public class Controller {
     }
 
     private boolean isDefaultPrimaryColor(int color) {
-        return color == getDefaultPrimaryColor();
+        return color == getDefaultPrimaryColor() || getDefaultPrimaryColor() == 0;
     }
 
     Integer getThemeColor() {
