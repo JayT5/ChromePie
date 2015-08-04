@@ -26,6 +26,7 @@ public class Controller {
     private Activity mActivity;
     private Unhook mFullscreenWindowFocusHook;
     private int mBrandColor;
+    private final Boolean mIsDocumentMode;
 
     private final Class<?> mTabModelUtilsClass;
     private final Class<?> mLoadUrlParamsClass;
@@ -74,6 +75,8 @@ public class Controller {
         mFeatureUtilsClass = getClass(CLASS_FEATURE_UTILS);
         mDomDistillerUrlUtilsClass = getClass(CLASS_DOM_DISTILLER_UTILS);
         mBrandColorUtilsClass = getClass(CLASS_BRAND_COLOR_UTILS);
+
+        mIsDocumentMode = isDocumentMode();
     }
 
     private Class<?> getClass(String[] classes) {
@@ -617,6 +620,9 @@ public class Controller {
     }
 
     Boolean isDocumentMode() {
+        if (mIsDocumentMode != null) {
+            return mIsDocumentMode;
+        }
         if (mFeatureUtilsClass == null) return false;
         try {
             return (Boolean) XposedHelpers.callStaticMethod(mFeatureUtilsClass, "isDocumentMode", mActivity);
