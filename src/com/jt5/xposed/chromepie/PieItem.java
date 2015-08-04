@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Process;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -424,7 +425,7 @@ class Item_print extends PieItem {
 
     @Override
     protected void onOpen(Controller control, XModuleResources mXResources) {
-        setEnabled(control.printingSupported() && !control.isOnNewTabPage());
+        setEnabled(control.printingEnabled() && !control.isOnNewTabPage() && Build.VERSION.SDK_INT >= 19);
     }
 }
 

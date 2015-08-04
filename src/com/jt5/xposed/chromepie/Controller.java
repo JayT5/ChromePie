@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.IBinder;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
@@ -35,6 +34,7 @@ public class Controller {
     private final Class<?> mFeatureUtilsClass;
     private final Class<?> mDomDistillerUrlUtilsClass;
     private final Class<?> mBrandColorUtilsClass;
+    private final Class<?> mServiceBridgeClass;
 
     private static final String[] CLASS_TAB_MODEL_UTILS = {
         "org.chromium.chrome.browser.tabmodel.TabModelUtils",
@@ -63,6 +63,10 @@ public class Controller {
         "org.chromium.chrome.browser.document.BrandColorUtils",
         "com.google.android.apps.chrome.utilities.DocumentUtilities"
     };
+    private static final String[] CLASS_SERVICE_BRIDGE = {
+        "org.chromium.chrome.browser.preferences.PrefServiceBridge",
+        "com.google.android.apps.chrome.preferences.ChromeNativePreferences"
+    };
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
@@ -75,6 +79,7 @@ public class Controller {
         mFeatureUtilsClass = getClass(CLASS_FEATURE_UTILS);
         mDomDistillerUrlUtilsClass = getClass(CLASS_DOM_DISTILLER_UTILS);
         mBrandColorUtilsClass = getClass(CLASS_BRAND_COLOR_UTILS);
+        mServiceBridgeClass = getClass(CLASS_SERVICE_BRIDGE);
 
         mIsDocumentMode = isDocumentMode();
     }
@@ -504,16 +509,14 @@ public class Controller {
         return true;
     }
 
-    Boolean printingSupported() {
+    Boolean printingEnabled() {
+        if (mServiceBridgeClass == null) return true;
         try {
-            Class<?> compatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
-            return (Boolean) XposedHelpers.callStaticMethod(compatUtils, "isPrintingSupported");
-        } catch (ClassNotFoundError cnfe) {
-
+            return (Boolean) callMethod(XposedHelpers.callStaticMethod(mServiceBridgeClass, "getInstance"), "isPrintingEnabled");
         } catch (NoSuchMethodError nsme) {
-
+            XposedBridge.log(TAG + nsme);
         }
-        return Build.VERSION.SDK_INT >= 19;
+        return true;
     }
 
     Boolean editBookmarksSupported() {
