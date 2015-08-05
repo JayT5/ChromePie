@@ -35,6 +35,7 @@ public class Controller {
     private final Class<?> mDomDistillerUrlUtilsClass;
     private final Class<?> mBrandColorUtilsClass;
     private final Class<?> mServiceBridgeClass;
+    private final Class<?> mChromeApplicationClass;
 
     private static final String[] CLASS_TAB_MODEL_UTILS = {
         "org.chromium.chrome.browser.tabmodel.TabModelUtils",
@@ -67,6 +68,11 @@ public class Controller {
         "org.chromium.chrome.browser.preferences.PrefServiceBridge",
         "com.google.android.apps.chrome.preferences.ChromeNativePreferences"
     };
+    private static final String[] CLASS_CHROME_APPLICATION = {
+        "org.chromium.chrome.browser.ChromeApplication",
+        "org.chromium.chrome.browser.ChromeMobileApplication",
+        "com.google.android.apps.chrome.ChromeMobileApplication"
+    };
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
@@ -80,6 +86,7 @@ public class Controller {
         mDomDistillerUrlUtilsClass = getClass(CLASS_DOM_DISTILLER_UTILS);
         mBrandColorUtilsClass = getClass(CLASS_BRAND_COLOR_UTILS);
         mServiceBridgeClass = getClass(CLASS_SERVICE_BRIDGE);
+        mChromeApplicationClass = getClass(CLASS_CHROME_APPLICATION);
 
         mIsDocumentMode = isDocumentMode();
     }
@@ -146,6 +153,16 @@ public class Controller {
         }
     }
 
+    private Object getDocumentModel(boolean incognito) {
+        if (mChromeApplicationClass == null) return new Object();
+        try {
+            return callMethod(XposedHelpers.callStaticMethod(mChromeApplicationClass, "getDocumentTabModelSelector"), "getModel", incognito);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return new Object();
+    }
+
     Object getTabModel() {
         if (isDocumentMode()) {
             try {
@@ -168,27 +185,41 @@ public class Controller {
         return new Object();
     }
 
-    Integer getCurrentTabIndex() {
+    Integer getTabIndex(Object tab) {
         try {
-            return (Integer) callMethod(getTabModel(), "indexOf", getCurrentTab());
+            return (Integer) callMethod(getTabModel(), "indexOf", tab);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return -1;
         }
     }
 
-    Boolean tabExistsAtIndex(Integer i) {
+    Boolean tabExistsAtIndex(int i) {
+        return getTabAt(getTabIndex(getCurrentTab()) + i) != null;
+    }
+
+    private Object getTabAt(int index) {
         try {
-            return callMethod(getTabModel(), "getTabAt", getCurrentTabIndex() + i) != null;
+            return callMethod(getTabModel(), "getTabAt", index);
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            return callMethod(getTabModel(), "getTab", getCurrentTabIndex() + i) != null;
+            return callMethod(getTabModel(), "getTab", index);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
-            return false;
         }
+        return null;
+    }
+
+    private Object getTabById(int id) {
+        if (mTabModelUtilsClass == null) return null;
+        try {
+            return XposedHelpers.callStaticMethod(mTabModelUtilsClass, "getTabById", getTabModel(), id);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return null;
     }
 
     void showTabByIndex(int index) {
@@ -201,6 +232,17 @@ public class Controller {
         if (mTabModelUtilsClass == null) return;
         try {
             XposedHelpers.callStaticMethod(mTabModelUtilsClass, "setIndex", getTabModel(), index);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+    }
+
+    private void showNextTab(Object tab) {
+        if (mTabModelUtilsClass == null) return;
+        try {
+            Object model = getDocumentModel((Boolean) callMethod(tab, "isIncognito"));
+            int index = (Integer) callMethod(model, "indexOf", tab);
+            XposedHelpers.callStaticMethod(mTabModelUtilsClass, "setIndex", model, index);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -248,17 +290,56 @@ public class Controller {
 
     void closeCurrentTab() {
         Object model = getTabModel();
+        Object tabToClose = getCurrentTab();
         try {
-            callMethod(model, "closeTab", getCurrentTab(), true, false, true);
+            callMethod(model, "closeTab", tabToClose);
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            callMethod(model, "closeTab", getCurrentTab());
+            callMethod(model, "closeTab", tabToClose, true, false, true);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
+    }
+
+    void closeDocumentTab() {
+        Object nextTab = getNextTabIfClosed();
+        closeCurrentTab();
+        if (nextTab != null) {
+            showNextTab(nextTab);
+        }
+    }
+
+    private Object getNextTabIfClosed() {
+        Object tabToClose = getCurrentTab();
+        try {
+            int closingTabIndex = getTabIndex(tabToClose);
+            Object adjacentTab = getTabAt((closingTabIndex == 0) ? 1 : closingTabIndex - 1);
+            Object parentTab = getTabById((Integer) callMethod(tabToClose, "getParentId"));
+
+            // Determine which tab to select next according to these rules:
+            // * Select the parent tab if it exists.
+            // * Otherwise, select an adjacent tab if one exists.
+            // * Otherwise, if closing the last incognito tab, select the current normal tab.
+            // * Otherwise, select nothing.
+
+            Object nextTab = null;
+            if (parentTab != null) {
+                nextTab = parentTab;
+            } else if (adjacentTab != null) {
+                nextTab = adjacentTab;
+            } else if (isIncognito()) {
+                if (mTabModelUtilsClass != null) {
+                    nextTab = XposedHelpers.callStaticMethod(mTabModelUtilsClass, "getCurrentTab", getDocumentModel(false));
+                }
+            }
+            return nextTab;
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return null;
     }
 
     public int getTabCount() {

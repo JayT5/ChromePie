@@ -147,7 +147,11 @@ class Item_close_tab extends PieItem {
 
     @Override
     public void onClick(Controller control) {
-        control.closeCurrentTab();
+        if (control.isDocumentMode()) {
+            control.closeDocumentTab();
+        } else {
+            control.closeCurrentTab();
+        }
     }
 }
 
@@ -464,7 +468,7 @@ class Item_next_tab extends PieItem {
 
     @Override
     public void onClick(Controller control) {
-        Integer index = control.getCurrentTabIndex();
+        int index = control.getTabIndex(control.getCurrentTab());
         if (index != -1) {
             control.showTabByIndex(index + 1);
         }
@@ -483,7 +487,7 @@ class Item_previous_tab extends PieItem {
 
     @Override
     public void onClick(Controller control) {
-        Integer index = control.getCurrentTabIndex();
+        int index = control.getTabIndex(control.getCurrentTab());
         if (index != -1) {
             control.showTabByIndex(index - 1);
         }
