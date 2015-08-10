@@ -292,13 +292,13 @@ public class Controller {
         Object model = getTabModel();
         Object tabToClose = getCurrentTab();
         try {
-            callMethod(model, "closeTab", tabToClose);
+            callMethod(model, "closeTab", tabToClose, true, false, true);
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            callMethod(model, "closeTab", tabToClose, true, false, true);
+            callMethod(model, "closeTab", tabToClose);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
