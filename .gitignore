@@ -1,5 +1,10 @@
-/bin
-/ext
-/libs
-/gen
-.settings/org.eclipse.jdt.core.prefs
+*.iml
+*.txt
+
+.gradle
+.idea
+build/
+gradle/
+libs/
+
+local.properties
