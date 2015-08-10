@@ -44,7 +44,6 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 
 /**
  * Controller for Quick Controls pie menu
@@ -275,7 +274,7 @@ public class PieControl implements PieMenu.PieController {
     }
 
     private void initColorHooks(ClassLoader classLoader) {
-        final Class<?> contentsObserverClass;
+        final Object webContentsObserver;
         final Object toolbarModel;
         final Object tabModelSelector;
         if (mController.getThemeColor() == 0) {
@@ -283,26 +282,23 @@ public class PieControl implements PieMenu.PieController {
         }
 
         try {
-            contentsObserverClass = XposedHelpers.findClass("org.chromium.chrome.browser.Tab$TabWebContentsObserver", classLoader);
+            webContentsObserver = XposedHelpers.getObjectField(mController.getCurrentTab(), "mWebContentsObserver");
             tabModelSelector = XposedHelpers.getObjectField(mChromeActivity, "mTabModelSelectorImpl");
             toolbarModel = XposedHelpers.getObjectField(mController.getToolbarManager(), "mToolbarModel");
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-            return;
         } catch (NoSuchFieldError nsfe) {
             XposedBridge.log(TAG + nsfe);
             return;
         }
 
         try {
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(contentsObserverClass, "didChangeThemeColor", int.class), new XC_MethodHook() {
+            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(webContentsObserver.getClass(), "didChangeThemeColor", int.class), new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
                     mController.applyThemeColors();
                 }
             });
 
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(contentsObserverClass, "didNavigateMainFrame", String.class, String.class,
+            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(webContentsObserver.getClass(), "didNavigateMainFrame", String.class, String.class,
                     boolean.class, boolean.class, int.class), new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(final MethodHookParam param) throws Throwable {

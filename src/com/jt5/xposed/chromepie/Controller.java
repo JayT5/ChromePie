@@ -778,15 +778,7 @@ public class Controller {
     }
 
     Boolean shouldUseThemeColor(int themeColor) {
-        boolean notDefault = !isDefaultPrimaryColor(themeColor);
-        if (isDocumentMode() && !isIncognito()) {
-            try {
-                return !(Boolean) callMethod(mActivity, "shouldUseDefaultStatusBarColor") && notDefault;
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
-            }
-        }
-        return notDefault;
+        return !isDefaultPrimaryColor(themeColor) && !isIncognito();
     }
 
     private int getDefaultPrimaryColor() {
@@ -800,23 +792,31 @@ public class Controller {
     }
 
     private boolean isDefaultPrimaryColor(int color) {
-        return color == getDefaultPrimaryColor() || getDefaultPrimaryColor() == 0;
+        return color == getDefaultPrimaryColor() || getDefaultPrimaryColor() == 0 || color == 0;
     }
 
     Integer getThemeColor() {
+        Object tab = getCurrentTab();
+        if (tab == null || isIncognito()) {
+            return getDefaultPrimaryColor();
+        }
         try {
-            if (isDocumentMode()) {
-                return (Integer) callMethod(mActivity, "getThemeColor");
-            } else {
-                Object tab = getCurrentTab();
-                if (tab == null || isIncognito()) {
-                    return getDefaultPrimaryColor();
-                }
-                Object webContents = callMethod(tab, "getWebContents");
-                return (Integer) callMethod(webContents, "getThemeColor", getDefaultPrimaryColor());
-            }
+            Object webContents = callMethod(tab, "getWebContents");
+            return (Integer) callMethod(webContents, "getThemeColor", getDefaultPrimaryColor());
         } catch (NoSuchMethodError nsme) {
 
+        }
+        try {
+            return (Integer) callMethod(tab, "getThemeColor");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        if (isDocumentMode()) {
+            try {
+                return (Integer) callMethod(mActivity, "getThemeColor");
+            } catch (NoSuchMethodError nsme) {
+
+            }
         }
         return 0;
     }
