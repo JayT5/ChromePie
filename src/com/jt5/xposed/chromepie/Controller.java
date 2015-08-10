@@ -604,12 +604,25 @@ public class Controller {
         Class<?> bookmarksBridge = null;
         try {
             bookmarksBridge = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarksBridge", mClassLoader);
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
+            return true;
+        }
+        try {
+            return (Boolean) callMethod(callMethod(getToolbarManager(), "getBookmarksBridge"), "isEditBookmarksEnabled");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
             Object profile = callMethod(callMethod(getCurrentTab(), "getProfile"), "getOriginalProfile");
             return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled", profile);
         } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
             return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled");
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
         return true;
     }
