@@ -536,3 +536,14 @@ class Item_voice_search extends PieItem {
         }
     }
 }
+
+class Item_recent_apps extends PieItem {
+    public Item_recent_apps(View view, String id, int action) {
+        super(view, id);
+    }
+
+    @Override
+    public void onClick(Controller control) {
+        control.toggleRecentApps();
+    }
+}

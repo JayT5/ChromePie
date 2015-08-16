@@ -93,5 +93,6 @@
     <string name="scroll_to_bottom">Scroll to bottom</string>
     <string name="direct_share">Direct share</string>
     <string name="voice_search">Voice search</string>
+    <string name="recent_apps">Recent apps</string>
 
 </resources>

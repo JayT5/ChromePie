@@ -34,6 +34,7 @@
         <item>@string/previous_tab</item>
         <item>@string/reader_mode</item>
         <item>@string/voice_search</item>
+        <item>@string/recent_apps</item>
     </string-array>
 
     <string-array name="pie_item_values" translatable="false">
@@ -69,6 +70,7 @@
         <item>previous_tab</item>
         <item>reader_mode</item>
         <item>voice_search</item>
+        <item>recent_apps</item>
     </string-array>
 
     <array name="pie_item_dark_drawables" translatable="false">
@@ -104,6 +106,7 @@
         <item>@drawable/ic_prev_tab_white</item>
         <item>@drawable/ic_reader_mode_white</item>
         <item>@drawable/ic_voice_search_white</item>
+        <item>@drawable/ic_recent_apps</item>
     </array>
 
     <string-array name="pie_item_actions" translatable="false">
@@ -138,6 +141,7 @@
         <item></item>
         <item></item>
         <item>reader_mode_id</item>
+        <item></item>
         <item></item>
     </string-array>
 
