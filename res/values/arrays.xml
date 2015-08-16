@@ -35,7 +35,7 @@
         <item>@string/reader_mode</item>
         <item>@string/voice_search</item>
     </string-array>
-    
+
     <string-array name="pie_item_values" translatable="false">
         <item>none</item>
         <item>back</item>
@@ -105,7 +105,7 @@
         <item>@drawable/ic_reader_mode_white</item>
         <item>@drawable/ic_voice_search_white</item>
     </array>
-    
+
     <string-array name="pie_item_actions" translatable="false">
         <item></item>
         <item>back_menu_id</item>
@@ -137,7 +137,7 @@
         <item></item>
         <item></item>
         <item></item>
-        <item></item>
+        <item>reader_mode_id</item>
         <item></item>
     </string-array>
 
@@ -146,7 +146,7 @@
         <item>@string/ts_right</item>
         <item>@string/ts_bottom</item>
     </string-array>
-    
+
     <string-array name="trigger_side_values" translatable="false">
         <item>0</item>
         <item>1</item>

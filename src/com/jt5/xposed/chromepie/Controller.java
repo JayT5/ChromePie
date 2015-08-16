@@ -428,8 +428,7 @@ public class Controller {
         }
         try {
             Boolean isNativePage = (Boolean) callMethod(tab, "isNativePage");
-            Object webContents = callMethod(tab, "getWebContents");
-            return !isNativePage && (webContents != null);
+            return !isNativePage && getWebContents() != null;
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return true;
@@ -639,13 +638,15 @@ public class Controller {
         return true;
     }
 
-    Integer getReaderModeStatus() {
+    void distillCurrentPage() {
         try {
-            return (Integer) callMethod(callMethod(getCurrentTab(), "getReaderModeManager"), "getReaderModeStatus");
+            Class<?> distillerTabUtils = XposedHelpers.findClass("org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils", mClassLoader);
+            XposedHelpers.callStaticMethod(distillerTabUtils, "distillCurrentPageAndView", getWebContents());
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
         } catch (NoSuchMethodError nsme) {
-
+            XposedBridge.log(TAG + nsme);
         }
-        return 1;
     }
 
     Boolean isDistilledPage() {
@@ -656,6 +657,16 @@ public class Controller {
             XposedBridge.log(TAG + nsme);
         }
         return false;
+    }
+
+    Boolean nativeIsUrlDistillable() {
+        if (mDomDistillerUrlUtilsClass == null) return true;
+        try {
+            return (Boolean) XposedHelpers.callStaticMethod(mDomDistillerUrlUtilsClass, "nativeIsUrlDistillable", getUrl());
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        return true;
     }
 
     String getOriginalUrl() {
@@ -691,6 +702,15 @@ public class Controller {
             XposedBridge.log(TAG + nsme);
         }
         return null;
+    }
+
+    Object getWebContents() {
+        try {
+            return callMethod(getCurrentTab(), "getWebContents");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return new Object();
     }
 
     public Integer getTopControlsHeight() {
@@ -814,8 +834,7 @@ public class Controller {
             return getDefaultPrimaryColor();
         }
         try {
-            Object webContents = callMethod(tab, "getWebContents");
-            return (Integer) callMethod(webContents, "getThemeColor", getDefaultPrimaryColor());
+            return (Integer) callMethod(getWebContents(), "getThemeColor", getDefaultPrimaryColor());
         } catch (NoSuchMethodError nsme) {
 
         }

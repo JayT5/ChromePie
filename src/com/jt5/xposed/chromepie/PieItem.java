@@ -496,12 +496,12 @@ class Item_previous_tab extends PieItem {
 
 class Item_reader_mode extends PieItem {
     public Item_reader_mode(View view, String id, int action) {
-        super(view, id);
+        super(view, id, action);
     }
 
     @Override
     protected void onOpen(Controller control, XModuleResources mXResources) {
-        setEnabled(control.getReaderModeStatus() != 1);
+        setEnabled((control.getWebContents() != null && control.nativeIsUrlDistillable()) || control.isDistilledPage());
     }
 
     @Override
@@ -510,8 +510,9 @@ class Item_reader_mode extends PieItem {
             String originalUrl = control.getOriginalUrl();
             control.loadUrl(originalUrl);
         } else {
-            int id = control.getResIdentifier("reader_mode_id");
-            control.itemSelected(id);
+            if (!control.itemSelected(getMenuActionId())) {
+                control.distillCurrentPage();
+            }
         }
     }
 }
