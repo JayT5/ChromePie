@@ -922,7 +922,12 @@ public class Controller {
             Object helper = XposedHelpers.getObjectField(mActivity, "mToolbarHelper");
             return XposedHelpers.getObjectField(helper, "mToolbarManager");
         } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
+
+        }
+        try {
+            Object helper = XposedHelpers.getObjectField(mActivity, "mDocumentToolbarHelper");
+            return XposedHelpers.getObjectField(helper, "mToolbarManager");
+        } catch (NoSuchFieldError nsfe) {
             return new Object();
         }
     }
