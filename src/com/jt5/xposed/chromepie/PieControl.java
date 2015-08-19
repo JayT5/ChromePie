@@ -41,6 +41,7 @@ import com.jt5.xposed.chromepie.view.BaseItem;
 import com.jt5.xposed.chromepie.view.PieMenu;
 
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XC_MethodHook.Unhook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
@@ -50,7 +51,7 @@ import de.robv.android.xposed.XposedHelpers;
  */
 public class PieControl implements PieMenu.PieController {
 
-    private Activity mChromeActivity;
+    private final Activity mChromeActivity;
     private final XModuleResources mXResources;
     private PieMenu mPie;
     private final Controller mController;
@@ -61,6 +62,7 @@ public class PieControl implements PieMenu.PieController {
     private static List<String> mNoTabActions;
     private static List<Integer> mTriggerPositions;
     private int mThemeColor = 0;
+    private Unhook mFinishPageLoadHook;
 
     PieControl(Activity chromeActivity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mChromeActivity = chromeActivity;
@@ -86,21 +88,19 @@ public class PieControl implements PieMenu.PieController {
         container.addView(mPie);
     }
 
-    protected void reattachToContainer(ViewGroup container) {
-        removeFromParent();
-        container.addView(mPie);
-    }
-
     private void removeFromParent() {
         if (mPie.getParent() != null) {
             ((ViewGroup) mPie.getParent()).removeView(mPie);
         }
     }
 
-    void setChromeActivity(Activity activity) {
-        mController.setChromeActivity(activity);
-        mChromeActivity = activity;
-        applyFullscreen();
+    void destroy() {
+        removeFromParent();
+        mPie = null;
+        if (mFinishPageLoadHook != null) {
+            mFinishPageLoadHook.unhook();
+            mFinishPageLoadHook = null;
+        }
     }
 
     private void applyFullscreen() {
@@ -239,7 +239,9 @@ public class PieControl implements PieMenu.PieController {
             XposedHelpers.findAndHookMethod(mChromeActivity.getClass(), "initializeUI", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                    initHooks(classLoader);
+                    if (mFinishPageLoadHook == null && mController.getCurrentTab() != null) {
+                        initHooks(classLoader);
+                    }
                 }
             });
         } catch (NoSuchMethodError nsme) {
@@ -262,7 +264,7 @@ public class PieControl implements PieMenu.PieController {
         };
 
         try {
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(
+            mFinishPageLoadHook = XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(
                     mController.getCurrentTab().getClass(), "didFinishPageLoad"), pageLoadHook);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);

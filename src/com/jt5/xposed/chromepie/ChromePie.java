@@ -28,8 +28,6 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     private String MODULE_PATH;
     private XModuleResources mModRes;
     private XSharedPreferences mXPreferences;
-    private Activity mChromeActivity;
-    private PieControl mPieControl;
 
     private static final String[] CHROME_ACTIVITY_CLASSES = {
         "org.chromium.chrome.browser.ChromeActivity",
@@ -103,14 +101,26 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             XposedHelpers.findAndHookMethod(activityClass, "onStart", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    if (!param.thisObject.equals(mChromeActivity)) {
-                        mChromeActivity = (Activity) param.thisObject;
-                        int containerId = mChromeActivity.getResources().getIdentifier("content_container", "id", CHROME_PACKAGE);
-                        ViewGroup container = (ViewGroup) mChromeActivity.findViewById(containerId);
+                    Activity activity = (Activity) param.thisObject;
+                    if (XposedHelpers.getAdditionalInstanceField(activity, "pie_control") == null) {
+                        int containerId = activity.getResources().getIdentifier("content_container", "id", CHROME_PACKAGE);
+                        ViewGroup container = (ViewGroup) activity.findViewById(containerId);
                         if (container == null) {
-                            container = (ViewGroup) mChromeActivity.findViewById(android.R.id.content);
+                            container = (ViewGroup) activity.findViewById(android.R.id.content);
                         }
-                        createPie(container, classLoader);
+                        initPieControl(activity, container, classLoader);
+                    }
+                }
+            });
+
+            XposedHelpers.findAndHookMethod(activityClass, "onDestroy", new XC_MethodHook() {
+                @Override
+                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                    Activity activity = (Activity) param.thisObject;
+                    PieControl control = (PieControl) XposedHelpers.getAdditionalInstanceField(activity, "pie_control");
+                    if (control != null) {
+                        control.destroy();
+                        XposedHelpers.setAdditionalInstanceField(activity, "pie_control", null);
                     }
                 }
             });
@@ -120,14 +130,10 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         }
     }
 
-    private void createPie(ViewGroup container, ClassLoader classLoader) {
-        if (mPieControl == null) {
-            mPieControl = new PieControl(mChromeActivity, mModRes, mXPreferences, classLoader);
-            mPieControl.attachToContainer(container);
-        } else {
-            mPieControl.reattachToContainer(container);
-            mPieControl.setChromeActivity(mChromeActivity);
-        }
+    private void initPieControl(Activity activity, ViewGroup container, ClassLoader classLoader) {
+        PieControl control = new PieControl(activity, mModRes, mXPreferences, classLoader);
+        control.attachToContainer(container);
+        XposedHelpers.setAdditionalInstanceField(activity, "pie_control", control);
     }
 
 }

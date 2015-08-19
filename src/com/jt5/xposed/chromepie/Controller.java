@@ -22,7 +22,7 @@ public class Controller {
 
     private static final String TAG = "ChromePie:Controller: ";
     private final ClassLoader mClassLoader;
-    private Activity mActivity;
+    private final Activity mActivity;
     private Unhook mFullscreenWindowFocusHook;
     private int mBrandColor;
     private final Boolean mIsDocumentMode;
@@ -105,10 +105,6 @@ public class Controller {
 
     Activity getChromeActivity() {
         return mActivity;
-    }
-
-    void setChromeActivity(Activity activity) {
-        mActivity = activity;
     }
 
     int getResIdentifier(String id) {
