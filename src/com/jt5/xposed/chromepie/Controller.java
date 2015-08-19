@@ -900,11 +900,20 @@ public class Controller {
         Class<?> apiCompatUtils = null;
         try {
             apiCompatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
-            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity, statusColor);
-        } catch (NoSuchMethodError nsme) {
-            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity.getWindow(), statusColor);
         } catch (ClassNotFoundError cnfe) {
             XposedBridge.log(TAG + cnfe);
+            return;
+        }
+        try {
+            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity.getWindow(), statusColor);
+            return;
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity, statusColor);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
     }
 
@@ -932,7 +941,12 @@ public class Controller {
         try {
             return XposedHelpers.getObjectField(mActivity, "mToolbar");
         } catch (NoSuchFieldError nsfe) {
+
+        }
+        try {
             return XposedHelpers.getObjectField(getToolbarManager(), "mToolbar");
+        } catch (NoSuchFieldError nsfe) {
+            return new Object();
         }
     }
 
