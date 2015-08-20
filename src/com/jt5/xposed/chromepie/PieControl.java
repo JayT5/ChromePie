@@ -193,7 +193,7 @@ public class PieControl implements PieMenu.PieController {
 
     private BaseItem initItem(List<String> values, TypedArray drawables, String[] actions, Map<String, ?> keyMap, String key) {
         String value = (String) keyMap.get(key);
-        if (!value.equals("none") && value != null) {
+        if (value != null && !value.equals("none")) {
             int index = values.indexOf(value);
             String action = actions[index];
             return makeItem(value, drawables.getResourceId(index, 0), mController.getResIdentifier(action));
