@@ -79,7 +79,7 @@ public class PieControl implements PieMenu.PieController {
         applyFullscreen();
     }
 
-    protected void attachToContainer(ViewGroup container) {
+    void attachToContainer(ViewGroup container) {
         if (mPie == null) {
             mPie = new PieMenu(mChromeActivity, mController, mXResources, mXPreferences);
             LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);

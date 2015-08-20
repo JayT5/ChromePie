@@ -61,9 +61,9 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         final ClassLoader classLoader = lpparam.classLoader;
         Class<?> chromeActivityClass;
 
-        for (int i = 0; i < CHROME_ACTIVITY_CLASSES.length; i++) {
+        for (String clazz : CHROME_ACTIVITY_CLASSES) {
             try {
-                chromeActivityClass = XposedHelpers.findClass(CHROME_ACTIVITY_CLASSES[i], classLoader);
+                chromeActivityClass = XposedHelpers.findClass(clazz, classLoader);
             } catch (ClassNotFoundError cnfe) {
                 continue;
             }

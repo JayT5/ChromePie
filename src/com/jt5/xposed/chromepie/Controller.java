@@ -92,9 +92,9 @@ public class Controller {
     }
 
     private Class<?> getClass(String[] classes) {
-        for (int i = 0; i < classes.length; i++) {
+        for (String clazz : classes) {
             try {
-                return XposedHelpers.findClass(classes[i], mClassLoader);
+                return XposedHelpers.findClass(clazz, mClassLoader);
             } catch (ClassNotFoundError cnfe) {
 
             }
@@ -276,10 +276,8 @@ public class Controller {
         try {
             Class<?> contentVideoView = XposedHelpers.findClass("org.chromium.content.browser.ContentVideoView", mClassLoader);
             return XposedHelpers.callStaticMethod(contentVideoView, "getContentVideoView");
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        } catch (ClassNotFoundError | NoSuchMethodError e) {
+            XposedBridge.log(TAG + e);
         }
         return null;
     }
@@ -626,10 +624,8 @@ public class Controller {
         try {
             Class<?> bookmarkUtils = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarkUtils", mClassLoader);
             return (Boolean) XposedHelpers.callStaticMethod(bookmarkUtils, "isAddToHomeIntentSupported", mActivity);
-        } catch (ClassNotFoundError cnfe) {
-
-        } catch (NoSuchMethodError nsme) {
-
+        } catch (ClassNotFoundError | NoSuchMethodError e) {
+            XposedBridge.log(TAG + e);
         }
         return true;
     }
@@ -638,10 +634,8 @@ public class Controller {
         try {
             Class<?> distillerTabUtils = XposedHelpers.findClass("org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils", mClassLoader);
             XposedHelpers.callStaticMethod(distillerTabUtils, "distillCurrentPageAndView", getWebContents());
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        } catch (ClassNotFoundError | NoSuchMethodError e) {
+            XposedBridge.log(TAG + e);
         }
     }
 
@@ -679,10 +673,8 @@ public class Controller {
         try {
             Class<?> shareHelper = XposedHelpers.findClass("org.chromium.chrome.browser.share.ShareHelper", mClassLoader);
             return (ComponentName) XposedHelpers.callStaticMethod(shareHelper, "getLastShareComponentName", mActivity);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        } catch (ClassNotFoundError | NoSuchMethodError e) {
+            XposedBridge.log(TAG + e);
         }
         return null;
     }
@@ -745,10 +737,8 @@ public class Controller {
         try {
             Class<?> featureUtilsInternal = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", mClassLoader);
             return (Boolean) XposedHelpers.callStaticMethod(featureUtilsInternal, "isDocumentMode", mActivity);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        } catch (ClassNotFoundError cnfe) {
-
+        } catch (ClassNotFoundError | NoSuchMethodError e) {
+            XposedBridge.log(TAG + e);
         }
         return false;
     }
@@ -887,10 +877,8 @@ public class Controller {
         try {
             Object toolbarDelegate = XposedHelpers.getObjectField(toolbar, "mToolbarDelegate");
             callMethod(toolbarDelegate, "updateVisualsForToolbarState", isInOverview());
-        } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        } catch (NoSuchFieldError | NoSuchMethodError e) {
+            XposedBridge.log(TAG + e);
         }
 
     }

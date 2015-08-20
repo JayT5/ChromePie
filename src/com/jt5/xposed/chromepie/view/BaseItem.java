@@ -109,7 +109,7 @@ public class BaseItem {
         return mId;
     }
 
-    public int getMenuActionId() {
+    protected int getMenuActionId() {
         return mMenuActionId;
     }
 

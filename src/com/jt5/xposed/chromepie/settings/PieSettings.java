@@ -61,11 +61,8 @@ public class PieSettings extends PreferenceActivity {
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-      if (SubPreferenceFragment.class.getName().equals(fragmentName) ||
-              MenuPreferenceFragment.class.getName().equals(fragmentName) ) {
-          return true;
-      }
-      return false;
+        return SubPreferenceFragment.class.getName().equals(fragmentName) ||
+                MenuPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     @Override
@@ -122,7 +119,7 @@ public class PieSettings extends PreferenceActivity {
                 } else {
                     Intent chooserIntent = Intent.createChooser(chromeApps.remove(chromeApps.size() - 1),
                             getResources().getString(R.string.chrome_app_chooser));
-                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, chromeApps.toArray(new Parcelable[]{}));
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, chromeApps.toArray(new Parcelable[chromeApps.size()]));
                     startActivity(chooserIntent);
                 }
             } else {
