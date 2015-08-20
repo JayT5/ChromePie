@@ -73,7 +73,9 @@ public class PieControl implements PieMenu.PieController {
         mItemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit", "go_to_home", "show_tabs");
         mTriggerPositions = initTriggerPositions();
-        initializeUIHook(classLoader);
+        if (!mController.isDocumentMode() && mXPreferences.getBoolean("toolbar_apply_theme_color", true)) {
+            initializeUIHook();
+        }
         applyFullscreen();
     }
 
@@ -124,8 +126,12 @@ public class PieControl implements PieMenu.PieController {
 
     @Override
     public boolean onOpen() {
-        if (mController.getCurrentTab() == null && mController.isDocumentMode()) {
-            return false;
+        if (mController.getCurrentTab() == null) {
+            if (mController.isDocumentMode()) {
+                return false;
+            }
+        } else if (mFinishPageLoadHook == null) {
+            hookFinishPageLoad();
         }
 
         if ((mController.isDocumentMode() || mXPreferences.getBoolean("toolbar_apply_theme_color", false))
@@ -234,14 +240,12 @@ public class PieControl implements PieMenu.PieController {
         return view;
     }
 
-    private void initializeUIHook(final ClassLoader classLoader) {
+    private void initializeUIHook() {
         try {
             XposedHelpers.findAndHookMethod(mChromeActivity.getClass(), "initializeUI", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                    if (mFinishPageLoadHook == null && mController.getCurrentTab() != null) {
-                        initHooks(classLoader);
-                    }
+                    initColorHooks();
                 }
             });
         } catch (NoSuchMethodError nsme) {
@@ -249,7 +253,7 @@ public class PieControl implements PieMenu.PieController {
         }
     }
 
-    private void initHooks(ClassLoader classLoader) {
+    private void hookFinishPageLoad() {
         XC_MethodHook pageLoadHook = new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
@@ -269,13 +273,9 @@ public class PieControl implements PieMenu.PieController {
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
-
-        if (!mController.isDocumentMode() && mXPreferences.getBoolean("toolbar_apply_theme_color", true)) {
-            initColorHooks(classLoader);
-        }
     }
 
-    private void initColorHooks(ClassLoader classLoader) {
+    private void initColorHooks() {
         final Object webContentsObserver;
         final Object toolbarModel;
         final Object tabModelSelector;
