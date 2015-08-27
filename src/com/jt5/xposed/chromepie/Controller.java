@@ -378,6 +378,14 @@ public class Controller {
         }
     }
 
+    void toggleOverview() {
+        try {
+            callMethod(mActivity, "toggleOverview");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+    }
+
     public Boolean isInOverview() {
         if (isTablet() || isDocumentMode()) {
             return getTabCount() == 0;

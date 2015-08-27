@@ -162,8 +162,11 @@ class Item_close_all extends PieItem {
 
     @Override
     public void onClick(Controller control) {
+        if (!control.isIncognito()) {
+            control.toggleOverview();
+        }
         try {
-            callMethod(control.getTabModel(), "closeAllTabs", true, true);
+            callMethod(control.getTabModel(), "closeAllTabs");
         } catch (NoSuchMethodError nsme) {
             int id = getMenuActionId();
             if (control.isIncognito()) {
@@ -236,11 +239,7 @@ class Item_show_tabs extends PieItem {
         if (control.isDocumentMode()) {
             control.toggleRecentApps();
         } else {
-            try {
-                callMethod(control.getChromeActivity(), "toggleOverview");
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
-            }
+            control.toggleOverview();
         }
     }
 
