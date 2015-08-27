@@ -36,6 +36,7 @@ public class Controller {
     private final Class<?> mBrandColorUtilsClass;
     private final Class<?> mServiceBridgeClass;
     private final Class<?> mChromeApplicationClass;
+    private final Class<?> mShortcutHelper;
 
     private static final String[] CLASS_TAB_MODEL_UTILS = {
         "org.chromium.chrome.browser.tabmodel.TabModelUtils",
@@ -73,6 +74,10 @@ public class Controller {
         "org.chromium.chrome.browser.ChromeMobileApplication",
         "com.google.android.apps.chrome.ChromeMobileApplication"
     };
+    private static final String[] CLASS_SHORTCUT_HELPER = {
+        "org.chromium.chrome.browser.BookmarkUtils",
+        "org.chromium.chrome.browser.ShortcutHelper"
+    };
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
@@ -87,6 +92,7 @@ public class Controller {
         mBrandColorUtilsClass = getClass(CLASS_BRAND_COLOR_UTILS);
         mServiceBridgeClass = getClass(CLASS_SERVICE_BRIDGE);
         mChromeApplicationClass = getClass(CLASS_CHROME_APPLICATION);
+        mShortcutHelper = getClass(CLASS_SHORTCUT_HELPER);
 
         mIsDocumentMode = isDocumentMode();
     }
@@ -621,11 +627,11 @@ public class Controller {
     }
 
     Boolean addToHomeSupported() {
+        if (mShortcutHelper == null) return true;
         try {
-            Class<?> bookmarkUtils = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarkUtils", mClassLoader);
-            return (Boolean) XposedHelpers.callStaticMethod(bookmarkUtils, "isAddToHomeIntentSupported", mActivity);
-        } catch (ClassNotFoundError | NoSuchMethodError e) {
-            XposedBridge.log(TAG + e);
+            return (Boolean) XposedHelpers.callStaticMethod(mShortcutHelper, "isAddToHomeIntentSupported", mActivity);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
         return true;
     }
