@@ -1,6 +1,5 @@
 package com.jt5.xposed.chromepie;
 
-import static de.robv.android.xposed.XposedHelpers.callMethod;
 import android.content.ComponentName;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -58,13 +57,13 @@ class Item_back extends PieItem {
     public void onClick(Controller control) {
         if (!control.itemSelected(getMenuActionId())) {
             try {
-                callMethod(control.getChromeActivity(), "goBack");
+                Utils.callMethod(control.getChromeActivity(), "goBack");
                 return;
             } catch (NoSuchMethodError nsme) {
 
             }
             try {
-                callMethod(control.getCurrentTab(), "goBack");
+                Utils.callMethod(control.getCurrentTab(), "goBack");
             } catch (NoSuchMethodError nsme) {
                 XposedBridge.log(TAG + nsme);
             }
@@ -103,9 +102,9 @@ class Item_refresh extends PieItem {
             Object tab = control.getCurrentTab();
             try {
                 if (control.isLoading()) {
-                    callMethod(tab, "stopLoading");
+                    Utils.callMethod(tab, "stopLoading");
                 } else {
-                    callMethod(tab, "reload");
+                    Utils.callMethod(tab, "reload");
                 }
             } catch (NoSuchMethodError nsme) {
                 XposedBridge.log(TAG + nsme);
@@ -166,7 +165,7 @@ class Item_close_all extends PieItem {
             control.toggleOverview();
         }
         try {
-            callMethod(control.getTabModel(), "closeAllTabs");
+            Utils.callMethod(control.getTabModel(), "closeAllTabs");
         } catch (NoSuchMethodError nsme) {
             int id = getMenuActionId();
             if (control.isIncognito()) {
@@ -285,7 +284,7 @@ class Item_edit_url extends PieItem {
     public void onClick(Controller control) {
         try {
             if (!control.itemSelected(getMenuActionId())) {
-                callMethod(control.getLocationBar(), "requestUrlFocus");
+                Utils.callMethod(control.getLocationBar(), "requestUrlFocus");
             }
             EditText urlBar = control.getUrlBar();
             if (urlBar != null) {
@@ -348,8 +347,8 @@ class Item_scroll_to_top extends PieItem {
     public void onClick(Controller control) {
         Object contentViewCore = control.getContentViewCore();
         try {
-            Integer scrollX = (Integer) callMethod(contentViewCore, "computeHorizontalScrollOffset");
-            callMethod(contentViewCore, "scrollTo", scrollX, -control.getTopControlsDimen());
+            Integer scrollX = (Integer) Utils.callMethod(contentViewCore, "computeHorizontalScrollOffset");
+            Utils.callMethod(contentViewCore, "scrollTo", scrollX, -control.getTopControlsDimen());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -370,9 +369,9 @@ class Item_scroll_to_bottom extends PieItem {
     public void onClick(Controller control) {
         Object contentViewCore = control.getContentViewCore();
         try {
-            Integer scrollRange = (Integer) callMethod(contentViewCore, "computeVerticalScrollRange");
-            Integer scrollX = (Integer) callMethod(contentViewCore, "computeHorizontalScrollOffset");
-            callMethod(contentViewCore, "scrollTo", scrollX, scrollRange);
+            Integer scrollRange = (Integer) Utils.callMethod(contentViewCore, "computeVerticalScrollRange");
+            Integer scrollX = (Integer) Utils.callMethod(contentViewCore, "computeHorizontalScrollOffset");
+            Utils.callMethod(contentViewCore, "scrollTo", scrollX, scrollRange);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -529,7 +528,7 @@ class Item_voice_search extends PieItem {
     @Override
     public void onClick(Controller control) {
         try {
-            callMethod(control.getLocationBar(), "startVoiceRecognition");
+            Utils.callMethod(control.getLocationBar(), "startVoiceRecognition");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }

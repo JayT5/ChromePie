@@ -248,8 +248,8 @@ public class PieControl implements PieMenu.PieController {
                     initColorHooks();
                 }
             });
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        } catch (Throwable t) {
+            XposedBridge.log(TAG + t);
         }
     }
 
@@ -270,8 +270,8 @@ public class PieControl implements PieMenu.PieController {
         try {
             mFinishPageLoadHook = XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(
                     mController.getCurrentTab().getClass(), "didFinishPageLoad"), pageLoadHook);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        } catch (Throwable t) {
+            XposedBridge.log(TAG + t);
         }
     }
 
@@ -332,8 +332,8 @@ public class PieControl implements PieMenu.PieController {
                     param.setResult(mController.shouldUseThemeColor(mController.getThemeColor()));
                 }
             });
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        } catch (Throwable t) {
+            XposedBridge.log(TAG + t);
         }
     }
 

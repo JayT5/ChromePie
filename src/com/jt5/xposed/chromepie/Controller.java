@@ -1,6 +1,5 @@
 package com.jt5.xposed.chromepie;
 
-import static de.robv.android.xposed.XposedHelpers.callMethod;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
@@ -27,86 +26,11 @@ public class Controller {
     private int mBrandColor;
     private final Boolean mIsDocumentMode;
 
-    private final Class<?> mTabModelUtilsClass;
-    private final Class<?> mLoadUrlParamsClass;
-    private final Class<?> mUrlConstantsClass;
-    private final Class<?> mDeviceUtilsClass;
-    private final Class<?> mFeatureUtilsClass;
-    private final Class<?> mDomDistillerUrlUtilsClass;
-    private final Class<?> mBrandColorUtilsClass;
-    private final Class<?> mServiceBridgeClass;
-    private final Class<?> mChromeApplicationClass;
-    private final Class<?> mShortcutHelper;
-
-    private static final String[] CLASS_TAB_MODEL_UTILS = {
-        "org.chromium.chrome.browser.tabmodel.TabModelUtils",
-        "com.google.android.apps.chrome.tabmodel.TabModelUtils"
-    };
-    private static final String[] CLASS_LOAD_URL_PARAMS = {
-        "org.chromium.content_public.browser.LoadUrlParams",
-        "org.chromium.content.browser.LoadUrlParams"
-    };
-    private static final String[] CLASS_URL_CONSTANTS = {
-        "org.chromium.chrome.browser.UrlConstants",
-        "com.google.android.apps.chrome.UrlConstants"
-    };
-    private static final String[] CLASS_DEVICE_UTILS = {
-        "org.chromium.ui.base.DeviceFormFactor",
-        "org.chromium.content.browser.DeviceUtils"
-    };
-    private static final String[] CLASS_FEATURE_UTILS = {
-        "org.chromium.chrome.browser.util.FeatureUtilities",
-        "com.google.android.apps.chrome.utilities.FeatureUtilities"
-    };
-    private static final String[] CLASS_DOM_DISTILLER_UTILS = {
-        "org.chromium.components.dom_distiller.core.DomDistillerUrlUtils"
-    };
-    private static final String[] CLASS_BRAND_COLOR_UTILS = {
-        "org.chromium.chrome.browser.document.BrandColorUtils",
-        "com.google.android.apps.chrome.utilities.DocumentUtilities"
-    };
-    private static final String[] CLASS_SERVICE_BRIDGE = {
-        "org.chromium.chrome.browser.preferences.PrefServiceBridge",
-        "com.google.android.apps.chrome.preferences.ChromeNativePreferences"
-    };
-    private static final String[] CLASS_CHROME_APPLICATION = {
-        "org.chromium.chrome.browser.ChromeApplication",
-        "org.chromium.chrome.browser.ChromeMobileApplication",
-        "com.google.android.apps.chrome.ChromeMobileApplication"
-    };
-    private static final String[] CLASS_SHORTCUT_HELPER = {
-        "org.chromium.chrome.browser.BookmarkUtils",
-        "org.chromium.chrome.browser.ShortcutHelper"
-    };
-
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
         mActivity = chromeActivity;
-
-        mTabModelUtilsClass = getClass(CLASS_TAB_MODEL_UTILS);
-        mLoadUrlParamsClass = getClass(CLASS_LOAD_URL_PARAMS);
-        mUrlConstantsClass = getClass(CLASS_URL_CONSTANTS);
-        mDeviceUtilsClass = getClass(CLASS_DEVICE_UTILS);
-        mFeatureUtilsClass = getClass(CLASS_FEATURE_UTILS);
-        mDomDistillerUrlUtilsClass = getClass(CLASS_DOM_DISTILLER_UTILS);
-        mBrandColorUtilsClass = getClass(CLASS_BRAND_COLOR_UTILS);
-        mServiceBridgeClass = getClass(CLASS_SERVICE_BRIDGE);
-        mChromeApplicationClass = getClass(CLASS_CHROME_APPLICATION);
-        mShortcutHelper = getClass(CLASS_SHORTCUT_HELPER);
-
+        Utils.initialise(mClassLoader);
         mIsDocumentMode = isDocumentMode();
-    }
-
-    private Class<?> getClass(String[] classes) {
-        for (String clazz : classes) {
-            try {
-                return XposedHelpers.findClass(clazz, mClassLoader);
-            } catch (ClassNotFoundError cnfe) {
-
-            }
-        }
-        XposedBridge.log(TAG + "ClassNotFoundError: " + classes[0]);
-        return null;
     }
 
     Activity getChromeActivity() {
@@ -138,17 +62,22 @@ public class Controller {
 
     Object getCurrentTab() {
         try {
-            return callMethod(mActivity, "getActivityTab");
+            return Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "getCurrentTab", getTabModel());
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            return callMethod(getTabModel(), "getCurrentTab");
+            return Utils.callMethod(mActivity, "getActivityTab");
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            return callMethod(mActivity, "getCurrentTab");
+            return Utils.callMethod(getTabModel(), "getCurrentTab");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return Utils.callMethod(mActivity, "getCurrentTab");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return new Object();
@@ -156,9 +85,8 @@ public class Controller {
     }
 
     private Object getDocumentModel(boolean incognito) {
-        if (mChromeApplicationClass == null) return new Object();
         try {
-            return callMethod(XposedHelpers.callStaticMethod(mChromeApplicationClass, "getDocumentTabModelSelector"), "getModel", incognito);
+            return Utils.callMethod(Utils.callStaticMethod(Utils.CLASS_CHROME_APPLICATION, "getDocumentTabModelSelector"), "getModel", incognito);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -179,7 +107,15 @@ public class Controller {
             }
         } else {
             try {
-                return callMethod(mActivity, "getCurrentTabModel");
+                Object modelSelector = XposedHelpers.getObjectField(mActivity, "mTabModelSelector");
+                if (modelSelector != null) {
+                    return Utils.callMethod(modelSelector, "getCurrentModel");
+                }
+            } catch (NoSuchFieldError | NoSuchMethodError e) {
+
+            }
+            try {
+                return Utils.callMethod(mActivity, "getCurrentTabModel");
             } catch (NoSuchMethodError nsme) {
                 XposedBridge.log(TAG + nsme);
             }
@@ -189,7 +125,7 @@ public class Controller {
 
     Integer getTabIndex(Object tab) {
         try {
-            return (Integer) callMethod(getTabModel(), "indexOf", tab);
+            return (Integer) Utils.callMethod(getTabModel(), "indexOf", tab);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return -1;
@@ -202,12 +138,12 @@ public class Controller {
 
     private Object getTabAt(int index) {
         try {
-            return callMethod(getTabModel(), "getTabAt", index);
+            return Utils.callMethod(getTabModel(), "getTabAt", index);
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            return callMethod(getTabModel(), "getTab", index);
+            return Utils.callMethod(getTabModel(), "getTab", index);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -215,9 +151,8 @@ public class Controller {
     }
 
     private Object getTabById(int id) {
-        if (mTabModelUtilsClass == null) return null;
         try {
-            return XposedHelpers.callStaticMethod(mTabModelUtilsClass, "getTabById", getTabModel(), id);
+            return Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "getTabById", getTabModel(), id);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -226,25 +161,23 @@ public class Controller {
 
     void showTabByIndex(int index) {
         try {
-            callMethod(getTabModel(), "setIndex", index);
+            Utils.callMethod(getTabModel(), "setIndex", index);
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
-        if (mTabModelUtilsClass == null) return;
         try {
-            XposedHelpers.callStaticMethod(mTabModelUtilsClass, "setIndex", getTabModel(), index);
+            Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "setIndex", getTabModel(), index);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
     }
 
     private void showNextTab(Object tab) {
-        if (mTabModelUtilsClass == null) return;
         try {
-            Object model = getDocumentModel((Boolean) callMethod(tab, "isIncognito"));
-            int index = (Integer) callMethod(model, "indexOf", tab);
-            XposedHelpers.callStaticMethod(mTabModelUtilsClass, "setIndex", model, index);
+            Object model = getDocumentModel((Boolean) Utils.callMethod(tab, "isIncognito"));
+            int index = (Integer) Utils.callMethod(model, "indexOf", tab);
+            Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "setIndex", model, index);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -253,7 +186,7 @@ public class Controller {
     void loadUrl(String url) {
         Object tab = getCurrentTab();
         try {
-            callMethod(tab, "loadUrl", url, null, null, 2);
+            Utils.callMethod(tab, "loadUrl", url, null, null, 2);
             return;
         } catch (NoSuchMethodError nsme) {
 
@@ -261,7 +194,7 @@ public class Controller {
         try {
             Object urlParams = getLoadUrlParams(url);
             if (urlParams != null) {
-                callMethod(tab, "loadUrl", urlParams);
+                Utils.callMethod(tab, "loadUrl", urlParams);
             }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
@@ -269,9 +202,9 @@ public class Controller {
     }
 
     private Object getLoadUrlParams(String url) {
-        if (mLoadUrlParamsClass == null) return null;
+        if (Utils.CLASS_LOAD_URL_PARAMS == null) return null;
         try {
-            return XposedHelpers.newInstance(mLoadUrlParamsClass, url);
+            return XposedHelpers.newInstance(Utils.CLASS_LOAD_URL_PARAMS, url);
         } catch (Throwable t) {
             XposedBridge.log(TAG + t);
         }
@@ -281,7 +214,7 @@ public class Controller {
     private Object getVideoView() {
         try {
             Class<?> contentVideoView = XposedHelpers.findClass("org.chromium.content.browser.ContentVideoView", mClassLoader);
-            return XposedHelpers.callStaticMethod(contentVideoView, "getContentVideoView");
+            return Utils.callStaticMethod(contentVideoView, "getContentVideoView");
         } catch (ClassNotFoundError | NoSuchMethodError e) {
             XposedBridge.log(TAG + e);
         }
@@ -292,13 +225,13 @@ public class Controller {
         Object model = getTabModel();
         Object tabToClose = getCurrentTab();
         try {
-            callMethod(model, "closeTab", tabToClose, true, false, true);
+            Utils.callMethod(model, "closeTab", tabToClose, true, false, true);
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            callMethod(model, "closeTab", tabToClose);
+            Utils.callMethod(model, "closeTab", tabToClose);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -317,7 +250,7 @@ public class Controller {
         try {
             int closingTabIndex = getTabIndex(tabToClose);
             Object adjacentTab = getTabAt((closingTabIndex == 0) ? 1 : closingTabIndex - 1);
-            Object parentTab = getTabById((Integer) callMethod(tabToClose, "getParentId"));
+            Object parentTab = getTabById((Integer) Utils.callMethod(tabToClose, "getParentId"));
 
             // Determine which tab to select next according to these rules:
             // * Select the parent tab if it exists.
@@ -331,9 +264,7 @@ public class Controller {
             } else if (adjacentTab != null) {
                 nextTab = adjacentTab;
             } else if (isIncognito()) {
-                if (mTabModelUtilsClass != null) {
-                    nextTab = XposedHelpers.callStaticMethod(mTabModelUtilsClass, "getCurrentTab", getDocumentModel(false));
-                }
+                nextTab = Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "getCurrentTab", getDocumentModel(false));
             }
             return nextTab;
         } catch (NoSuchMethodError nsme) {
@@ -344,7 +275,7 @@ public class Controller {
 
     public int getTabCount() {
         try {
-            return (Integer) callMethod(getTabModel(), "getCount");
+            return (Integer) Utils.callMethod(getTabModel(), "getCount");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return 0;
@@ -353,7 +284,7 @@ public class Controller {
 
     private String getUrl() {
         try {
-            return (String) callMethod(getCurrentTab(), "getUrl");
+            return (String) Utils.callMethod(getCurrentTab(), "getUrl");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return "";
@@ -366,13 +297,13 @@ public class Controller {
             return;
         }
         try {
-            callMethod(tab, "requestFocus", true);
+            Utils.callMethod(tab, "requestFocus", true);
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            callMethod(tab, "requestFocus");
+            Utils.callMethod(tab, "requestFocus");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -380,7 +311,7 @@ public class Controller {
 
     void toggleOverview() {
         try {
-            callMethod(mActivity, "toggleOverview");
+            Utils.callMethod(mActivity, "toggleOverview");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -391,17 +322,14 @@ public class Controller {
             return getTabCount() == 0;
         }
         try {
-            Object ovLayout = callMethod(mActivity, "getAndSetupOverviewLayout");
-            if (ovLayout != null) {
-                return (Boolean) callMethod(ovLayout, "overviewVisible");
-            }
+            return (Boolean) Utils.callMethod(mActivity, "isInOverviewMode");
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            Object layoutMan = callMethod(mActivity, "getLayoutManager");
-            if (layoutMan != null) {
-                return (Boolean) callMethod(layoutMan, "overviewVisible");
+            Object layout = getLayoutManager();
+            if (layout != null) {
+                return (Boolean) Utils.callMethod(layout, "overviewVisible");
             }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
@@ -409,9 +337,28 @@ public class Controller {
         return false;
     }
 
+    private Object getLayoutManager() {
+        try {
+            return XposedHelpers.getObjectField(mActivity, "mLayoutManager");
+        } catch (NoSuchFieldError nsfe) {
+
+        }
+        try {
+            return Utils.callMethod(mActivity, "getLayoutManager");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return Utils.callMethod(mActivity, "getAndSetupOverviewLayout");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return null;
+    }
+
     Boolean isDesktopUserAgent() {
         try {
-            return (Boolean) callMethod(getCurrentTab(), "getUseDesktopUserAgent");
+            return (Boolean) Utils.callMethod(getCurrentTab(), "getUseDesktopUserAgent");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return false;
@@ -420,7 +367,7 @@ public class Controller {
 
     Boolean isLoading() {
         try {
-            return (Boolean) callMethod(getCurrentTab(), "isLoading");
+            return (Boolean) Utils.callMethod(getCurrentTab(), "isLoading");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return false;
@@ -430,12 +377,12 @@ public class Controller {
     Boolean tabSupportsFinding() {
         Object tab = getCurrentTab();
         try {
-            return (Boolean) callMethod(tab, "supportsFinding");
+            return (Boolean) Utils.callMethod(tab, "supportsFinding");
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            Boolean isNativePage = (Boolean) callMethod(tab, "isNativePage");
+            Boolean isNativePage = (Boolean) Utils.callMethod(tab, "isNativePage");
             return !isNativePage && getWebContents() != null;
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
@@ -445,7 +392,7 @@ public class Controller {
 
     Boolean bookmarkExists() {
         try {
-            return (Long) callMethod(getCurrentTab(), "getBookmarkId") == -1L;
+            return (Long) Utils.callMethod(getCurrentTab(), "getBookmarkId") == -1L;
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return false;
@@ -454,7 +401,7 @@ public class Controller {
 
     Boolean canGoBack() {
         try {
-            return (Boolean) callMethod(getCurrentTab(), "canGoBack");
+            return (Boolean) Utils.callMethod(getCurrentTab(), "canGoBack");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return true;
@@ -463,7 +410,7 @@ public class Controller {
 
     Boolean canGoForward() {
         try {
-            return (Boolean) callMethod(getCurrentTab(), "canGoForward");
+            return (Boolean) Utils.callMethod(getCurrentTab(), "canGoForward");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return true;
@@ -472,7 +419,7 @@ public class Controller {
 
     public Boolean isInFullscreenVideo() {
         try {
-            return (Boolean) callMethod(mActivity, "isFullscreenVideoPlaying");
+            return (Boolean) Utils.callMethod(mActivity, "isFullscreenVideoPlaying");
         } catch (NoSuchMethodError nsme) {
             return getVideoView() != null;
         }
@@ -545,7 +492,7 @@ public class Controller {
 
     Boolean isIncognito() {
         try {
-            return (Boolean) callMethod(getTabModel(), "isIncognito");
+            return (Boolean) Utils.callMethod(getTabModel(), "isIncognito");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
             return false;
@@ -558,14 +505,14 @@ public class Controller {
     }
 
     String getMostVisitedUrl() {
-        if (mUrlConstantsClass == null) return "chrome-native://newtab/";
+        if (Utils.CLASS_URL_CONSTANTS == null) return "chrome-native://newtab/";
         try {
-            return (String) XposedHelpers.getStaticObjectField(mUrlConstantsClass, "MOST_VISITED_URL");
+            return (String) XposedHelpers.getStaticObjectField(Utils.CLASS_URL_CONSTANTS, "MOST_VISITED_URL");
         } catch (NoSuchFieldError nsfe) {
 
         }
         try {
-            return (String) XposedHelpers.getStaticObjectField(mUrlConstantsClass, "NTP_URL");
+            return (String) XposedHelpers.getStaticObjectField(Utils.CLASS_URL_CONSTANTS, "NTP_URL");
         } catch (NoSuchFieldError nsfe) {
             XposedBridge.log(TAG + nsfe);
         }
@@ -574,13 +521,12 @@ public class Controller {
 
     Boolean isTablet() {
         try {
-            return (Boolean) callMethod(mActivity, "isTablet");
+            return (Boolean) Utils.callMethod(mActivity, "isTablet");
         } catch (NoSuchMethodError nsme) {
 
         }
-        if (mDeviceUtilsClass == null) return false;
         try {
-            return (Boolean) XposedHelpers.callStaticMethod(mDeviceUtilsClass, "isTablet", mActivity);
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_DEVICE_UTILS, "isTablet", mActivity);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -588,9 +534,8 @@ public class Controller {
     }
 
     Boolean syncSupported() {
-        if (mFeatureUtilsClass == null) return true;
         try {
-            return (Boolean) XposedHelpers.callStaticMethod(mFeatureUtilsClass, "canAllowSync", mActivity);
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_FEATURE_UTILS, "canAllowSync", mActivity);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -598,9 +543,8 @@ public class Controller {
     }
 
     Boolean printingEnabled() {
-        if (mServiceBridgeClass == null) return true;
         try {
-            return (Boolean) callMethod(XposedHelpers.callStaticMethod(mServiceBridgeClass, "getInstance"), "isPrintingEnabled");
+            return (Boolean) Utils.callMethod(Utils.callStaticMethod(Utils.CLASS_SERVICE_BRIDGE, "getInstance"), "isPrintingEnabled");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -616,18 +560,18 @@ public class Controller {
             return true;
         }
         try {
-            return (Boolean) callMethod(callMethod(getToolbarManager(), "getBookmarksBridge"), "isEditBookmarksEnabled");
+            return (Boolean) Utils.callMethod(Utils.callMethod(getToolbarManager(), "getBookmarksBridge"), "isEditBookmarksEnabled");
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            Object profile = callMethod(callMethod(getCurrentTab(), "getProfile"), "getOriginalProfile");
-            return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled", profile);
+            Object profile = Utils.callMethod(Utils.callMethod(getCurrentTab(), "getProfile"), "getOriginalProfile");
+            return (Boolean) Utils.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled", profile);
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            return (Boolean) XposedHelpers.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled");
+            return (Boolean) Utils.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -635,9 +579,8 @@ public class Controller {
     }
 
     Boolean addToHomeSupported() {
-        if (mShortcutHelper == null) return true;
         try {
-            return (Boolean) XposedHelpers.callStaticMethod(mShortcutHelper, "isAddToHomeIntentSupported", mActivity);
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_SHORTCUT_HELPER, "isAddToHomeIntentSupported", mActivity);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -647,16 +590,15 @@ public class Controller {
     void distillCurrentPage() {
         try {
             Class<?> distillerTabUtils = XposedHelpers.findClass("org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils", mClassLoader);
-            XposedHelpers.callStaticMethod(distillerTabUtils, "distillCurrentPageAndView", getWebContents());
+            Utils.callStaticMethod(distillerTabUtils, "distillCurrentPageAndView", getWebContents());
         } catch (ClassNotFoundError | NoSuchMethodError e) {
             XposedBridge.log(TAG + e);
         }
     }
 
     Boolean isDistilledPage() {
-        if (mDomDistillerUrlUtilsClass == null) return false;
         try {
-            return (Boolean) XposedHelpers.callStaticMethod(mDomDistillerUrlUtilsClass, "isDistilledPage", getUrl());
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_DOM_DISTILLER_UTILS, "isDistilledPage", getUrl());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -664,9 +606,8 @@ public class Controller {
     }
 
     Boolean nativeIsUrlDistillable() {
-        if (mDomDistillerUrlUtilsClass == null) return true;
         try {
-            return (Boolean) XposedHelpers.callStaticMethod(mDomDistillerUrlUtilsClass, "nativeIsUrlDistillable", getUrl());
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_DOM_DISTILLER_UTILS, "nativeIsUrlDistillable", getUrl());
         } catch (NoSuchMethodError nsme) {
 
         }
@@ -674,9 +615,8 @@ public class Controller {
     }
 
     String getOriginalUrl() {
-        if (mDomDistillerUrlUtilsClass == null) return "";
         try {
-            return (String) XposedHelpers.callStaticMethod(mDomDistillerUrlUtilsClass, "getOriginalUrlFromDistillerUrl", getUrl());
+            return (String) Utils.callStaticMethod(Utils.CLASS_DOM_DISTILLER_UTILS, "getOriginalUrlFromDistillerUrl", getUrl());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -686,7 +626,7 @@ public class Controller {
     ComponentName getShareComponentName() {
         try {
             Class<?> shareHelper = XposedHelpers.findClass("org.chromium.chrome.browser.share.ShareHelper", mClassLoader);
-            return (ComponentName) XposedHelpers.callStaticMethod(shareHelper, "getLastShareComponentName", mActivity);
+            return (ComponentName) Utils.callStaticMethod(shareHelper, "getLastShareComponentName", mActivity);
         } catch (ClassNotFoundError | NoSuchMethodError e) {
             XposedBridge.log(TAG + e);
         }
@@ -695,11 +635,14 @@ public class Controller {
 
     Object getContentViewCore() {
         Object tab = getCurrentTab();
-        if (tab == null) {
-            return null;
+        if (tab == null) return null;
+        try {
+            return Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "getCurrentContentViewCore", getTabModel());
+        } catch (NoSuchMethodError nsme) {
+
         }
         try {
-            return callMethod(tab, "getContentViewCore");
+            return Utils.callMethod(tab, "getContentViewCore");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -708,7 +651,7 @@ public class Controller {
 
     Object getWebContents() {
         try {
-            return callMethod(getCurrentTab(), "getWebContents");
+            return Utils.callMethod(getCurrentTab(), "getWebContents");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -721,12 +664,12 @@ public class Controller {
             return getTopControlsDimen();
         }
         try {
-            return (Integer) callMethod(contentViewCore, "getTopControlsLayoutHeightPix");
+            return (Integer) Utils.callMethod(contentViewCore, "getTopControlsLayoutHeightPix");
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            return (Integer) callMethod(contentViewCore, "getViewportSizeOffsetHeightPix");
+            return (Integer) Utils.callMethod(contentViewCore, "getViewportSizeOffsetHeightPix");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -742,15 +685,14 @@ public class Controller {
         if (mIsDocumentMode != null) {
             return mIsDocumentMode;
         }
-        if (mFeatureUtilsClass == null) return false;
         try {
-            return (Boolean) XposedHelpers.callStaticMethod(mFeatureUtilsClass, "isDocumentMode", mActivity);
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_FEATURE_UTILS, "isDocumentMode", mActivity);
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
             Class<?> featureUtilsInternal = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", mClassLoader);
-            return (Boolean) XposedHelpers.callStaticMethod(featureUtilsInternal, "isDocumentMode", mActivity);
+            return (Boolean) Utils.callStaticMethod(featureUtilsInternal, "isDocumentMode", mActivity);
         } catch (ClassNotFoundError | NoSuchMethodError e) {
             XposedBridge.log(TAG + e);
         }
@@ -759,7 +701,7 @@ public class Controller {
 
     Object getLocationBar() {
         try {
-            return callMethod(mActivity, "getLocationBar");
+            return Utils.callMethod(mActivity, "getLocationBar");
         } catch (NoSuchMethodError nsme) {
 
         }
@@ -770,7 +712,7 @@ public class Controller {
     EditText getUrlBar() {
         Object locationBar = getLocationBar();
         try {
-            return (EditText) callMethod(locationBar, "getUrlBar");
+            return (EditText) Utils.callMethod(locationBar, "getUrlBar");
         } catch (NoSuchMethodError nsme) {
 
         }
@@ -784,7 +726,7 @@ public class Controller {
 
     Boolean isVoiceSearchEnabled() {
         try {
-            return (Boolean) callMethod(getLocationBar(), "isVoiceSearchEnabled");
+            return (Boolean) Utils.callMethod(getLocationBar(), "isVoiceSearchEnabled");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -794,10 +736,10 @@ public class Controller {
     void toggleRecentApps() {
         try {
             Class<?> serviceClass = XposedHelpers.findClass("android.os.ServiceManager", mClassLoader);
-            IBinder statusBarBinder = (IBinder) XposedHelpers.callStaticMethod(serviceClass, "getService", "statusbar");
+            IBinder statusBarBinder = (IBinder) Utils.callStaticMethod(serviceClass, "getService", "statusbar");
             Class<?> statusBarClass = XposedHelpers.findClass(statusBarBinder.getInterfaceDescriptor(), mClassLoader).getClasses()[0];
-            Object statusBar = XposedHelpers.callStaticMethod(statusBarClass, "asInterface", statusBarBinder);
-            callMethod(statusBar, "toggleRecentApps");
+            Object statusBar = Utils.callStaticMethod(statusBarClass, "asInterface", statusBarBinder);
+            Utils.callMethod(statusBar, "toggleRecentApps");
         } catch (Throwable t) {
             XposedBridge.log(TAG + t);
         }
@@ -834,18 +776,18 @@ public class Controller {
             return getDefaultPrimaryColor();
         }
         try {
-            return (Integer) callMethod(getWebContents(), "getThemeColor", getDefaultPrimaryColor());
+            return (Integer) Utils.callMethod(getWebContents(), "getThemeColor", getDefaultPrimaryColor());
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            return (Integer) callMethod(tab, "getThemeColor");
+            return (Integer) Utils.callMethod(tab, "getThemeColor");
         } catch (NoSuchMethodError nsme) {
 
         }
         if (isDocumentMode()) {
             try {
-                return (Integer) callMethod(mActivity, "getThemeColor");
+                return (Integer) Utils.callMethod(mActivity, "getThemeColor");
             } catch (NoSuchMethodError nsme) {
 
             }
@@ -857,9 +799,8 @@ public class Controller {
         if (isDefaultPrimaryColor(color)) {
             return Color.BLACK;
         }
-        if (mBrandColorUtilsClass == null) return color;
         try {
-            return (Integer) XposedHelpers.callStaticMethod(mBrandColorUtilsClass, "computeStatusBarColor", color);
+            return (Integer) Utils.callStaticMethod(Utils.CLASS_BRAND_COLOR_UTILS, "computeStatusBarColor", color);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -872,7 +813,7 @@ public class Controller {
             if (mBrandColor != themeColor) {
                 mBrandColor = themeColor;
                 setStatusBarColor(themeColor);
-                callMethod(getToolbarManager(), "updatePrimaryColor", themeColor);
+                Utils.callMethod(getToolbarManager(), "updatePrimaryColor", themeColor);
                 updateToolbarVisuals();
             }
         } catch (NoSuchMethodError nsme) {
@@ -883,18 +824,17 @@ public class Controller {
     private void updateToolbarVisuals() {
         Object toolbar = getToolbar();
         try {
-            callMethod(toolbar, "updateVisualsForToolbarState", isInOverview());
+            Utils.callMethod(toolbar, "updateVisualsForToolbarState", isInOverview());
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
             Object toolbarDelegate = XposedHelpers.getObjectField(toolbar, "mToolbarDelegate");
-            callMethod(toolbarDelegate, "updateVisualsForToolbarState", isInOverview());
+            Utils.callMethod(toolbarDelegate, "updateVisualsForToolbarState", isInOverview());
         } catch (NoSuchFieldError | NoSuchMethodError e) {
             XposedBridge.log(TAG + e);
         }
-
     }
 
     private void setStatusBarColor(int themeColor) {
@@ -907,13 +847,13 @@ public class Controller {
             return;
         }
         try {
-            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity.getWindow(), statusColor);
+            Utils.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity.getWindow(), statusColor);
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            XposedHelpers.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity, statusColor);
+            Utils.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity, statusColor);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
