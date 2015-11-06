@@ -278,7 +278,7 @@ public class Controller {
             return (Integer) Utils.callMethod(getTabModel(), "getCount");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
-            return 0;
+            return 1;
         }
     }
 
