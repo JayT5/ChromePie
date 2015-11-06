@@ -800,11 +800,16 @@ public class Controller {
             return Color.BLACK;
         }
         try {
-            return (Integer) Utils.callStaticMethod(Utils.CLASS_BRAND_COLOR_UTILS, "computeStatusBarColor", color);
+            return (Integer) Utils.callStaticMethod(Utils.CLASS_COLOR_UTILS, "getDarkenedColorForStatusBar", color);
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return (Integer) Utils.callStaticMethod(Utils.CLASS_COLOR_UTILS, "computeStatusBarColor", color);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
-        return color;
+        return Color.BLACK;
     }
 
     void applyThemeColors() {
@@ -838,7 +843,12 @@ public class Controller {
     }
 
     private void setStatusBarColor(int themeColor) {
-        int statusColor = getStatusBarColor(themeColor);
+        try {
+            Utils.callMethod(mActivity, "setStatusBarColor", getCurrentTab(), themeColor);
+            return;
+        } catch (NoSuchMethodError nsme) {
+
+        }
         Class<?> apiCompatUtils = null;
         try {
             apiCompatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
@@ -846,6 +856,7 @@ public class Controller {
             XposedBridge.log(TAG + cnfe);
             return;
         }
+        int statusColor = getStatusBarColor(themeColor);
         try {
             Utils.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity.getWindow(), statusColor);
             return;
