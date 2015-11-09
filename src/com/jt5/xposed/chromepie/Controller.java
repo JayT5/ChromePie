@@ -793,7 +793,7 @@ public class Controller {
 
     Integer getThemeColor() {
         Object tab = getCurrentTab();
-        if (tab == null || isIncognito()) {
+        if (tab == null || getWebContents() == null || isIncognito()) {
             return getDefaultPrimaryColor();
         }
         try {
