@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import android.app.Activity;
 import android.content.res.XModuleResources;
+import android.os.Handler;
 import android.view.ViewGroup;
 
 import com.jt5.xposed.chromepie.settings.PieSettings;
@@ -101,14 +102,18 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             XposedHelpers.findAndHookMethod(activityClass, "onStart", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    Activity activity = (Activity) param.thisObject;
+                    final Activity activity = (Activity) param.thisObject;
                     if (XposedHelpers.getAdditionalInstanceField(activity, "pie_control") == null) {
                         int containerId = activity.getResources().getIdentifier("content_container", "id", CHROME_PACKAGE);
-                        ViewGroup container = (ViewGroup) activity.findViewById(containerId);
-                        if (container == null) {
-                            container = (ViewGroup) activity.findViewById(android.R.id.content);
-                        }
-                        initPieControl(activity, container, classLoader);
+                        final ViewGroup container = activity.findViewById(containerId) != null ?
+                                (ViewGroup) activity.findViewById(containerId) : (ViewGroup) activity.findViewById(android.R.id.content);
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                initPieControl(activity, container, classLoader);
+                            }
+                        }, 500);
                     }
                 }
             });
