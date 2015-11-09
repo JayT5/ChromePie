@@ -32,7 +32,8 @@ public class PieSettings extends PreferenceActivity {
         "com.android.chrome",
         "com.chrome.beta",
         "com.chrome.dev",
-        "com.metalasfook.nochromo"
+        "com.metalasfook.nochromo",
+        "org.chromium.chrome"
     );
 
     @Override
