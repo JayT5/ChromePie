@@ -864,12 +864,6 @@ public class Controller {
     }
 
     private void setStatusBarColor(int themeColor) {
-        try {
-            Utils.callMethod(mActivity, "setStatusBarColor", getCurrentTab(), themeColor);
-            return;
-        } catch (NoSuchMethodError nsme) {
-
-        }
         Class<?> apiCompatUtils = null;
         try {
             apiCompatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
