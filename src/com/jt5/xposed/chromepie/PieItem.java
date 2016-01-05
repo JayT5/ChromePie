@@ -161,7 +161,7 @@ class Item_close_all extends PieItem {
 
     @Override
     public void onClick(Controller control) {
-        if (!control.isIncognito()) {
+        if (!control.isIncognito() && !control.isDocumentMode()) {
             control.toggleOverview();
         }
         try {
