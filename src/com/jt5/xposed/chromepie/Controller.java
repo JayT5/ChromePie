@@ -421,10 +421,15 @@ public class Controller {
 
     public Boolean isInFullscreenVideo() {
         try {
-            return (Boolean) Utils.callMethod(mActivity, "isFullscreenVideoPlaying");
+            Object fullscreenManager = Utils.callMethod(mActivity, "getFullscreenManager");
+            if (fullscreenManager != null) {
+                return (Boolean) Utils.callMethod(fullscreenManager, "isOverlayVideoMode") ||
+                        (Boolean) Utils.callMethod(fullscreenManager, "getPersistentFullscreenMode");
+            }
         } catch (NoSuchMethodError nsme) {
-            return getVideoView() != null;
+
         }
+        return getVideoView() != null;
     }
 
     @SuppressLint("InlinedApi")
