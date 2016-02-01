@@ -305,7 +305,7 @@ public class PieControl implements PieMenu.PieController {
                     boolean.class, boolean.class, int.class), new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                    if (!(Boolean) param.args[2] || mController.isDistilledPage()) {
+                    if (!(Boolean) param.args[2] || (mController.getCurrentTab() != null && mController.isDistilledPage())) {
                         mController.applyThemeColors();
                     }
                 }
