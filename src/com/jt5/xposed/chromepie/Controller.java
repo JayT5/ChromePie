@@ -735,7 +735,7 @@ public class Controller {
         return (locationBar == null) ? new Object() : locationBar;
     }
 
-    EditText getUrlBar() {
+    public EditText getUrlBar() {
         Object locationBar = getLocationBar();
         try {
             return (EditText) Utils.callMethod(locationBar, "getUrlBar");
