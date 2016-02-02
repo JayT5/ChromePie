@@ -427,7 +427,7 @@ public class Controller {
                         (Boolean) Utils.callMethod(fullscreenManager, "getPersistentFullscreenMode");
             }
         } catch (NoSuchMethodError nsme) {
-
+            XposedBridge.log(TAG + nsme);
         }
         return getVideoView() != null;
     }
