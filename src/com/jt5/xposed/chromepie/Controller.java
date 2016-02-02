@@ -657,6 +657,18 @@ public class Controller {
         return null;
     }
 
+    public Boolean touchScrollInProgress() {
+        try {
+            Object contentViewCore = getContentViewCore();
+            if (contentViewCore != null) {
+                return XposedHelpers.getBooleanField(contentViewCore, "mTouchScrollInProgress");
+            }
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
+        }
+        return false;
+    }
+
     void scroll(Object contentViewCore, int yVel, int y) {
         try {
             float density = mActivity.getResources().getDisplayMetrics().density + 1;
