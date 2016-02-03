@@ -596,11 +596,23 @@ public class Controller {
     }
 
     void distillCurrentPage() {
+        Class<?> distillerTabUtils;
         try {
-            Class<?> distillerTabUtils = XposedHelpers.findClass("org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils", mClassLoader);
+            distillerTabUtils = XposedHelpers.findClass("org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils", mClassLoader);
+        } catch (ClassNotFoundError cnfe) {
+            XposedBridge.log(TAG + cnfe);
+            return;
+        }
+        try {
+            Utils.callStaticMethod(distillerTabUtils, "nativeDistillCurrentPageAndView", getWebContents());
+            return;
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
             Utils.callStaticMethod(distillerTabUtils, "distillCurrentPageAndView", getWebContents());
-        } catch (ClassNotFoundError | NoSuchMethodError e) {
-            XposedBridge.log(TAG + e);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
     }
 
