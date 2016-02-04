@@ -81,11 +81,10 @@ public class BaseItem {
         mItems.add(item);
     }
 
-    @SuppressWarnings("deprecation")
     public void setAlpha(float alpha) {
         final int alphaInt = Math.round(alpha * (mEnabled ? 255 : 77));
         if (mView != null) {
-            ((ImageView) mView).setAlpha(alphaInt);
+            ((ImageView) mView).setImageAlpha(alphaInt);
         }
     }
 

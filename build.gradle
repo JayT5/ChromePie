@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId "com.jt5.xposed.chromepie"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 22
     }
 

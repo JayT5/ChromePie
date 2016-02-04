@@ -227,12 +227,11 @@ public class PieControl implements PieMenu.PieController {
         return new BaseItem(null, "");
     }
 
-    @SuppressWarnings("deprecation")
     private View makeTabsView(int iconRes) {
         LayoutInflater li = mChromeActivity.getLayoutInflater();
         ViewGroup view = (ViewGroup) li.inflate(mXResources.getLayout(R.layout.qc_tabs_view), null);
         TextView count = (TextView) view.getChildAt(1);
-        count.setBackgroundDrawable(mXResources.getDrawable(R.drawable.tab_nr));
+        count.setBackground(mXResources.getDrawable(R.drawable.tab_nr));
         count.setText(Integer.toString(mController.getTabCount()));
         ImageView icon = (ImageView) view.getChildAt(0);
         icon.setImageDrawable(mXResources.getDrawable(iconRes));
