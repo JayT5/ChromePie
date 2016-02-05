@@ -56,6 +56,9 @@
     <string name="toolbar_theme_color_title">Use site theme colours for toolbar</string>
     <string name="toolbar_theme_color_summary">Applies to \'merge tabs and apps\' setting disabled on supported sites</string>
     
+    <string name="data_saver_enabled">Data saver enabled</string>
+    <string name="data_saver_disabled">Data saver disabled</string>
+    
     <string name="slice">Slice</string>
     <string name="pie_item">Pie Item</string>
     <string name="main_item">Main item</string>
@@ -94,5 +97,6 @@
     <string name="direct_share">Direct share</string>
     <string name="voice_search">Voice search</string>
     <string name="recent_apps">Recent apps</string>
+    <string name="toggle_data_saver">Toggle data saver</string>
 
 </resources>

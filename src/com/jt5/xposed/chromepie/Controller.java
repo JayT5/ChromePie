@@ -947,4 +947,14 @@ public class Controller {
         }
     }
 
+    Object getDataReductionSettings() {
+        try {
+            Class<?> dataReduction = XposedHelpers.findClass("org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings", mClassLoader);
+            return Utils.callStaticMethod(dataReduction, "getInstance");
+        } catch (ClassNotFoundError | NoSuchMethodError e) {
+            XposedBridge.log(TAG + e);
+        }
+        return new Object();
+    }
+
 }

@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jt5.xposed.chromepie.view.BaseItem;
 
@@ -544,5 +545,43 @@ class Item_recent_apps extends PieItem {
     @Override
     public void onClick(Controller control) {
         control.toggleRecentApps();
+    }
+}
+
+class Item_toggle_data_saver extends PieItem {
+    private XModuleResources mResources;
+
+    public Item_toggle_data_saver(View view, String id, int action) {
+        super(view, id);
+    }
+
+    @Override
+    protected void onOpen(Controller control, XModuleResources mXResources) {
+        if (mResources == null) mResources = mXResources;
+        try {
+            boolean enabled = (Boolean) Utils.callMethod(control.getDataReductionSettings(), "isDataReductionProxyEnabled");
+            if (enabled) {
+                ((ImageView) getView()).setColorFilter(0xFF676f73);
+                ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_data_saver_off_white));
+            } else {
+                ((ImageView) getView()).setColorFilter(null);
+                ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_data_saver_white));
+            }
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+    }
+
+    @Override
+    public void onClick(Controller control) {
+        try {
+            Object dataSettings = control.getDataReductionSettings();
+            boolean enabled = (Boolean) Utils.callMethod(dataSettings, "isDataReductionProxyEnabled");
+            Utils.callMethod(dataSettings, "setDataReductionProxyEnabled", control.getChromeActivity(), !enabled);
+            Toast.makeText(control.getChromeActivity(), mResources.getString(enabled ?
+                    R.string.data_saver_disabled : R.string.data_saver_enabled), Toast.LENGTH_SHORT).show();
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
     }
 }

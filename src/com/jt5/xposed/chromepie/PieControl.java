@@ -72,7 +72,7 @@ public class PieControl implements PieMenu.PieController {
         mXPreferences.reload();
         mItemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen",
-                "settings", "exit", "go_to_home", "show_tabs", "recent_apps");
+                "settings", "exit", "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver");
         mTriggerPositions = initTriggerPositions();
         if (!mController.isDocumentMode() && mXPreferences.getBoolean("toolbar_apply_theme_color", true)) {
             initializeUIHook();
