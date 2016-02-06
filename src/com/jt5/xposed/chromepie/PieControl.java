@@ -63,6 +63,7 @@ public class PieControl implements PieMenu.PieController {
     private static List<Integer> mTriggerPositions;
     private int mThemeColor = 0;
     private Unhook mFinishPageLoadHook;
+    private final boolean mApplyThemeColor;
 
     PieControl(Activity chromeActivity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mChromeActivity = chromeActivity;
@@ -74,10 +75,8 @@ public class PieControl implements PieMenu.PieController {
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen",
                 "settings", "exit", "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver");
         mTriggerPositions = initTriggerPositions();
-        if (!mController.isDocumentMode() && mXPreferences.getBoolean("toolbar_apply_theme_color", true)) {
-            initializeUIHook();
-        }
         applyFullscreen();
+        mApplyThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
     }
 
     void attachToContainer(ViewGroup container) {
@@ -135,8 +134,7 @@ public class PieControl implements PieMenu.PieController {
             hookFinishPageLoad();
         }
 
-        if ((mController.isDocumentMode() || mXPreferences.getBoolean("toolbar_apply_theme_color", false))
-                && mXPreferences.getBoolean("apply_theme_color", true)) {
+        if (mApplyThemeColor) {
             int color = mController.getThemeColor();
             if (mThemeColor != color) {
                 mThemeColor = color;
@@ -240,19 +238,6 @@ public class PieControl implements PieMenu.PieController {
         return view;
     }
 
-    private void initializeUIHook() {
-        try {
-            XposedHelpers.findAndHookMethod(mChromeActivity.getClass(), "initializeUI", new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                    initColorHooks();
-                }
-            });
-        } catch (Throwable t) {
-            XposedBridge.log(TAG + t);
-        }
-    }
-
     private void hookFinishPageLoad() {
         XC_MethodHook pageLoadHook = new XC_MethodHook() {
             @Override
@@ -270,68 +255,6 @@ public class PieControl implements PieMenu.PieController {
         try {
             mFinishPageLoadHook = XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(
                     mController.getCurrentTab().getClass(), "didFinishPageLoad"), pageLoadHook);
-        } catch (Throwable t) {
-            XposedBridge.log(TAG + t);
-        }
-    }
-
-    private void initColorHooks() {
-        final Object webContentsObserver;
-        final Object toolbarModel;
-        final Object tabModelSelector;
-        if (mController.getThemeColor() == 0) {
-            return;
-        }
-
-        try {
-            webContentsObserver = XposedHelpers.getObjectField(mController.getCurrentTab(), "mWebContentsObserver");
-            tabModelSelector = XposedHelpers.getObjectField(mChromeActivity, "mTabModelSelectorImpl");
-            toolbarModel = XposedHelpers.getObjectField(mController.getToolbarManager(), "mToolbarModel");
-        } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
-            return;
-        }
-
-        try {
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(webContentsObserver.getClass(), "didChangeThemeColor", int.class), new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                    mController.applyThemeColors();
-                }
-            });
-
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(webContentsObserver.getClass(), "didNavigateMainFrame", String.class, String.class,
-                    boolean.class, boolean.class, int.class), new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                    if (!(Boolean) param.args[2] || (mController.getCurrentTab() != null && mController.isDistilledPage())) {
-                        mController.applyThemeColors();
-                    }
-                }
-            });
-
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(tabModelSelector.getClass(), "notifyChanged"), new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(final MethodHookParam param) throws Throwable {
-                    mController.applyThemeColors();
-                }
-            });
-
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(toolbarModel.getClass(), "setPrimaryColor", int.class), new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
-                    if (!param.args[0].equals(mController.getThemeColor())) {
-                        param.setResult(null);
-                    }
-                }
-            });
-
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(toolbarModel.getClass(), "isUsingBrandColor"), new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
-                    param.setResult(mController.shouldUseThemeColor(mController.getThemeColor()));
-                }
-            });
         } catch (Throwable t) {
             XposedBridge.log(TAG + t);
         }

@@ -25,7 +25,6 @@ public class Controller {
     private final ClassLoader mClassLoader;
     private final Activity mActivity;
     private Unhook mFullscreenWindowFocusHook;
-    private int mBrandColor;
     private final Boolean mIsDocumentMode;
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
@@ -862,59 +861,7 @@ public class Controller {
         return Color.BLACK;
     }
 
-    void applyThemeColors() {
-        try {
-            int themeColor = getThemeColor();
-            if (mBrandColor != themeColor) {
-                mBrandColor = themeColor;
-                setStatusBarColor(themeColor);
-                Utils.callMethod(getToolbarManager(), "updatePrimaryColor", themeColor);
-                updateToolbarVisuals();
-            }
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
-    }
-
-    private void updateToolbarVisuals() {
-        Object toolbar = getToolbar();
-        try {
-            Utils.callMethod(toolbar, "updateVisualsForToolbarState", isInOverview());
-            return;
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            Object toolbarDelegate = XposedHelpers.getObjectField(toolbar, "mToolbarDelegate");
-            Utils.callMethod(toolbarDelegate, "updateVisualsForToolbarState", isInOverview());
-        } catch (NoSuchFieldError | NoSuchMethodError e) {
-            XposedBridge.log(TAG + e);
-        }
-    }
-
-    private void setStatusBarColor(int themeColor) {
-        Class<?> apiCompatUtils = null;
-        try {
-            apiCompatUtils = XposedHelpers.findClass("org.chromium.base.ApiCompatibilityUtils", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-            return;
-        }
-        int statusColor = getStatusBarColor(themeColor);
-        try {
-            Utils.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity.getWindow(), statusColor);
-            return;
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            Utils.callStaticMethod(apiCompatUtils, "setStatusBarColor", mActivity, statusColor);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
-    }
-
-    Object getToolbarManager() {
+    private Object getToolbarManager() {
         try {
             return XposedHelpers.getObjectField(mActivity, "mToolbarManager");
         } catch (NoSuchFieldError nsfe) {
@@ -929,19 +876,6 @@ public class Controller {
         try {
             Object helper = XposedHelpers.getObjectField(mActivity, "mDocumentToolbarHelper");
             return XposedHelpers.getObjectField(helper, "mToolbarManager");
-        } catch (NoSuchFieldError nsfe) {
-            return new Object();
-        }
-    }
-
-    private Object getToolbar() {
-        try {
-            return XposedHelpers.getObjectField(mActivity, "mToolbar");
-        } catch (NoSuchFieldError nsfe) {
-
-        }
-        try {
-            return XposedHelpers.getObjectField(getToolbarManager(), "mToolbar");
         } catch (NoSuchFieldError nsfe) {
             return new Object();
         }

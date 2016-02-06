@@ -50,10 +50,7 @@
 
     <string name="pie_theme_color_title">使用網站的顏色(圓餅選單)</string>
     <string name="pie_theme_color_summary">僅可於支援的網站中使用</string>
-        
-    <string name="toolbar_theme_color_title">使用網站主題的顏色(工具欄)</string>
-    <string name="toolbar_theme_color_summary">適用於\'合併分頁和程式\'設定對支援網站的禁用</string>
-    
+
     <string name="slice">主項目</string>
     <string name="pie_item">子項目</string>
     <string name="main_item">主項目</string>

@@ -52,10 +52,7 @@
 
     <string name="pie_theme_color_title">Použiť farby témy stránky pre koláčovú ponuku</string>
     <string name="pie_theme_color_summary">K dispozícii iba na podporovaných stránkach</string>
-        
-    <string name="toolbar_theme_color_title">Použiť farby témy stránky pre koláčov pre panel nástrojov</string>
-    <string name="toolbar_theme_color_summary">Použiť pre nastavenie \'Zlúčiť karty a aplikácie\' zakázané na podporovaných stránkach</string>
-    
+
     <string name="slice">Plátok</string>
     <string name="pie_item">Položka koláča</string>
     <string name="main_item">Hlavná položka</string>

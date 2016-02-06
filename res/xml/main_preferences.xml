@@ -39,11 +39,6 @@
         android:summary="@string/pie_theme_color_summary"
         android:defaultValue="true" />
     <CheckBoxPreference
-        android:key="toolbar_apply_theme_color"
-        android:title="@string/toolbar_theme_color_title"
-        android:summary="@string/toolbar_theme_color_summary"
-        android:defaultValue="true" />
-    <CheckBoxPreference
         android:key="hide_launcher_icon"
         android:title="@string/hide_launcher_icon_title"
         android:defaultValue="false" />
