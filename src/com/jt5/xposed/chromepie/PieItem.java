@@ -1,6 +1,7 @@
 package com.jt5.xposed.chromepie;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.XModuleResources;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jt5.xposed.chromepie.broadcastreceiver.PieReceiver;
 import com.jt5.xposed.chromepie.view.BaseItem;
 
 import de.robv.android.xposed.XposedBridge;
@@ -579,5 +581,19 @@ class Item_toggle_data_saver extends PieItem {
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
+    }
+}
+
+class Item_expand_notifications extends PieItem {
+    public Item_expand_notifications(View view, String id, int action) {
+        super(view, id);
+    }
+
+    @Override
+    public void onClick(Controller control) {
+        Intent intent = new Intent(PieReceiver.EXPAND_NOTIFICATIONS_INTENT);
+        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        intent.setComponent(new ComponentName(ChromePie.PACKAGE_NAME, PieReceiver.class.getName()));
+        control.getChromeActivity().sendBroadcast(intent);
     }
 }

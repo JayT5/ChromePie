@@ -36,6 +36,7 @@
         <item>@string/voice_search</item>
         <item>@string/recent_apps</item>
         <item>@string/toggle_data_saver</item>
+        <item>@string/expand_notifications</item>
     </string-array>
 
     <string-array name="pie_item_values" translatable="false">
@@ -73,6 +74,7 @@
         <item>voice_search</item>
         <item>recent_apps</item>
         <item>toggle_data_saver</item>
+        <item>expand_notifications</item>
     </string-array>
 
     <array name="pie_item_dark_drawables" translatable="false">
@@ -110,6 +112,7 @@
         <item>@drawable/ic_voice_search_white</item>
         <item>@drawable/ic_recent_apps</item>
         <item>@drawable/ic_data_saver_white</item>
+        <item>@drawable/ic_expand_notifications_white</item>
     </array>
 
     <string-array name="pie_item_actions" translatable="false">
@@ -144,6 +147,7 @@
         <item></item>
         <item></item>
         <item>reader_mode_id</item>
+        <item></item>
         <item></item>
         <item></item>
         <item></item>

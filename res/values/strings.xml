@@ -95,5 +95,6 @@
     <string name="voice_search">Voice search</string>
     <string name="recent_apps">Recent apps</string>
     <string name="toggle_data_saver">Toggle data saver</string>
+    <string name="expand_notifications">Expand notifications</string>
 
 </resources>
