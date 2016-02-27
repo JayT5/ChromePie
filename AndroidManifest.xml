@@ -4,7 +4,7 @@
     android:versionCode="13"
     android:versionName="0.4.3" >
 
-    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="22" />
+    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="23" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
     <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
 
