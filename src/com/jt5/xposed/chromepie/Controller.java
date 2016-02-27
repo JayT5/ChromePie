@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+
+import com.jt5.xposed.chromepie.broadcastreceiver.PieReceiver;
+
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodHook.Unhook;
 import de.robv.android.xposed.XposedBridge;
@@ -483,6 +486,15 @@ public class Controller {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
             }
         }
+        broadcastFullscreenIntent(fullscreen);
+    }
+
+    private void broadcastFullscreenIntent(boolean fullscreen) {
+        Intent intent = new Intent(PieReceiver.FULLSCREEN_UPDATED_INTENT);
+        intent.putExtra("IS_FULLSCREEN", fullscreen);
+        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        intent.setComponent(new ComponentName(ChromePie.PACKAGE_NAME, PieReceiver.class.getName()));
+        mActivity.sendBroadcast(intent);
     }
 
     @SuppressLint("InlinedApi")

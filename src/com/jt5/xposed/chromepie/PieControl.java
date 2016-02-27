@@ -107,7 +107,12 @@ public class PieControl implements PieMenu.PieController {
 
     private void applyFullscreen() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mChromeActivity);
-        mController.setFullscreen(prefs.getBoolean("chromepie_apply_fullscreen", false));
+        boolean defValue = false;
+        if (prefs.contains("chromepie_apply_fullscreen")) {
+            defValue = prefs.getBoolean("chromepie_apply_fullscreen", false);
+            prefs.edit().remove("chromepie_apply_fullscreen").apply();
+        }
+        mController.setFullscreen(mXPreferences.getBoolean("launch_in_fullscreen", defValue));
     }
 
     private List<Integer> initTriggerPositions() {

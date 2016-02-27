@@ -1,7 +1,6 @@
 package com.jt5.xposed.chromepie;
 
 import android.content.ComponentName;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.XModuleResources;
 import android.graphics.Bitmap;
@@ -10,7 +9,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Process;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -329,8 +327,6 @@ class Item_fullscreen extends PieItem {
     @Override
     public void onClick(Controller control) {
         control.setFullscreen(!control.isFullscreen());
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(control.getChromeActivity());
-        prefs.edit().putBoolean("chromepie_apply_fullscreen", control.isFullscreen()).apply();
     }
 }
 

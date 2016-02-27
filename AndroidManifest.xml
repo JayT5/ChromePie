@@ -35,6 +35,14 @@
             </intent-filter>
         </activity-alias>
 
+        <receiver android:name="com.jt5.xposed.chromepie.broadcastreceiver.PieReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.jt5.xposed.chromepie.intent.FULLSCREEN_UPDATED" />
+            </intent-filter>
+        </receiver>
+
         <meta-data
             android:name="xposedmodule"
             android:value="true" />
