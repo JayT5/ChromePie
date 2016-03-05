@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Process;
 import android.view.View;
 import android.view.ViewGroup;
@@ -177,6 +178,30 @@ class Item_close_all extends PieItem {
     }
 }
 
+class Item_bookmarks extends PieItem {
+    public Item_bookmarks(View view, String id, int action) {
+        super(view, id, action);
+    }
+
+    @Override
+    public void onClick(final Controller control) {
+        if (control.getTabCount() == 0) {
+            String ntp = control.getChromeUrl("NTP_URL");
+            control.launchUrl(ntp);
+            // Allow time for the new tab animation to finish
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Item_bookmarks.super.onClick(control);
+                }
+            }, 150);
+        } else {
+            super.onClick(control);
+        }
+    }
+}
+
 class Item_add_bookmark extends PieItem {
     public Item_add_bookmark(View view, String id, int action) {
         super(view, id, action);
@@ -193,6 +218,22 @@ class Item_add_bookmark extends PieItem {
     }
 }
 
+class Item_history extends PieItem {
+    public Item_history(View view, String id, int action) {
+        super(view, id, action);
+    }
+
+    @Override
+    public void onClick(Controller control) {
+        if (control.getTabCount() == 0) {
+            String history = control.getChromeUrl("HISTORY_URL");
+            control.launchUrl(history);
+        } else {
+            super.onClick(control);
+        }
+    }
+}
+
 class Item_most_visited extends PieItem {
     public Item_most_visited(View view, String id, int action) {
         super(view, id);
@@ -205,8 +246,12 @@ class Item_most_visited extends PieItem {
 
     @Override
     public void onClick(Controller control) {
-        String ntpUrl = control.getMostVisitedUrl();
-        control.loadUrl(ntpUrl);
+        String ntp = control.getChromeUrl("NTP_URL");
+        if (control.getTabCount() == 0) {
+            control.launchUrl(ntp);
+        } else {
+            control.loadUrl(ntp);
+        }
     }
 }
 
@@ -218,6 +263,16 @@ class Item_recent_tabs extends PieItem {
     @Override
     protected void onOpen(Controller control, XModuleResources mXResources) {
         setEnabled(control.syncSupported() && !control.isIncognito());
+    }
+
+    @Override
+    public void onClick(Controller control) {
+        if (control.getTabCount() == 0) {
+            String recents = control.getChromeUrl("RECENT_TABS_URL");
+            control.launchUrl(recents);
+        } else {
+            super.onClick(control);
+        }
     }
 }
 

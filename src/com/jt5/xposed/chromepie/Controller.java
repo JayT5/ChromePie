@@ -187,6 +187,15 @@ public class Controller {
         }
     }
 
+    void launchUrl(String url) {
+        try {
+            Object tabCreator = Utils.callMethod(mActivity, "getTabCreator", false);
+            Utils.callMethod(tabCreator, "launchUrl", url, getMenuTabLaunchType());
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+    }
+
     void loadUrl(String url) {
         Object tab = getCurrentTab();
         try {
@@ -213,6 +222,16 @@ public class Controller {
             XposedBridge.log(TAG + t);
         }
         return null;
+    }
+
+    private Object getMenuTabLaunchType() {
+        try {
+            Class<?> tabLaunchType = XposedHelpers.findClass("org.chromium.chrome.browser.tabmodel.TabModel$TabLaunchType", mClassLoader);
+            return XposedHelpers.getStaticObjectField(tabLaunchType, "FROM_MENU_OR_OVERVIEW");
+        } catch (ClassNotFoundError | NoSuchFieldError e) {
+            XposedBridge.log(TAG + e);
+        }
+        return new Object();
     }
 
     private Object getVideoView() {
@@ -522,15 +541,10 @@ public class Controller {
         return (url.startsWith("chrome://") || url.startsWith("chrome-native://"));
     }
 
-    String getMostVisitedUrl() {
+    String getChromeUrl(String page) {
         if (Utils.CLASS_URL_CONSTANTS == null) return "chrome-native://newtab/";
         try {
-            return (String) XposedHelpers.getStaticObjectField(Utils.CLASS_URL_CONSTANTS, "MOST_VISITED_URL");
-        } catch (NoSuchFieldError nsfe) {
-
-        }
-        try {
-            return (String) XposedHelpers.getStaticObjectField(Utils.CLASS_URL_CONSTANTS, "NTP_URL");
+            return (String) XposedHelpers.getStaticObjectField(Utils.CLASS_URL_CONSTANTS, page);
         } catch (NoSuchFieldError nsfe) {
             XposedBridge.log(TAG + nsfe);
         }

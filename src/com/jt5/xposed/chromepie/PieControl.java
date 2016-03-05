@@ -73,7 +73,8 @@ public class PieControl implements PieMenu.PieController {
         mXPreferences.reload();
         mItemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit",
-                "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver", "expand_notifications");
+                "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver", "expand_notifications",
+                "bookmarks", "history", "most_visited", "recent_tabs");
         mTriggerPositions = initTriggerPositions();
         applyFullscreen();
         mApplyThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
