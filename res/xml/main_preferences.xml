@@ -5,7 +5,8 @@
     <Preference
         android:key="kill_chrome"
         android:title="@string/kill_chrome"
-        android:summary="@string/kill_chrome_summary" />
+        android:summary="@string/kill_chrome_summary"
+        android:icon="@drawable/ic_launch_white" />
     <Preference
         android:key="edit_pie_menu"
         android:title="@string/edit_pie_menu_title"
