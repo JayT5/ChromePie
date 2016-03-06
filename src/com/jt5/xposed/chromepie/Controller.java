@@ -585,30 +585,28 @@ public class Controller {
 
     Boolean editBookmarksSupported() {
         try {
-            Object bookmarksBridge = Utils.callMethod(getToolbarManager(), "getBookmarksBridge");
-            return bookmarksBridge == null ? true : (Boolean) Utils.callMethod(bookmarksBridge, "isEditBookmarksEnabled");
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        Class<?> bookmarksBridge;
-        try {
-            bookmarksBridge = XposedHelpers.findClass("org.chromium.chrome.browser.BookmarksBridge", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-            return true;
-        }
-        try {
-            Object profile = Utils.callMethod(Utils.callMethod(getCurrentTab(), "getProfile"), "getOriginalProfile");
-            return (Boolean) Utils.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled", profile);
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            return (Boolean) Utils.callStaticMethod(bookmarksBridge, "isEditBookmarksEnabled");
+            Object bookmarkBridge = getBookmarkBridge();
+            if (bookmarkBridge != null) {
+                return (Boolean) Utils.callMethod(bookmarkBridge, "isEditBookmarksEnabled");
+            }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
         return true;
+    }
+
+    private Object getBookmarkBridge() {
+        try {
+            return Utils.callMethod(getToolbarManager(), "getBookmarkBridge");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return Utils.callMethod(getToolbarManager(), "getBookmarksBridge");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        return null;
     }
 
     Boolean addToHomeSupported() {
