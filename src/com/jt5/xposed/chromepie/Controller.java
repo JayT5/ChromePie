@@ -739,12 +739,13 @@ public class Controller {
             return getTopControlsDimen();
         }
         try {
-            return (Integer) Utils.callMethod(contentViewCore, "getTopControlsLayoutHeightPix");
+            return (Integer) Utils.callMethod(contentViewCore, "getViewportSizeOffsetHeightPix");
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            return (Integer) Utils.callMethod(contentViewCore, "getViewportSizeOffsetHeightPix");
+            return (Boolean) Utils.callMethod(contentViewCore, "doTopControlsShrinkBlinkSize") ?
+                    (Integer) Utils.callMethod(contentViewCore, "getTopControlsHeightPix") : 0;
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
