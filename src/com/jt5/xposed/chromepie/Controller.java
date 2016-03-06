@@ -624,21 +624,14 @@ public class Controller {
     }
 
     void distillCurrentPage() {
-        Class<?> distillerTabUtils;
         try {
-            distillerTabUtils = XposedHelpers.findClass("org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils", mClassLoader);
-        } catch (ClassNotFoundError cnfe) {
-            XposedBridge.log(TAG + cnfe);
-            return;
-        }
-        try {
-            Utils.callStaticMethod(distillerTabUtils, "nativeDistillCurrentPageAndView", getWebContents());
+            Utils.callStaticMethod(Utils.CLASS_DISTILLER_TAB_UTILS, "nativeDistillCurrentPageAndView", getWebContents());
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            Utils.callStaticMethod(distillerTabUtils, "distillCurrentPageAndView", getWebContents());
+            Utils.callStaticMethod(Utils.CLASS_DISTILLER_TAB_UTILS, "distillCurrentPageAndView", getWebContents());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -646,7 +639,7 @@ public class Controller {
 
     Boolean isDistilledPage() {
         try {
-            return (Boolean) Utils.callStaticMethod(Utils.CLASS_DOM_DISTILLER_UTILS, "isDistilledPage", getUrl());
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_DISTILLER_URL_UTILS, "isDistilledPage", getUrl());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -655,7 +648,7 @@ public class Controller {
 
     Boolean nativeIsUrlDistillable() {
         try {
-            return (Boolean) Utils.callStaticMethod(Utils.CLASS_DOM_DISTILLER_UTILS, "nativeIsUrlDistillable", getUrl());
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_DISTILLER_URL_UTILS, "nativeIsUrlDistillable", getUrl());
         } catch (NoSuchMethodError nsme) {
 
         }
@@ -664,7 +657,7 @@ public class Controller {
 
     String getOriginalUrl() {
         try {
-            return (String) Utils.callStaticMethod(Utils.CLASS_DOM_DISTILLER_UTILS, "getOriginalUrlFromDistillerUrl", getUrl());
+            return (String) Utils.callStaticMethod(Utils.CLASS_DISTILLER_URL_UTILS, "getOriginalUrlFromDistillerUrl", getUrl());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }

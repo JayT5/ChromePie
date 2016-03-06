@@ -9,7 +9,8 @@ public class Utils {
     static Class<?> CLASS_URL_CONSTANTS;
     static Class<?> CLASS_DEVICE_UTILS;
     static Class<?> CLASS_FEATURE_UTILS;
-    static Class<?> CLASS_DOM_DISTILLER_UTILS;
+    static Class<?> CLASS_DISTILLER_URL_UTILS;
+    static Class<?> CLASS_DISTILLER_TAB_UTILS;
     static Class<?> CLASS_COLOR_UTILS;
     static Class<?> CLASS_SERVICE_BRIDGE;
     static Class<?> CLASS_CHROME_APPLICATION;
@@ -37,8 +38,11 @@ public class Utils {
                 "org.chromium.chrome.browser.util.FeatureUtilities",
                 "com.google.android.apps.chrome.utilities.FeatureUtilities"
         };
-        String[] domDistillerUtils = {
+        String[] distillerUrlUtils = {
                 "org.chromium.components.dom_distiller.core.DomDistillerUrlUtils"
+        };
+        String[] distillerTabUtils = {
+                "org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils"
         };
         String[] colorUtils = {
                 "org.chromium.chrome.browser.util.ColorUtils",
@@ -68,7 +72,8 @@ public class Utils {
         CLASS_URL_CONSTANTS = getClass(classLoader, urlConstants);
         CLASS_DEVICE_UTILS = getClass(classLoader, deviceUtils);
         CLASS_FEATURE_UTILS = getClass(classLoader, featureUtilities);
-        CLASS_DOM_DISTILLER_UTILS = getClass(classLoader, domDistillerUtils);
+        CLASS_DISTILLER_URL_UTILS = getClass(classLoader, distillerUrlUtils);
+        CLASS_DISTILLER_TAB_UTILS = getClass(classLoader, distillerTabUtils);
         CLASS_COLOR_UTILS = getClass(classLoader, colorUtils);
         CLASS_SERVICE_BRIDGE = getClass(classLoader, serviceBridge);
         CLASS_CHROME_APPLICATION = getClass(classLoader, chromeApplication);
