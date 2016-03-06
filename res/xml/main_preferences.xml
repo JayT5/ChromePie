@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" 
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:name="pref_screen_name" android:key="pref_screen_key">
 
     <Preference
@@ -40,6 +40,11 @@
         android:summary="@string/pie_theme_color_summary"
         android:defaultValue="true" />
     <CheckBoxPreference
+        android:key="enable_document_tab_switcher"
+        android:title="@string/document_tab_switcher_title"
+        android:summary="@string/document_tab_switcher_summary"
+        android:defaultValue="false" />
+    <CheckBoxPreference
         android:key="hide_launcher_icon"
         android:title="@string/hide_launcher_icon_title"
         android:defaultValue="false" />
@@ -47,7 +52,7 @@
         android:key="donate"
         android:title="@string/donate_title"
         android:summary="@string/donate_summary" >
-        <intent 
+        <intent
             android:action="android.intent.action.VIEW"
             android:data="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=KBY3MHRMVW5PG" />
     </Preference>

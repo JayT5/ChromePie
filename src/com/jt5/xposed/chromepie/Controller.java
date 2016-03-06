@@ -345,6 +345,23 @@ public class Controller {
         }
     }
 
+    void documentModeToggleOverview() {
+        try {
+            Utils.callMethod(Utils.callMethod(Utils.callMethod(mActivity, "getCompositorViewHolder"), "getLayoutManager"), "toggleOverview");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+    }
+
+    Boolean isTabSwitchingEnabledInDocumentMode() {
+        try {
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_FEATURE_UTILS, "isTabSwitchingEnabledInDocumentModeInternal");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        return false;
+    }
+
     public Boolean isInOverview() {
         if (isTablet() || isDocumentMode()) {
             return getTabCount() == 0;

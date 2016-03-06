@@ -292,7 +292,11 @@ class Item_show_tabs extends PieItem {
     @Override
     public void onClick(Controller control) {
         if (control.isDocumentMode()) {
-            control.toggleRecentApps();
+            if (control.isTabSwitchingEnabledInDocumentMode()) {
+                control.documentModeToggleOverview();
+            } else {
+                control.toggleRecentApps();
+            }
         } else {
             control.toggleOverview();
         }

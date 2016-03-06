@@ -53,6 +53,9 @@
     <string name="pie_theme_color_title">Use site theme colours for pie menu</string>
     <string name="pie_theme_color_summary">Only available on supported sites</string>
 
+    <string name="document_tab_switcher_title">Enable tab switcher in merged tabs &amp; apps</string>
+    <string name="document_tab_switcher_summary">This is a Chrome UX experiment &amp; may break or be removed in future updates</string>
+
     <string name="data_saver_enabled">Data saver enabled</string>
     <string name="data_saver_disabled">Data saver disabled</string>
     
