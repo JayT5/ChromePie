@@ -190,7 +190,7 @@ public class Controller {
     void launchUrl(String url) {
         try {
             Object tabCreator = Utils.callMethod(mActivity, "getTabCreator", false);
-            Utils.callMethod(tabCreator, "launchUrl", url, getMenuTabLaunchType());
+            Utils.callMethod(tabCreator, "launchUrl", url, getTabLaunchType());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -224,12 +224,17 @@ public class Controller {
         return null;
     }
 
-    private Object getMenuTabLaunchType() {
+    private Object getTabLaunchType() {
+        if (Utils.CLASS_TAB_LAUNCH_TYPE == null) return new Object();
         try {
-            Class<?> tabLaunchType = XposedHelpers.findClass("org.chromium.chrome.browser.tabmodel.TabModel$TabLaunchType", mClassLoader);
-            return XposedHelpers.getStaticObjectField(tabLaunchType, "FROM_MENU_OR_OVERVIEW");
-        } catch (ClassNotFoundError | NoSuchFieldError e) {
-            XposedBridge.log(TAG + e);
+            return XposedHelpers.getStaticObjectField(Utils.CLASS_TAB_LAUNCH_TYPE, "FROM_CHROME_UI");
+        } catch (NoSuchFieldError nsfe) {
+
+        }
+        try {
+            return XposedHelpers.getStaticObjectField(Utils.CLASS_TAB_LAUNCH_TYPE, "FROM_MENU_OR_OVERVIEW");
+        } catch (NoSuchFieldError nsfe) {
+
         }
         return new Object();
     }

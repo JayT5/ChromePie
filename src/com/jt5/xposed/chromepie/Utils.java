@@ -14,6 +14,7 @@ public class Utils {
     static Class<?> CLASS_SERVICE_BRIDGE;
     static Class<?> CLASS_CHROME_APPLICATION;
     static Class<?> CLASS_SHORTCUT_HELPER;
+    static Class<?> CLASS_TAB_LAUNCH_TYPE;
 
     static void initialise(ClassLoader classLoader) {
         String[] tabModelUtils = {
@@ -57,6 +58,10 @@ public class Utils {
                 "org.chromium.chrome.browser.BookmarkUtils",
                 "org.chromium.chrome.browser.ShortcutHelper"
         };
+        String[] tabLaunchType = {
+                "org.chromium.chrome.browser.tabmodel.TabModel$TabLaunchType",
+                "com.google.android.apps.chrome.tabmodel.TabModel$TabLaunchType"
+        };
 
         CLASS_TAB_MODEL_UTILS = getClass(classLoader, tabModelUtils);
         CLASS_LOAD_URL_PARAMS = getClass(classLoader, loadUrlParams);
@@ -68,6 +73,7 @@ public class Utils {
         CLASS_SERVICE_BRIDGE = getClass(classLoader, serviceBridge);
         CLASS_CHROME_APPLICATION = getClass(classLoader, chromeApplication);
         CLASS_SHORTCUT_HELPER = getClass(classLoader, shortcutHelper);
+        CLASS_TAB_LAUNCH_TYPE = getClass(classLoader, tabLaunchType);
     }
 
     private static Class<?> getClass(ClassLoader classLoader, String[] classes) {
