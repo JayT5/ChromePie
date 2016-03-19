@@ -7,12 +7,15 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.PopupMenu;
 
 import com.jt5.xposed.chromepie.broadcastreceiver.PieReceiver;
 
@@ -29,12 +32,15 @@ public class Controller {
     private final Activity mActivity;
     private Unhook mFullscreenWindowFocusHook;
     private final Boolean mIsDocumentMode;
+    private final Menu mMenu;
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
         mActivity = chromeActivity;
         Utils.initialise(mClassLoader);
         mIsDocumentMode = isDocumentMode();
+        PopupMenu popup = new PopupMenu(mActivity, null);
+        mMenu = popup.getMenu();
     }
 
     Activity getChromeActivity() {
@@ -46,20 +52,14 @@ public class Controller {
     }
 
     private int getResIdentifier(String id, String type) {
-        return mActivity.getResources().getIdentifier(id, type, ChromePie.CHROME_PACKAGE);
+        return mActivity.getResources().getIdentifier(id, type, mActivity.getPackageName());
     }
 
     Boolean itemSelected(int id) {
         if (id != 0) {
-            try {
-                if (ChromePie.sMenuActionMethod.getParameterTypes().length == 1) {
-                    return (Boolean) ChromePie.sMenuActionMethod.invoke(mActivity, id);
-                } else {
-                    return (Boolean) ChromePie.sMenuActionMethod.invoke(mActivity, id, false);
-                }
-            } catch (Throwable t) {
-                XposedBridge.log(TAG + t);
-            }
+            MenuItem item = mMenu.add(Menu.NONE, id, Menu.NONE, "");
+            mMenu.removeItem(id);
+            return mActivity.onOptionsItemSelected(item);
         }
         return false;
     }

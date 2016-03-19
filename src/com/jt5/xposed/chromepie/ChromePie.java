@@ -1,6 +1,7 @@
 package com.jt5.xposed.chromepie;
 
-import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 import android.app.Activity;
 import android.content.res.XModuleResources;
@@ -16,26 +17,26 @@ import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
 
 public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
 
     static final String PACKAGE_NAME = ChromePie.class.getPackage().getName();
-    static String CHROME_PACKAGE;
-    static Method sMenuActionMethod;
 
     private String MODULE_PATH;
     private XModuleResources mModRes;
     private XSharedPreferences mXPreferences;
 
-    private static final String[] CHROME_ACTIVITY_CLASSES = {
-        "org.chromium.chrome.browser.ChromeActivity",
-        "com.google.android.apps.chrome.ChromeTabbedActivity",
-        "com.google.android.apps.chrome.ChromeActivity",
-        "com.google.android.apps.chrome.Main"
-    };
+    private static final List<String> CHROME_ACTIVITY_CLASSES = Arrays.asList(
+            "org.chromium.chrome.browser.ChromeTabbedActivity",
+            "org.chromium.chrome.browser.document.DocumentActivity",
+            "org.chromium.chrome.browser.document.IncognitoDocumentActivity",
+            "com.google.android.apps.chrome.ChromeTabbedActivity",
+            "com.google.android.apps.chrome.document.DocumentActivity",
+            "com.google.android.apps.chrome.document.IncognitoDocumentActivity",
+            "com.google.android.apps.chrome.Main"
+    );
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
@@ -50,7 +51,6 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             return;
         }
         mModRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
-        CHROME_PACKAGE = resparam.packageName;
     }
 
     @Override
@@ -58,55 +58,21 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         if (!PieSettings.CHROME_PACKAGE_NAMES.contains(lpparam.packageName)) {
             return;
         }
-
-        final ClassLoader classLoader = lpparam.classLoader;
-        Class<?> chromeActivityClass;
-
-        for (String clazz : CHROME_ACTIVITY_CLASSES) {
-            try {
-                chromeActivityClass = XposedHelpers.findClass(clazz, classLoader);
-            } catch (ClassNotFoundError cnfe) {
-                continue;
-            }
-            sMenuActionMethod = getMenuActionMethod(chromeActivityClass);
-            if (sMenuActionMethod != null) {
-                hookChrome(chromeActivityClass, classLoader);
-                return;
-            }
-        }
-
-        XposedBridge.log("Failed to initialise ChromePie, could not find hookable method");
+        initHooks(lpparam.classLoader);
     }
 
-    private Method getMenuActionMethod(Class<?> activityClass) {
-        try {
-            XposedHelpers.findMethodExact(activityClass, "onStart");
-            try {
-                return XposedHelpers.findMethodExact(activityClass, "onMenuOrKeyboardAction", int.class, boolean.class);
-            } catch (NoSuchMethodError nsme) {
-
-            }
-            try {
-                return XposedHelpers.findMethodExact(activityClass, "onMenuOrKeyboardAction", int.class);
-            } catch (NoSuchMethodError nsme) {
-                return XposedHelpers.findMethodExact(activityClass, "onOptionsItemSelected", int.class);
-            }
-        } catch (NoSuchMethodError nsme) {
-            return null;
-        }
-    }
-
-    private void hookChrome(Class<?> activityClass, final ClassLoader classLoader) {
+    private void initHooks(final ClassLoader classLoader) {
         try {
 
-            XposedHelpers.findAndHookMethod(activityClass, "onStart", new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Activity.class, "onStart", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     final Activity activity = (Activity) param.thisObject;
+                    if (!CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
+                        return;
+                    }
                     if (XposedHelpers.getAdditionalInstanceField(activity, "pie_control") == null) {
-                        int containerId = activity.getResources().getIdentifier("content_container", "id", CHROME_PACKAGE);
-                        final ViewGroup container = activity.findViewById(containerId) != null ?
-                                (ViewGroup) activity.findViewById(containerId) : (ViewGroup) activity.findViewById(android.R.id.content);
+                        final ViewGroup container = findContainer(activity);
                         final Handler handler = new Handler();
                         handler.postDelayed(new Runnable() {
                             @Override
@@ -118,10 +84,13 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
                 }
             });
 
-            XposedHelpers.findAndHookMethod(activityClass, "onDestroy", new XC_MethodHook() {
+            XposedHelpers.findAndHookMethod(Activity.class, "onDestroy", new XC_MethodHook() {
                 @Override
                 protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    Activity activity = (Activity) param.thisObject;
+                    final Activity activity = (Activity) param.thisObject;
+                    if (!CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
+                        return;
+                    }
                     PieControl control = (PieControl) XposedHelpers.getAdditionalInstanceField(activity, "pie_control");
                     if (control != null) {
                         control.destroy();
@@ -132,6 +101,16 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
 
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log("Could not initialise ChromePie: " + nsme);
+        }
+    }
+
+    private ViewGroup findContainer(Activity activity) {
+        int containerId = activity.getResources().getIdentifier("content_container", "id", activity.getPackageName());
+        ViewGroup container;
+        if ((container = (ViewGroup) activity.findViewById(containerId)) != null) {
+            return container;
+        } else {
+            return (ViewGroup) activity.findViewById(android.R.id.content);
         }
     }
 
