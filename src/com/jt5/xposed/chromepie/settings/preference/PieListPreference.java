@@ -44,11 +44,13 @@ public class PieListPreference extends ListPreference {
     }
 
     private void updateState(String newValue) {
-        final int index = findIndexOfValue(newValue);
         setSummary(getEntry());
-        final TypedArray drawables = getContext().getResources().obtainTypedArray(R.array.pie_item_dark_drawables);
-        setIcon(drawables.getResourceId(index, 0));
-        drawables.recycle();
+        int index = findIndexOfValue(newValue);
+        if (index >= 0) {
+            TypedArray drawables = getContext().getResources().obtainTypedArray(R.array.pie_item_dark_drawables);
+            setIcon(drawables.getResourceId(index, R.drawable.null_icon));
+            drawables.recycle();
+        }
     }
 
 }

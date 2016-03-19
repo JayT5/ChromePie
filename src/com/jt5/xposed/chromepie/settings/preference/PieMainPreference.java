@@ -1,6 +1,7 @@
 package com.jt5.xposed.chromepie.settings.preference;
 
 import java.util.Arrays;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -70,12 +71,13 @@ public class PieMainPreference extends Preference implements View.OnClickListene
     }
 
     private void updateSummary() {
-        String[] values = mResources.getStringArray(R.array.pie_item_values);
-        String[] entries = mResources.getStringArray(R.array.pie_item_entries);
+        List<String> values = Arrays.asList(mResources.getStringArray(R.array.pie_item_values));
         String value = mSharedPrefs.getString("slice_" + mSlice + "_item_" + mSlice, "none");
-        int i = Arrays.asList(values).indexOf(value);
-        String summary = Arrays.asList(entries).get(i);
-        setSummary(summary);
+        int index = values.indexOf(value);
+        if (index >= 0) {
+            String[] entries = mResources.getStringArray(R.array.pie_item_entries);
+            setSummary(entries[index]);
+        }
     }
 
     public int getSlice() {

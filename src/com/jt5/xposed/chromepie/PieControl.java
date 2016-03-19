@@ -217,11 +217,12 @@ public class PieControl implements PieMenu.PieController {
         String value = (String) keyMap.get(key);
         if (value != null && !value.equals("none")) {
             int index = values.indexOf(value);
-            String action = actions[index];
-            return makeItem(value, drawables.getResourceId(index, 0), mController.getResIdentifier(action));
-        } else {
-            return makeFiller();
+            if (index >= 0) {
+                String action = actions[index];
+                return makeItem(value, drawables.getResourceId(index, R.drawable.null_icon), mController.getResIdentifier(action));
+            }
         }
+        return makeFiller();
     }
 
     private BaseItem makeItem(String id, int iconRes, int action) {
