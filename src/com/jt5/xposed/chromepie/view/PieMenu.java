@@ -480,11 +480,7 @@ public class PieMenu extends FrameLayout {
         float y = evt.getY();
         int action = evt.getActionMasked();
         if (MotionEvent.ACTION_DOWN == action) {
-            mTriggerPosition = getTriggerPosition(x, y);
-            boolean show = mTriggerPosition != -1 && PieControl.getTriggerPositions().contains(mTriggerPosition) &&
-                    !mControl.isInFullscreenVideo() && (mControl.isInOverview() == (mControl.getTabCount() == 0)) &&
-                    y > mControl.getTopControlsHeight() && !mControl.getUrlBar().hasFocus() && !mControl.touchScrollInProgress();
-            if (show) {
+            if (shouldShowMenu(x, y)) {
                 setCenter((int) x, (int) y);
                 show(true);
                 return true;
@@ -562,6 +558,13 @@ public class PieMenu extends FrameLayout {
         }
         // always re-dispatch event
         return false;
+    }
+
+    private boolean shouldShowMenu(float x, float y) {
+        mTriggerPosition = getTriggerPosition(x, y);
+        return PieControl.getTriggerPositions().contains(mTriggerPosition) && !mControl.isInFullscreenVideo() &&
+                (mControl.isInOverview() == (mControl.getTabCount() == 0)) && y > mControl.getTopControlsHeight() &&
+                (mControl.getUrlBar() != null && !mControl.getUrlBar().hasFocus()) && !mControl.touchScrollInProgress();
     }
 
     private void layoutPieView(PieView pv, int x, int y, float angle) {
