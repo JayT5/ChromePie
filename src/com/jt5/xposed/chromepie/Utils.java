@@ -1,8 +1,14 @@
 package com.jt5.xposed.chromepie;
 
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
+
 import de.robv.android.xposed.XposedHelpers;
 
 public class Utils {
+
+    private static final Set<Class<?>> WRAPPER_TYPES = getWrapperTypes();
 
     static Class<?> CLASS_TAB_MODEL_UTILS;
     static Class<?> CLASS_LOAD_URL_PARAMS;
@@ -93,12 +99,19 @@ public class Utils {
     }
 
     static Object callMethod(Object obj, String methodName, Object... args) {
+        if (obj == null) {
+            throw new NoSuchMethodError("NullPointerException for method: " + methodName);
+        }
         try {
             return XposedHelpers.callMethod(obj, methodName, args);
         } catch (NoSuchMethodError e) {
             throw e;
         } catch (NoClassDefFoundError e) {
-            throw new NoSuchMethodError("NoClassDefFoundError: " + obj.getClass() + "#" + methodName);
+            try {
+                return manualMethodFind(obj.getClass(), methodName, args).invoke(obj, args);
+            } catch (Throwable t) {
+                throw new NoSuchMethodError(t.getMessage());
+            }
         }
     }
 
@@ -111,8 +124,64 @@ public class Utils {
         } catch (NoSuchMethodError e) {
             throw e;
         } catch (NoClassDefFoundError e) {
-            throw new NoSuchMethodError("NoClassDefFoundError: " + clazz + "#" + methodName);
+            try {
+                return manualMethodFind(clazz, methodName, args).invoke(null, args);
+            } catch (Throwable t) {
+                throw new NoSuchMethodError(t.getMessage());
+            }
         }
+    }
+
+    private static Method manualMethodFind(Class<?> clazz, String methodName, Object... args) {
+        Class<?> clz = clazz;
+        do {
+            try {
+                return XposedHelpers.findMethodExact(clz, methodName, getParameterTypes(args));
+            } catch (NoSuchMethodError nsme) {
+
+            }
+		} while ((clz = clz.getSuperclass()) != null);
+        throw new NoSuchMethodError(clazz + "#" + methodName);
+    }
+
+    /**
+     * Return an array with the classes of the given objects. If an object
+     * is a wrapper for a primitive type, then the primitive type is used
+     */
+    private static Class<?>[] getParameterTypes(Object... args) {
+        Class<?>[] clazzes = new Class<?>[args.length];
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] != null) {
+                if (isWrapperType(args[i].getClass())) {
+                    try {
+                        clazzes[i] = (Class<?>) args[i].getClass().getField("TYPE").get(null);
+                    } catch (Throwable t) {
+                        clazzes[i] = args[i].getClass();
+                    }
+                } else {
+                    clazzes[i] = args[i].getClass();
+                }
+            }
+        }
+        return clazzes;
+    }
+
+    private static boolean isWrapperType(Class<?> clazz) {
+        return WRAPPER_TYPES.contains(clazz);
+    }
+
+    private static Set<Class<?>> getWrapperTypes() {
+        Set<Class<?>> types = new HashSet<Class<?>>();
+        types.add(Boolean.class);
+        types.add(Character.class);
+        types.add(Byte.class);
+        types.add(Short.class);
+        types.add(Integer.class);
+        types.add(Long.class);
+        types.add(Float.class);
+        types.add(Double.class);
+        types.add(Void.class);
+        return types;
     }
 
 }

@@ -722,18 +722,17 @@ public class Controller {
     void scroll(Object contentViewCore, int yVel, int y) {
         try {
             float density = mActivity.getResources().getDisplayMetrics().density + 1;
-            XposedHelpers.findMethodExact(contentViewCore.getClass(), "flingViewport", long.class, int.class, int.class)
-                .invoke(contentViewCore, SystemClock.uptimeMillis(), 0, (int) (yVel * density));
+            Utils.callMethod(contentViewCore, "flingViewport", SystemClock.uptimeMillis(), 0, (int) (yVel * density));
             return;
-        } catch (Throwable t) {
+        } catch (NoSuchMethodError nsme) {
 
         }
         try {
             Integer x = (Integer) Utils.callMethod(contentViewCore, "computeHorizontalScrollOffset");
             ViewGroup containerView = (ViewGroup) Utils.callMethod(contentViewCore, "getContainerView");
-            XposedHelpers.findMethodExact(containerView.getClass(), "scrollTo", int.class, int.class).invoke(containerView, x, y);
-        } catch (Throwable t) {
-            XposedBridge.log(TAG + t);
+            Utils.callMethod(containerView, "scrollTo", x, y);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
     }
 
