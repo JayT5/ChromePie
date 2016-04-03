@@ -6,7 +6,6 @@
     <string name="data_saver_enabled">데이터 세이버 실행</string>
     <string name="desktop_site">데스크탑 버전으로 보기</string>
     <string name="direct_share">공유</string>
-    <string name="document_tab_switcher_summary"></string>
     <string name="donate_summary">페이팔을 통해 기부하기</string>
     <string name="donate_title">기부</string>
     <string name="edit_pie_menu_summary">파이 메뉴 설정</string>
@@ -75,6 +74,5 @@
     <string name="bookmarks">북마크</string>
     <string name="chrome_not_found">크롬을 찾지 못 했습니다</string>
     <string name="close_all">모든 탭 닫기</string>
-    <string name="app_thread_link"></string>
 
 </resources>
