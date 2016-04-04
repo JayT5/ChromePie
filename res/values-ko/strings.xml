@@ -6,13 +6,12 @@
     <string name="data_saver_enabled">데이터 세이버 실행</string>
     <string name="desktop_site">데스크탑 버전으로 보기</string>
     <string name="direct_share">공유</string>
-    <string name="donate_summary">페이팔을 통해 기부하기</string>
-    <string name="donate_title">기부</string>
-    <string name="edit_pie_menu_summary">파이 메뉴 설정</string>
+    <string name="donate_title">기부하기</string>
+    <string name="edit_pie_menu_summary">파이 메뉴를 설정합니다.</string>
     <string name="edit_pie_menu_title">파이 메뉴</string>
     <string name="edit_url">URL 수정</string>
     <string name="exit">종료</string>
-    <string name="expand_notifications">알람 확장</string>
+    <string name="expand_notifications">알림창 열기</string>
     <string name="find_in_page">페이지에서 찾기</string>
     <string name="forward">다음 페이지</string>
     <string name="fullscreen">전체화면</string>
@@ -32,7 +31,7 @@
     <string name="none">없음</string>
     <string name="pie_item">파이 아이템</string>
     <string name="pie_size_title">파이 메뉴 크기</string>
-    <string name="pie_slices_cat">파이 조각들</string>
+    <string name="pie_slices_cat">파이 메뉴 조각</string>
     <string name="previous_tab">이전 탭</string>
     <string name="print">인쇄</string>
     <string name="reader_mode">읽기 모드</string>
@@ -40,8 +39,8 @@
     <string name="recent_tabs">최근 탭</string>
     <string name="most_visited">자주 방문한 페이지</string>
     <string name="refresh">새로 고침</string>
-    <string name="reposition_menu_summary">파이 메뉴가 화면 밖으로 벗어나지 않도록 위치 조정</string>
-    <string name="reposition_menu_title">파이 메뉴 화면에 맞추기</string>
+    <string name="reposition_menu_summary">화면 외각에 파이 메뉴가 생성될 때 잘려지지 않도록 위치를 옮깁니다.</string>
+    <string name="reposition_menu_title">파이 메뉴를 화면에 맞추기</string>
     <string name="scroll_to_bottom">맨 아래로 이동</string>
     <string name="scroll_to_top">맨 위로 이동</string>
     <string name="settings">설정</string>
@@ -49,14 +48,13 @@
     <string name="show_tabs">탭 보기</string>
     <string name="slice">조각</string>
     <string name="toggle_data_saver">데이터 세이버 토글</string>
-    <string name="trigger_area_title">트리거 영역 설정</string>
-    <string name="trigger_side">트리거 위치</string>
-    <string name="ts_bottom">하단</string>
+    <string name="trigger_area_title">실행 영역 크기</string>
+    <string name="trigger_side">실행 위치</string>
     <string name="ts_left">왼쪽</string>
     <string name="ts_right">오른쪽</string>
     <string name="voice_search">음성 검색</string>
-    <string name="pie_theme_color_summary">지원하는 사이트에서만 사용 가능</string>
-    <string name="pie_theme_color_title">사이트 테마 컬러를 사용</string>
+    <string name="pie_theme_color_summary">크롬파이 테마를 지원하는 사이트에서만 적용 가능합니다.</string>
+    <string name="pie_theme_color_title">사이트 테마 적용</string>
     <string name="chrome_app_chooser">앱 선택</string>
     <string name="chrome_killed">크롬을 종료시켰습니다.</string>
     <string name="add_bookmark">북마크 추가</string>
@@ -74,5 +72,13 @@
     <string name="bookmarks">북마크</string>
     <string name="chrome_not_found">크롬을 찾지 못 했습니다</string>
     <string name="close_all">모든 탭 닫기</string>
+    <string name="app_thread_link">이 앱에 대한 지원 및 피드백은 <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">XDA Developers의 공식 스레드</a>에서 하고 있습니다.</string><string name="app_help">파이 메뉴를 열 때 처음 표시되는 메인 메뉴를 추가하기 위해선 \'새로운 파이 조각 추가\'를
+   누르면 됩니다. 이 메인 메뉴에 서브 메뉴를 추가할 수 있으며 서브 메뉴는 메인 메뉴로
+   손가락으로 드래그해서 선택하게 되면 표시됩니다. 서브 메뉴 개수는 메인 메뉴의 개수와
+   같습니다. 메뉴를 선택한 다음 손을 떼면 설정된 작업을 수행합니다. 변경된 설정들은
+   크롬이 재실행 후 적용됩니다.</string>
+    <string name="document_tab_switcher_summary">이 기능은 실험적으로 제공되는 크롬 UX(사용자 경험) 입니다. 추후 업데이트에서 중지되거나 제거될 수 있습니다.</string>
+    <string name="ts_bottom">아래쪽</string>
+    <string name="donate_summary">페이팔을 통한 기부로 개발에 도움을 주실 수 있습니다.</string>
 
 </resources>
