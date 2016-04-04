@@ -13,7 +13,6 @@
     <string name="exit">종료</string>
     <string name="expand_notifications">알림창 열기</string>
     <string name="find_in_page">페이지에서 찾기</string>
-    <string name="forward">다음 페이지</string>
     <string name="fullscreen">전체화면</string>
     <string name="go_to_home">홈페이지 열기</string>
     <string name="help">도움말</string>
@@ -80,5 +79,6 @@
     <string name="document_tab_switcher_summary">이 기능은 실험적으로 제공되는 크롬 UX(사용자 경험) 입니다. 추후 업데이트에서 중지되거나 제거될 수 있습니다.</string>
     <string name="ts_bottom">아래쪽</string>
     <string name="donate_summary">페이팔을 통한 기부로 개발에 도움을 주실 수 있습니다.</string>
+    <string name="forward">앞으로</string>
 
 </resources>
