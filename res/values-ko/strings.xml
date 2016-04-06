@@ -80,5 +80,6 @@
     <string name="ts_bottom">아래쪽</string>
     <string name="donate_summary">페이팔을 통한 기부로 개발에 도움을 주실 수 있습니다.</string>
     <string name="forward">앞으로</string>
+    <string name="document_tab_switcher_title">탭과 앱 함께 보기</string>
 
 </resources>
