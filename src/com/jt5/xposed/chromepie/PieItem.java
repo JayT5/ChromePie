@@ -4,9 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.XModuleResources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -453,25 +451,27 @@ class Item_direct_share extends PieItem {
 
     public Item_direct_share(View view, String id, int action) {
         super(view, id, action);
+        ((ImageView) view).setAdjustViewBounds(true);
     }
 
     @Override
     protected void onOpen(Controller control, XModuleResources mXResources) {
         ComponentName compName = control.getShareComponentName();
         setEnabled(compName != null && !control.isOnNewTabPage());
+        ImageView iv = (ImageView) getView();
         if (compName == null) {
-            ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
+            iv.setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
         } else {
             if (!compName.equals(mDirectShareComponentName)) {
                 mDirectShareComponentName = compName;
                 try {
-                    int shareSize = mXResources.getDimensionPixelSize(R.dimen.qc_direct_share_icon_size);
-                    Drawable shareIcon = control.getChromeActivity().getPackageManager().getActivityIcon(mDirectShareComponentName);
-                    Bitmap bitmap = ((BitmapDrawable) shareIcon).getBitmap();
-                    shareIcon = new BitmapDrawable(mXResources, Bitmap.createScaledBitmap(bitmap, shareSize, shareSize, true));
-                    ((ImageView) getView()).setImageDrawable(shareIcon);
+                    int size = mXResources.getDimensionPixelSize(R.dimen.qc_direct_share_icon_size);
+                    iv.setMaxWidth(size);
+                    iv.setMaxHeight(size);
+                    Drawable icon = control.getChromeActivity().getPackageManager().getActivityIcon(mDirectShareComponentName);
+                    iv.setImageDrawable(icon);
                 } catch (PackageManager.NameNotFoundException nnfe) {
-                    ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
+                    iv.setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
                     setEnabled(false);
                 }
             }
