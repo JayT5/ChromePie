@@ -33,7 +33,7 @@ public class PieItem extends BaseItem {
         super(view, id, action);
     }
 
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
 
     }
 
@@ -49,7 +49,7 @@ class Item_back extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.canGoBack());
     }
 
@@ -77,7 +77,7 @@ class Item_forward extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.canGoForward());
     }
 }
@@ -88,11 +88,11 @@ class Item_refresh extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         if (control.isLoading()) {
-            ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_stop_white));
+            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_stop_white));
         } else {
-            ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_refresh_white));
+            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_refresh_white));
         }
     }
 
@@ -119,7 +119,7 @@ class Item_new_tab extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         if (control.isDocumentMode()) {
             setEnabled(!control.isOnNewTabPage() || control.isIncognito());
         }
@@ -132,7 +132,7 @@ class Item_new_incognito_tab extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         if (control.isDocumentMode()) {
             setEnabled(!(control.isOnNewTabPage() && control.isIncognito()));
         }
@@ -206,11 +206,11 @@ class Item_add_bookmark extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         if (control.bookmarkExists()) {
-            ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_add_bookmark_white));
+            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_add_bookmark_white));
         } else {
-            ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_added_bookmark_white));
+            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_added_bookmark_white));
         }
         setEnabled(control.editBookmarksSupported());
     }
@@ -238,7 +238,7 @@ class Item_most_visited extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(!control.isIncognito());
     }
 
@@ -259,7 +259,7 @@ class Item_recent_tabs extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.syncSupported() && !control.isIncognito());
     }
 
@@ -280,7 +280,7 @@ class Item_show_tabs extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         int tabCount = control.getTabCount();
         setEnabled(!control.isTablet() && tabCount != 0);
         TextView tv = (TextView) ((ViewGroup) getView()).getChildAt(1);
@@ -317,7 +317,7 @@ class Item_add_to_home extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.addToHomeSupported() && !control.isIncognito() && !control.isOnNewTabPage());
     }
 }
@@ -328,7 +328,7 @@ class Item_find_in_page extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.tabSupportsFinding());
     }
 }
@@ -360,11 +360,11 @@ class Item_desktop_site extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         if (control.isDesktopUserAgent()) {
-            ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_mobile_site_white));
+            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_mobile_site_white));
         } else {
-            ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_desktop_site_white));
+            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_desktop_site_white));
         }
     }
 }
@@ -375,11 +375,11 @@ class Item_fullscreen extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         if (control.isFullscreen()) {
-            ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_fullscreen_exit_white));
+            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_exit_white));
         } else {
-            ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_fullscreen_white));
+            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_white));
         }
     }
 
@@ -395,7 +395,7 @@ class Item_scroll_to_top extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.getContentViewCore() != null);
     }
 
@@ -418,7 +418,7 @@ class Item_scroll_to_bottom extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.getContentViewCore() != null);
     }
 
@@ -441,7 +441,7 @@ class Item_share extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(!control.isOnNewTabPage());
     }
 }
@@ -455,23 +455,23 @@ class Item_direct_share extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         ComponentName compName = control.getShareComponentName();
         setEnabled(compName != null && !control.isOnNewTabPage());
         ImageView iv = (ImageView) getView();
         if (compName == null) {
-            iv.setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
+            iv.setImageDrawable(resources.getDrawable(R.drawable.ic_direct_share_white));
         } else {
             if (!compName.equals(mDirectShareComponentName)) {
                 mDirectShareComponentName = compName;
                 try {
-                    int size = mXResources.getDimensionPixelSize(R.dimen.qc_direct_share_icon_size);
+                    int size = resources.getDimensionPixelSize(R.dimen.qc_direct_share_icon_size);
                     iv.setMaxWidth(size);
                     iv.setMaxHeight(size);
                     Drawable icon = control.getChromeActivity().getPackageManager().getActivityIcon(mDirectShareComponentName);
                     iv.setImageDrawable(icon);
                 } catch (PackageManager.NameNotFoundException nnfe) {
-                    iv.setImageDrawable(mXResources.getDrawable(R.drawable.ic_direct_share_white));
+                    iv.setImageDrawable(resources.getDrawable(R.drawable.ic_direct_share_white));
                     setEnabled(false);
                 }
             }
@@ -485,7 +485,7 @@ class Item_print extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.printingEnabled() && !control.isOnNewTabPage() && Build.VERSION.SDK_INT >= 19);
     }
 }
@@ -519,7 +519,7 @@ class Item_next_tab extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.tabExistsAtIndex(1));
     }
 
@@ -538,7 +538,7 @@ class Item_previous_tab extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.tabExistsAtIndex(-1));
     }
 
@@ -557,7 +557,7 @@ class Item_reader_mode extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled((control.getWebContents() != null && control.nativeIsUrlDistillable()) || control.isDistilledPage());
     }
 
@@ -580,7 +580,7 @@ class Item_voice_search extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
+    protected void onOpen(Controller control, XModuleResources resources) {
         setEnabled(control.isVoiceSearchEnabled());
     }
 
@@ -613,16 +613,16 @@ class Item_toggle_data_saver extends PieItem {
     }
 
     @Override
-    protected void onOpen(Controller control, XModuleResources mXResources) {
-        if (mResources == null) mResources = mXResources;
+    protected void onOpen(Controller control, XModuleResources resources) {
+        if (mResources == null) mResources = resources;
         try {
             boolean enabled = (Boolean) Utils.callMethod(control.getDataReductionSettings(), "isDataReductionProxyEnabled");
             if (enabled) {
                 ((ImageView) getView()).setColorFilter(0xFF676f73);
-                ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_data_saver_off_white));
+                ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_data_saver_off_white));
             } else {
                 ((ImageView) getView()).setColorFilter(null);
-                ((ImageView) getView()).setImageDrawable(mXResources.getDrawable(R.drawable.ic_data_saver_white));
+                ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_data_saver_white));
             }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
