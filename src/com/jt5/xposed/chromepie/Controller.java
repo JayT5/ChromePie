@@ -347,7 +347,10 @@ public class Controller {
 
     void documentModeToggleOverview() {
         try {
-            Utils.callMethod(Utils.callMethod(Utils.callMethod(mActivity, "getCompositorViewHolder"), "getLayoutManager"), "toggleOverview");
+            Object layout = getLayoutManager();
+            if (layout != null) {
+                Utils.callMethod(layout, "toggleOverview");
+            }
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -363,13 +366,8 @@ public class Controller {
     }
 
     public Boolean isInOverview() {
-        if (isTablet() || isDocumentMode()) {
+        if (isTablet() || (isDocumentMode() && !isTabSwitchingEnabledInDocumentMode())) {
             return getTabCount() == 0;
-        }
-        try {
-            return (Boolean) Utils.callMethod(mActivity, "isInOverviewMode");
-        } catch (NoSuchMethodError nsme) {
-
         }
         try {
             Object layout = getLayoutManager();
@@ -377,26 +375,39 @@ public class Controller {
                 return (Boolean) Utils.callMethod(layout, "overviewVisible");
             }
         } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return (Boolean) Utils.callMethod(mActivity, "isInOverviewMode");
+        } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
         return false;
     }
 
     private Object getLayoutManager() {
-        try {
-            return XposedHelpers.getObjectField(mActivity, "mLayoutManager");
-        } catch (NoSuchFieldError nsfe) {
+        if (isDocumentMode()) {
+            try {
+                return Utils.callMethod(Utils.callMethod(mActivity, "getCompositorViewHolder"), "getLayoutManager");
+            } catch (NoSuchMethodError nsme) {
+                XposedBridge.log(TAG + nsme);
+            }
+        } else {
+            try {
+                return XposedHelpers.getObjectField(mActivity, "mLayoutManager");
+            } catch (NoSuchFieldError nsfe) {
 
-        }
-        try {
-            return Utils.callMethod(mActivity, "getLayoutManager");
-        } catch (NoSuchMethodError nsme) {
+            }
+            try {
+                return Utils.callMethod(mActivity, "getLayoutManager");
+            } catch (NoSuchMethodError nsme) {
 
-        }
-        try {
-            return Utils.callMethod(mActivity, "getAndSetupOverviewLayout");
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            }
+            try {
+                return Utils.callMethod(mActivity, "getAndSetupOverviewLayout");
+            } catch (NoSuchMethodError nsme) {
+                XposedBridge.log(TAG + nsme);
+            }
         }
         return null;
     }
