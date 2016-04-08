@@ -89,5 +89,6 @@
     <string name="direct_share">直接分享</string>
     <string name="voice_search">語音搜尋</string>
     <string name="recent_apps">最近開啟程式</string>
+    <string name="toggle_data_saver">開關 Data Saver</string>
 
 </resources>
