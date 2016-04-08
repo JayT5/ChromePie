@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.android.tools.build:gradle:2.0.0'
     }
 }
 
@@ -41,5 +41,5 @@ android {
 }
 
 dependencies {
-    provided files('libs/XposedBridgeApi.jar')
+    provided 'de.robv.android.xposed:api:81'
 }
