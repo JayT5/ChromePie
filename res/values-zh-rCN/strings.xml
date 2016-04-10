@@ -6,7 +6,7 @@
     <string name="app_thread_link">查看 <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">XDA 论坛内的官方
     话题帖</a>以获取帮助或反馈问题</string>
     <string name="app_about">ChromePie 是一款能够在 Google Chrome 和 Google Chrome Beta 中添加
-	可定制化 Pie 控制菜单的 Xposed 模块。\n\n
+        可定制化 Pie 控制菜单的 Xposed 模块。\n\n
         所支持的操作包括:
         \n•   前进，后退，刷新，打开新的标签页，打开新的隐身标签页，关闭标签页
         \n•   添加到书签，历史记录，请求桌面版网站，在网页中查找
