@@ -3,8 +3,8 @@
 
     <string name="app_name">ChromePie</string>
     <string name="app_description">向 Google Chrome 中添加 Pie 控制菜单</string>
-    <string name="app_thread_link">查看 <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">XDA 论坛内的官方
-    话题帖</a>以获取帮助或反馈问题</string>
+    <string name="app_thread_link">查看 <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">XDA 
+    论坛内的官方话题帖</a>以获取帮助或反馈问题</string>
     <string name="app_about">ChromePie 是一款能够在 Google Chrome 和 Google Chrome Beta 中添加
         可定制化 Pie 控制菜单的 Xposed 模块。\n\n
         所支持的操作包括:
@@ -13,8 +13,8 @@
         \n•   添加到主屏幕，分享，去往页面顶端，全屏模式等
     </string>
     <string name="app_help">点击\'添加新区域\' 来新增一个用于在打开控制菜单时初始显示的主项目。
-	在当中还可以包含有指向主项目时用于额外显示的分项目。分项目的数量取决于所创建主项目的数量大小。
-	要执行一项操作，请在选中一个项目后抬起手指。任何设置项的变更都需要在重启 Chrome 后才能生效。
+        在当中还可以包含有指向主项目时用于额外显示的分项目。分项目的数量取决于所创建主项目的数量大小。
+        要执行一项操作，请在选中一个项目后抬起手指。任何设置项的变更都需要在重启 Chrome 后才能生效。
     </string>
     <string name="app_version">版本：%s</string>
     <string name="app_help_title">帮助</string>
