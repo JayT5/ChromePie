@@ -50,6 +50,12 @@
 
     <string name="pie_theme_color_title">使用網站的顏色(圓餅選單)</string>
     <string name="pie_theme_color_summary">僅可於支援的網站中使用</string>
+    
+    <string name="document_tab_switcher_title">在合併標籤頁和程式，啟用標籤頁切換器</string>
+    <string name="document_tab_switcher_summary">這是Chrome UX實驗功能，可能會崩潰或在未來的更新中移除</string>
+    
+    <string name="data_saver_enabled">Data saver 已開啟</string>
+    <string name="data_saver_disabled">Data saver 已關閉</string>
 
     <string name="slice">主項目</string>
     <string name="pie_item">子項目</string>
@@ -90,5 +96,6 @@
     <string name="voice_search">語音搜尋</string>
     <string name="recent_apps">最近開啟程式</string>
     <string name="toggle_data_saver">開關 Data Saver</string>
+    <string name="expand_notifications">展開通知</string>
 
 </resources>
