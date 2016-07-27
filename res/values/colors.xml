@@ -20,8 +20,8 @@
 
 <resources>
     <color name="qc_menu_background">#C0000000</color>
-    <color name="qc_normal">#E02A96BC</color>
-    <color name="qc_selected">#E0FF8800</color>
-    <color name="qc_sub">#F01A5B73</color>
-    <color name="qc_tab_nr">#F033B5E5</color>
+    <color name="qc_normal">#607D8B</color>
+    <color name="qc_selected">#263238</color>
+    <color name="qc_sub">#455A64</color>
+    <color name="qc_tab_nr">#607D8B</color>
 </resources>
