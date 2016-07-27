@@ -36,7 +36,8 @@ public class PieSettings extends PreferenceActivity {
         "org.chromium.chrome",
         "tugapower.codeaurora.browser",
         "org.notphenom.swe.browser",
-        "com.rsbrowser.browser"
+        "com.rsbrowser.browser",
+        "com.mokee.yubrowser"
     );
 
     @Override
