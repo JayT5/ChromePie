@@ -1,14 +1,14 @@
 package com.jt5.xposed.chromepie;
 
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import de.robv.android.xposed.XposedHelpers;
 
 public class Utils {
 
-    private static final Set<Class<?>> WRAPPER_TYPES = getWrapperTypes();
+    private static final Map<Class<?>, Class<?>> WRAPPERS_TO_PRIMITIVES = getWrappersMap();
 
     static Class<?> CLASS_TAB_MODEL_UTILS;
     static Class<?> CLASS_LOAD_URL_PARAMS;
@@ -153,11 +153,7 @@ public class Utils {
         for (int i = 0; i < args.length; i++) {
             if (args[i] != null) {
                 if (isWrapperType(args[i].getClass())) {
-                    try {
-                        clazzes[i] = (Class<?>) args[i].getClass().getField("TYPE").get(null);
-                    } catch (Throwable t) {
-                        clazzes[i] = args[i].getClass();
-                    }
+                    clazzes[i] = WRAPPERS_TO_PRIMITIVES.get(args[i].getClass());
                 } else {
                     clazzes[i] = args[i].getClass();
                 }
@@ -167,21 +163,21 @@ public class Utils {
     }
 
     private static boolean isWrapperType(Class<?> clazz) {
-        return WRAPPER_TYPES.contains(clazz);
+        return WRAPPERS_TO_PRIMITIVES.containsKey(clazz);
     }
 
-    private static Set<Class<?>> getWrapperTypes() {
-        Set<Class<?>> types = new HashSet<Class<?>>();
-        types.add(Boolean.class);
-        types.add(Character.class);
-        types.add(Byte.class);
-        types.add(Short.class);
-        types.add(Integer.class);
-        types.add(Long.class);
-        types.add(Float.class);
-        types.add(Double.class);
-        types.add(Void.class);
-        return types;
+    private static Map<Class<?>, Class<?>> getWrappersMap() {
+        Map<Class<?>, Class<?>> map = new HashMap<>();
+        map.put(Boolean.class, boolean.class);
+        map.put(Character.class, char.class);
+        map.put(Byte.class, byte.class);
+        map.put(Short.class, short.class);
+        map.put(Integer.class, int.class);
+        map.put(Long.class, long.class);
+        map.put(Float.class, float.class);
+        map.put(Double.class, double.class);
+        map.put(Void.class, void.class);
+        return map;
     }
 
 }
