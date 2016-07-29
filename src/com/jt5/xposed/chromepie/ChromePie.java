@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.content.res.XModuleResources;
 import android.os.Handler;
 import android.view.ViewGroup;
@@ -15,7 +16,6 @@ import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_InitPackageResources.InitPackageResourcesParam;
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam;
@@ -47,77 +47,73 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
 
     @Override
     public void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable {
-        if (!PieSettings.CHROME_PACKAGE_NAMES.contains(resparam.packageName)) {
-            return;
+        if (PieSettings.CHROME_PACKAGE_NAMES.contains(resparam.packageName)) {
+            mModRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
         }
-        mModRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
     }
 
     @Override
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-        if (!PieSettings.CHROME_PACKAGE_NAMES.contains(lpparam.packageName)) {
-            return;
+        if (PieSettings.CHROME_PACKAGE_NAMES.contains(lpparam.packageName)) {
+            initHooks(lpparam.classLoader);
         }
-        initHooks(lpparam.classLoader);
     }
 
     private void initHooks(final ClassLoader classLoader) {
+        XposedHelpers.findAndHookMethod(Activity.class, "onStart", new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                final Activity activity = (Activity) param.thisObject;
+                if (!CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
+                    return;
+                }
+                if (XposedHelpers.getAdditionalInstanceField(activity, "pie_control") == null &&
+                        areResourcesActive()) {
+                    initPieControl(activity, classLoader);
+                }
+            }
+        });
+
+        XposedHelpers.findAndHookMethod(Activity.class, "onDestroy", new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                final Activity activity = (Activity) param.thisObject;
+                if (!CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
+                    return;
+                }
+                PieControl control = (PieControl) XposedHelpers.getAdditionalInstanceField(activity, "pie_control");
+                if (control != null) {
+                    control.destroy();
+                    XposedHelpers.removeAdditionalInstanceField(activity, "pie_control");
+                }
+            }
+        });
+    }
+
+    private void initPieControl(final Activity activity, final ClassLoader classLoader) {
+        final ViewGroup container = (ViewGroup) activity.findViewById(android.R.id.content);
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                PieControl control = new PieControl(activity, mModRes, mXPreferences, classLoader);
+                control.attachToContainer(container);
+                XposedHelpers.setAdditionalInstanceField(activity, "pie_control", control);
+            }
+        }, 500);
+    }
+
+    private boolean areResourcesActive() {
         try {
-
-            XposedHelpers.findAndHookMethod(Activity.class, "onStart", new XC_MethodHook() {
-                @Override
-                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                    final Activity activity = (Activity) param.thisObject;
-                    if (!CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
-                        return;
-                    }
-                    if (XposedHelpers.getAdditionalInstanceField(activity, "pie_control") == null) {
-                        final ViewGroup container = findContainer(activity);
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                initPieControl(activity, container, classLoader);
-                            }
-                        }, 500);
-                    }
-                }
-            });
-
-            XposedHelpers.findAndHookMethod(Activity.class, "onDestroy", new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                    final Activity activity = (Activity) param.thisObject;
-                    if (!CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
-                        return;
-                    }
-                    PieControl control = (PieControl) XposedHelpers.getAdditionalInstanceField(activity, "pie_control");
-                    if (control != null) {
-                        control.destroy();
-                        XposedHelpers.removeAdditionalInstanceField(activity, "pie_control");
-                    }
-                }
-            });
-
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log("Could not initialise ChromePie: " + nsme);
+            if (mModRes != null) {
+                mModRes.getResourceEntryName(R.id.version);
+            }
+        } catch (Resources.NotFoundException nfe) {
+            // Module has been updated but device has not
+            // rebooted and so resources are not initialised
+            return false;
         }
-    }
-
-    private ViewGroup findContainer(Activity activity) {
-        int containerId = activity.getResources().getIdentifier("content_container", "id", activity.getPackageName());
-        ViewGroup container;
-        if ((container = (ViewGroup) activity.findViewById(containerId)) != null) {
-            return container;
-        } else {
-            return (ViewGroup) activity.findViewById(android.R.id.content);
-        }
-    }
-
-    private void initPieControl(Activity activity, ViewGroup container, ClassLoader classLoader) {
-        PieControl control = new PieControl(activity, mModRes, mXPreferences, classLoader);
-        control.attachToContainer(container);
-        XposedHelpers.setAdditionalInstanceField(activity, "pie_control", control);
+        return true;
     }
 
 }
