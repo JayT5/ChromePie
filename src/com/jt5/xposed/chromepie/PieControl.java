@@ -28,6 +28,7 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.content.res.XModuleResources;
 import android.graphics.Color;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,7 +71,7 @@ public class PieControl implements PieMenu.PieController {
         mController = new Controller(mChromeActivity, classLoader);
         mXResources = res;
         mXPreferences = prefs;
-        mXPreferences.reload();
+        reloadPreferences();
         mItemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit",
                 "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver", "expand_notifications",
@@ -80,6 +81,15 @@ public class PieControl implements PieMenu.PieController {
         mApplyThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
         if (mController.isDocumentMode() && mXPreferences.getBoolean("enable_document_tab_switcher", false)) {
             enableTabSwitcherInDocumentMode();
+        }
+    }
+
+    private void reloadPreferences() {
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+        try {
+            mXPreferences.reload();
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
         }
     }
 
