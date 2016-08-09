@@ -35,6 +35,7 @@ public class PieSettings extends PreferenceActivity {
         "com.metalasfook.nochromo",
         "org.chromium.chrome",
         "tugapower.codeaurora.browser",
+        "tugapower.codeaurora.browser.beta",
         "org.notphenom.swe.browser",
         "com.rsbrowser.browser",
         "com.mokee.yubrowser"
