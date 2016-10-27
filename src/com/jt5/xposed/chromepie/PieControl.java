@@ -16,12 +16,9 @@
 
 package com.jt5.xposed.chromepie;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -61,7 +58,6 @@ public class PieControl implements PieMenu.PieController {
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
     private static List<String> mNoTabActions;
-    private static List<Integer> mTriggerPositions;
     private int mThemeColor = 0;
     private Unhook mFinishPageLoadHook;
     private final boolean mApplyThemeColor;
@@ -76,7 +72,6 @@ public class PieControl implements PieMenu.PieController {
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit",
                 "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver", "expand_notifications",
                 "bookmarks", "history", "most_visited", "recent_tabs");
-        mTriggerPositions = initTriggerPositions();
         applyFullscreen();
         mApplyThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
         if (mController.isDocumentMode() && mXPreferences.getBoolean("enable_document_tab_switcher", false)) {
@@ -141,20 +136,6 @@ public class PieControl implements PieMenu.PieController {
             prefs.edit().remove("chromepie_apply_fullscreen").apply();
         }
         mController.setFullscreen(mXPreferences.getBoolean("launch_in_fullscreen", defValue));
-    }
-
-    private List<Integer> initTriggerPositions() {
-        Set<String> triggerSet = mXPreferences.getStringSet("trigger_side_set",
-                new HashSet<String>(Arrays.asList("0", "1", "2")));
-        List<Integer> triggerInt = new ArrayList<Integer>();
-        for (String trigger : triggerSet) {
-            triggerInt.add(Integer.valueOf(trigger));
-        }
-        return triggerInt;
-    }
-
-    public static List<Integer> getTriggerPositions() {
-        return mTriggerPositions;
     }
 
     @Override
