@@ -162,7 +162,7 @@ class Item_close_all extends PieItem {
     @Override
     public void onClick(Controller control) {
         if (!control.isIncognito() && !control.isDocumentMode()) {
-            control.toggleOverview();
+            control.showOverview();
         }
         try {
             Utils.callMethod(control.getTabModel(), "closeAllTabs");
@@ -296,7 +296,7 @@ class Item_show_tabs extends PieItem {
                 control.toggleRecentApps();
             }
         } else {
-            control.toggleOverview();
+            control.showOverview();
         }
     }
 

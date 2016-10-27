@@ -337,7 +337,13 @@ public class Controller {
         }
     }
 
-    void toggleOverview() {
+    void showOverview() {
+        try {
+            Utils.callMethod(getLayoutManager(), "showOverview", true);
+            return;
+        } catch (NoSuchMethodError nsme) {
+
+        }
         try {
             Utils.callMethod(mActivity, "toggleOverview");
         } catch (NoSuchMethodError nsme) {
