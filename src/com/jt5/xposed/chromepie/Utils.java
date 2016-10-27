@@ -22,6 +22,7 @@ public class Utils {
     static Class<?> CLASS_CHROME_APPLICATION;
     static Class<?> CLASS_SHORTCUT_HELPER;
     static Class<?> CLASS_TAB_LAUNCH_TYPE;
+    static Class<?> CLASS_SHARE_HELPER;
 
     static void initialise(ClassLoader classLoader) {
         String[] tabModelUtils = {
@@ -72,6 +73,9 @@ public class Utils {
                 "org.chromium.chrome.browser.tabmodel.TabModel$TabLaunchType",
                 "com.google.android.apps.chrome.tabmodel.TabModel$TabLaunchType"
         };
+        String[] shareHelper = {
+                "org.chromium.chrome.browser.share.ShareHelper"
+        };
 
         CLASS_TAB_MODEL_UTILS = getClass(classLoader, tabModelUtils);
         CLASS_LOAD_URL_PARAMS = getClass(classLoader, loadUrlParams);
@@ -85,6 +89,7 @@ public class Utils {
         CLASS_CHROME_APPLICATION = getClass(classLoader, chromeApplication);
         CLASS_SHORTCUT_HELPER = getClass(classLoader, shortcutHelper);
         CLASS_TAB_LAUNCH_TYPE = getClass(classLoader, tabLaunchType);
+        CLASS_SHARE_HELPER = getClass(classLoader, shareHelper);
     }
 
     private static Class<?> getClass(ClassLoader classLoader, String[] classes) {

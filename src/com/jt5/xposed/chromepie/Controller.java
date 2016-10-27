@@ -694,10 +694,14 @@ public class Controller {
 
     ComponentName getShareComponentName() {
         try {
-            Class<?> shareHelper = XposedHelpers.findClass("org.chromium.chrome.browser.share.ShareHelper", mClassLoader);
-            return (ComponentName) Utils.callStaticMethod(shareHelper, "getLastShareComponentName", mActivity);
-        } catch (ClassNotFoundError | NoSuchMethodError e) {
-            XposedBridge.log(TAG + e);
+            return (ComponentName) Utils.callStaticMethod(Utils.CLASS_SHARE_HELPER, "getLastShareComponentName");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return (ComponentName) Utils.callStaticMethod(Utils.CLASS_SHARE_HELPER, "getLastShareComponentName", mActivity);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
         return null;
     }
