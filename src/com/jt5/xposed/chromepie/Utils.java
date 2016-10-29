@@ -17,7 +17,6 @@ public class Utils {
     static Class<?> CLASS_FEATURE_UTILS;
     static Class<?> CLASS_DISTILLER_URL_UTILS;
     static Class<?> CLASS_DISTILLER_TAB_UTILS;
-    static Class<?> CLASS_COLOR_UTILS;
     static Class<?> CLASS_SERVICE_BRIDGE;
     static Class<?> CLASS_CHROME_APPLICATION;
     static Class<?> CLASS_SHORTCUT_HELPER;
@@ -51,11 +50,6 @@ public class Utils {
         String[] distillerTabUtils = {
                 "org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils"
         };
-        String[] colorUtils = {
-                "org.chromium.chrome.browser.util.ColorUtils",
-                "org.chromium.chrome.browser.document.BrandColorUtils",
-                "com.google.android.apps.chrome.utilities.DocumentUtilities"
-        };
         String[] serviceBridge = {
                 "org.chromium.chrome.browser.preferences.PrefServiceBridge",
                 "com.google.android.apps.chrome.preferences.ChromeNativePreferences"
@@ -84,7 +78,6 @@ public class Utils {
         CLASS_FEATURE_UTILS = getClass(classLoader, featureUtilities);
         CLASS_DISTILLER_URL_UTILS = getClass(classLoader, distillerUrlUtils);
         CLASS_DISTILLER_TAB_UTILS = getClass(classLoader, distillerTabUtils);
-        CLASS_COLOR_UTILS = getClass(classLoader, colorUtils);
         CLASS_SERVICE_BRIDGE = getClass(classLoader, serviceBridge);
         CLASS_CHROME_APPLICATION = getClass(classLoader, chromeApplication);
         CLASS_SHORTCUT_HELPER = getClass(classLoader, shortcutHelper);

@@ -885,6 +885,11 @@ public class Controller {
             return getDefaultPrimaryColor();
         }
         try {
+            return (Integer) Utils.callMethod(getWebContents(), "getThemeColor");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
             return (Integer) Utils.callMethod(getWebContents(), "getThemeColor", getDefaultPrimaryColor());
         } catch (NoSuchMethodError nsme) {
 
@@ -906,19 +911,12 @@ public class Controller {
 
     public Integer getStatusBarColor(int color) {
         if (isDefaultPrimaryColor(color)) {
-            return Color.BLACK;
+            return color;
         }
-        try {
-            return (Integer) Utils.callStaticMethod(Utils.CLASS_COLOR_UTILS, "getDarkenedColorForStatusBar", color);
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            return (Integer) Utils.callStaticMethod(Utils.CLASS_COLOR_UTILS, "computeStatusBarColor", color);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
-        return Color.BLACK;
+        float[] statusColor = new float[3];
+        Color.colorToHSV(color, statusColor);
+        statusColor[2] *= 0.6f;
+        return Color.HSVToColor(statusColor);
     }
 
     private Object getToolbarManager() {
