@@ -152,11 +152,7 @@ public class PieControl implements PieMenu.PieController {
             int color = mController.getThemeColor();
             if (mThemeColor != color) {
                 mThemeColor = color;
-                boolean useThemeColor = mController.shouldUseThemeColor(mThemeColor) &&
-                        !(Color.red(mThemeColor) == Color.green(mThemeColor) &&
-                          Color.green(mThemeColor) == Color.blue(mThemeColor) &&
-                          Color.red(mThemeColor) > 230);
-                if (useThemeColor) {
+                if (mController.shouldUseThemeColor(mThemeColor)) {
                     mPie.setThemeColors(color);
                 } else {
                     mPie.setDefaultColors(mXResources);

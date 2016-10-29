@@ -862,7 +862,13 @@ public class Controller {
     }
 
     Boolean shouldUseThemeColor(int themeColor) {
-        return !isDefaultPrimaryColor(themeColor) && !isIncognito();
+        return !isDefaultPrimaryColor(themeColor) && isValidThemeColor(themeColor) && !isIncognito();
+    }
+
+    private boolean isValidThemeColor(int color) {
+        float[] hsv = new float[3];
+        Color.colorToHSV(color, hsv);
+        return hsv[1] >= 0.08f || hsv[2] <= 0.92f;
     }
 
     private int getDefaultPrimaryColor() {
