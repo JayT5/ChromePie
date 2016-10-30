@@ -481,15 +481,24 @@ public class Controller {
 
     public Boolean isInFullscreenVideo() {
         try {
-            Object fullscreenManager = Utils.callMethod(mActivity, "getFullscreenManager");
-            if (fullscreenManager != null) {
-                return (Boolean) Utils.callMethod(fullscreenManager, "isOverlayVideoMode") ||
-                        (Boolean) Utils.callMethod(fullscreenManager, "getPersistentFullscreenMode");
+            Object fullscreenHandler = getFullscreenHandler();
+            if (fullscreenHandler != null) {
+                return XposedHelpers.getBooleanField(fullscreenHandler, "mIsPersistentMode");
             }
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
         }
         return getVideoView() != null;
+    }
+
+    private Object getFullscreenHandler() {
+        try {
+            Object fullscreenManager = Utils.callMethod(getLayoutManager(), "getFullscreenManager");
+            return XposedHelpers.getObjectField(fullscreenManager, "mHtmlApiHandler");
+        } catch (NoSuchMethodError | NoSuchFieldError e) {
+            XposedBridge.log(TAG + e);
+        }
+        return null;
     }
 
     @SuppressLint("InlinedApi")
