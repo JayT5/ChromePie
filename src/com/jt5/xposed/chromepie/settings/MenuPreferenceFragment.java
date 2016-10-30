@@ -39,6 +39,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
                 getPreferenceManager().getSharedPreferencesName(), Context.MODE_WORLD_READABLE);
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActivity().getActionBar().setTitle(getResources().getString(R.string.edit_pie_menu_title));
         mPieMenuCat = (PreferenceCategory) findPreference("pie_slices_cat");
 
         final Preference newSlice = findPreference("new_slice");
