@@ -37,6 +37,7 @@
         <item>@string/recent_apps</item>
         <item>@string/toggle_data_saver</item>
         <item>@string/expand_notifications</item>
+        <item>@string/downloads</item>
     </string-array>
 
     <string-array name="pie_item_values" translatable="false">
@@ -75,6 +76,7 @@
         <item>recent_apps</item>
         <item>toggle_data_saver</item>
         <item>expand_notifications</item>
+        <item>downloads</item>
     </string-array>
 
     <array name="pie_item_dark_drawables" translatable="false">
@@ -113,6 +115,7 @@
         <item>@drawable/ic_recent_apps</item>
         <item>@drawable/ic_data_saver_white</item>
         <item>@drawable/ic_expand_notifications_white</item>
+        <item>@drawable/ic_downloads_white</item>
     </array>
 
     <string-array name="pie_item_actions" translatable="false">
@@ -151,6 +154,7 @@
         <item/>
         <item/>
         <item/>
+        <item>downloads_menu_id</item>
     </string-array>
 
     <string-array name="trigger_side_entries" translatable="false">

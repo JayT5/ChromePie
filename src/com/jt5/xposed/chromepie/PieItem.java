@@ -656,3 +656,14 @@ class Item_expand_notifications extends PieItem {
         control.getChromeActivity().sendBroadcast(intent);
     }
 }
+
+class Item_downloads extends PieItem {
+    public Item_downloads(View view, String id, int action) {
+        super(view, id, action);
+    }
+
+    @Override
+    protected void onOpen(Controller control, XModuleResources resources) {
+        setEnabled(control.isDownloadHomeEnabled());
+    }
+}

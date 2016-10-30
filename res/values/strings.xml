@@ -99,5 +99,6 @@
     <string name="recent_apps">Recent apps</string>
     <string name="toggle_data_saver">Toggle data saver</string>
     <string name="expand_notifications">Expand notifications</string>
+    <string name="downloads">Downloads</string>
 
 </resources>

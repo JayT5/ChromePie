@@ -964,4 +964,14 @@ public class Controller {
         return new Object();
     }
 
+    Boolean isDownloadHomeEnabled() {
+        try {
+            Class<?> downloadUtils = XposedHelpers.findClass("org.chromium.chrome.browser.download.DownloadUtils", mClassLoader);
+            return (Boolean) Utils.callStaticMethod(downloadUtils, "isDownloadHomeEnabled");
+        } catch (ClassNotFoundError | NoSuchMethodError e) {
+
+        }
+        return false;
+    }
+
 }
