@@ -781,13 +781,13 @@ public class Controller {
             return getTopControlsDimen();
         }
         try {
-            return (Integer) Utils.callMethod(contentViewCore, "getViewportSizeOffsetHeightPix");
-        } catch (NoSuchMethodError nsme) {
+            return (Boolean) XposedHelpers.getBooleanField(contentViewCore, "mTopControlsShrinkBlinkSize") ?
+                    (Integer) Utils.callMethod(contentViewCore, "getTopControlsHeightPix") : 0;
+        } catch (NoSuchFieldError | NoSuchMethodError e) {
 
         }
         try {
-            return (Boolean) Utils.callMethod(contentViewCore, "doTopControlsShrinkBlinkSize") ?
-                    (Integer) Utils.callMethod(contentViewCore, "getTopControlsHeightPix") : 0;
+            return (Integer) Utils.callMethod(contentViewCore, "getViewportSizeOffsetHeightPix");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
