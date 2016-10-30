@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -737,6 +736,15 @@ public class Controller {
         return null;
     }
 
+    Object getContentView() {
+        try {
+            return XposedHelpers.getObjectField(getContentViewCore(), "mContainerViewInternals");
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
+        }
+        return new Object();
+    }
+
     public Boolean touchScrollInProgress() {
         try {
             Object contentViewCore = getContentViewCore();
@@ -749,18 +757,17 @@ public class Controller {
         return false;
     }
 
-    void scroll(Object contentViewCore, int yVel, int y) {
+    void scroll(Object contentView, int yVel, int y) {
         try {
             float density = mActivity.getResources().getDisplayMetrics().density + 1;
-            Utils.callMethod(contentViewCore, "flingViewport", SystemClock.uptimeMillis(), 0, (int) (yVel * density));
+            Utils.callMethod(getContentViewCore(), "flingViewport", SystemClock.uptimeMillis(), 0, (int) (yVel * density));
             return;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            Integer x = (Integer) Utils.callMethod(contentViewCore, "computeHorizontalScrollOffset");
-            ViewGroup containerView = (ViewGroup) Utils.callMethod(contentViewCore, "getContainerView");
-            Utils.callMethod(containerView, "scrollTo", x, y);
+            Integer x = (Integer) Utils.callMethod(contentView, "computeHorizontalScrollOffset");
+            Utils.callMethod(contentView, "scrollTo", x, y);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }

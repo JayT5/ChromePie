@@ -402,10 +402,10 @@ class Item_scroll_to_top extends PieItem {
     @Override
     public void onClick(Controller control) {
         try {
-            Object contentViewCore = control.getContentViewCore();
-            Integer scrollOffset = (Integer) Utils.callMethod(contentViewCore, "computeVerticalScrollOffset");
-            Integer scrollExtent = (Integer) Utils.callMethod(contentViewCore, "computeVerticalScrollExtent");
-            control.scroll(contentViewCore, scrollOffset + scrollExtent, -control.getTopControlsDimen());
+            Object contentView = control.getContentView();
+            Integer scrollOffset = (Integer) Utils.callMethod(contentView, "computeVerticalScrollOffset");
+            Integer scrollExtent = (Integer) Utils.callMethod(contentView, "computeVerticalScrollExtent");
+            control.scroll(contentView, scrollOffset + scrollExtent, -control.getTopControlsDimen());
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -425,10 +425,10 @@ class Item_scroll_to_bottom extends PieItem {
     @Override
     public void onClick(Controller control) {
         try {
-            Object contentViewCore = control.getContentViewCore();
-            Integer scrollRange = (Integer) Utils.callMethod(contentViewCore, "computeVerticalScrollRange");
-            Integer scrollOffset = (Integer) Utils.callMethod(contentViewCore, "computeVerticalScrollOffset");
-            control.scroll(contentViewCore, -scrollRange + scrollOffset, scrollRange);
+            Object contentView = control.getContentView();
+            Integer scrollRange = (Integer) Utils.callMethod(contentView, "computeVerticalScrollRange");
+            Integer scrollOffset = (Integer) Utils.callMethod(contentView, "computeVerticalScrollOffset");
+            control.scroll(contentView, -scrollRange + scrollOffset, scrollRange);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
