@@ -1,8 +1,5 @@
 package com.jt5.xposed.chromepie;
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.res.Resources;
 import android.content.res.XModuleResources;
@@ -10,6 +7,9 @@ import android.os.Handler;
 import android.view.ViewGroup;
 
 import com.jt5.xposed.chromepie.settings.PieSettings;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import de.robv.android.xposed.IXposedHookInitPackageResources;
 import de.robv.android.xposed.IXposedHookLoadPackage;
@@ -28,16 +28,6 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     private XModuleResources mModRes;
     private XSharedPreferences mXPreferences;
 
-    private static final List<String> CHROME_ACTIVITY_CLASSES = Arrays.asList(
-            "org.chromium.chrome.browser.ChromeTabbedActivity",
-            "org.chromium.chrome.browser.document.DocumentActivity",
-            "org.chromium.chrome.browser.document.IncognitoDocumentActivity",
-            "com.google.android.apps.chrome.ChromeTabbedActivity",
-            "com.google.android.apps.chrome.document.DocumentActivity",
-            "com.google.android.apps.chrome.document.IncognitoDocumentActivity",
-            "com.google.android.apps.chrome.Main"
-    );
-
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
@@ -47,14 +37,20 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
 
     @Override
     public void handleInitPackageResources(InitPackageResourcesParam resparam) throws Throwable {
-        if (PieSettings.CHROME_PACKAGE_NAMES.contains(resparam.packageName)) {
+        Utils.reloadPreferences(mXPreferences);
+        Set<String> extraPkgs = mXPreferences.getStringSet("extra_packages", new HashSet<String>());
+        if (PieSettings.CHROME_PACKAGE_NAMES.contains(resparam.packageName) ||
+                extraPkgs.contains(resparam.packageName)) {
             mModRes = XModuleResources.createInstance(MODULE_PATH, resparam.res);
         }
     }
 
     @Override
     public void handleLoadPackage(final LoadPackageParam lpparam) throws Throwable {
-        if (PieSettings.CHROME_PACKAGE_NAMES.contains(lpparam.packageName)) {
+        Utils.reloadPreferences(mXPreferences);
+        Set<String> extraPkgs = mXPreferences.getStringSet("extra_packages", new HashSet<String>());
+        if (PieSettings.CHROME_PACKAGE_NAMES.contains(lpparam.packageName) ||
+                extraPkgs.contains(lpparam.packageName)) {
             initHooks(lpparam.classLoader);
         }
     }
@@ -64,7 +60,7 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 final Activity activity = (Activity) param.thisObject;
-                if (!CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
+                if (!PieSettings.CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
                     return;
                 }
                 if (XposedHelpers.getAdditionalInstanceField(activity, "pie_control") == null &&
@@ -78,7 +74,7 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 final Activity activity = (Activity) param.thisObject;
-                if (!CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
+                if (!PieSettings.CHROME_ACTIVITY_CLASSES.contains(activity.getClass().getName())) {
                     return;
                 }
                 PieControl control = (PieControl) XposedHelpers.getAdditionalInstanceField(activity, "pie_control");

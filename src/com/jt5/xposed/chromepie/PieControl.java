@@ -16,16 +16,10 @@
 
 package com.jt5.xposed.chromepie;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.content.res.XModuleResources;
-import android.graphics.Color;
-import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +31,10 @@ import android.widget.TextView;
 
 import com.jt5.xposed.chromepie.view.BaseItem;
 import com.jt5.xposed.chromepie.view.PieMenu;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodHook.Unhook;
@@ -67,7 +65,7 @@ public class PieControl implements PieMenu.PieController {
         mController = new Controller(mChromeActivity, classLoader);
         mXResources = res;
         mXPreferences = prefs;
-        reloadPreferences();
+        Utils.reloadPreferences(mXPreferences);
         mItemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
         mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit",
                 "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver", "expand_notifications",
@@ -76,15 +74,6 @@ public class PieControl implements PieMenu.PieController {
         mApplyThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
         if (mController.isDocumentMode() && mXPreferences.getBoolean("enable_document_tab_switcher", false)) {
             enableTabSwitcherInDocumentMode();
-        }
-    }
-
-    private void reloadPreferences() {
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
-        try {
-            mXPreferences.reload();
-        } finally {
-            StrictMode.setThreadPolicy(oldPolicy);
         }
     }
 
@@ -180,28 +169,27 @@ public class PieControl implements PieMenu.PieController {
         mPie.clearItems();
         final Map<String, ?> keyMap = mXPreferences.getAll();
         if (keyMap.isEmpty()) {
-            XposedBridge.log(TAG + "Failed to load preferences. Can read file: " + mXPreferences.getFile().canRead());
+            XposedBridge.log(TAG + "Failed to load preferences");
             return;
         }
         for (int i = 1; i <= MAX_SLICES; i++) {
             if (mXPreferences.getBoolean("screen_slice_" + i, false)) {
-                String key = "slice_" + i + "_item_" + i;
-                BaseItem item = initItem(values, drawables, actions, keyMap, key);
+                String value = (String) keyMap.get("slice_" + i + "_item_" + i);
+                BaseItem item = initItem(values, drawables, actions, value);
                 mPie.addItem(item);
                 for (int j = 1; j <= MAX_SLICES; j++) {
                     if (i == j) {
                         continue;
                     }
-                    key = "slice_" + i + "_item_" + j;
-                    item.addItem(initItem(values, drawables, actions, keyMap, key));
+                    value = (String) keyMap.get("slice_" + i + "_item_" + j);
+                    item.addItem(initItem(values, drawables, actions, value));
                 }
             }
         }
         drawables.recycle();
     }
 
-    private BaseItem initItem(List<String> values, TypedArray drawables, String[] actions, Map<String, ?> keyMap, String key) {
-        String value = (String) keyMap.get(key);
+    private BaseItem initItem(List<String> values, TypedArray drawables, String[] actions, String value) {
         if (value != null && !value.equals("none")) {
             int index = values.indexOf(value);
             if (index >= 0) {

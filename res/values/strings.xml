@@ -28,6 +28,9 @@
     <string name="chrome_killed">Chrome killed</string>
     <string name="chrome_not_found">Chrome not found</string>
     <string name="chrome_app_chooser">Select app</string>
+    <string name="check_new_browsers">Check for new browsers</string>
+    <string name="new_browser_added">Support for %s added</string>
+    <string name="no_new_browsers">No new supported browsers found</string>
     
     <string name="edit_pie_menu_title">Pie menu</string>
     <string name="edit_pie_menu_summary">Edit Pie menu items</string>

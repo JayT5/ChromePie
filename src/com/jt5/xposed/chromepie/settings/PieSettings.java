@@ -1,9 +1,5 @@
 package com.jt5.xposed.chromepie.settings;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -24,6 +20,11 @@ import android.widget.Toast;
 
 import com.jt5.xposed.chromepie.R;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+
 public class PieSettings extends PreferenceActivity {
 
     private Fragment mCurrentFragment;
@@ -41,6 +42,16 @@ public class PieSettings extends PreferenceActivity {
         "com.rsbrowser.browser",
         "com.mokee.yubrowser",
         "com.hsv.freeadblockerbrowser"
+    );
+
+    public static final List<String> CHROME_ACTIVITY_CLASSES = Arrays.asList(
+            "org.chromium.chrome.browser.ChromeTabbedActivity",
+            "org.chromium.chrome.browser.document.DocumentActivity",
+            "org.chromium.chrome.browser.document.IncognitoDocumentActivity",
+            "com.google.android.apps.chrome.ChromeTabbedActivity",
+            "com.google.android.apps.chrome.document.DocumentActivity",
+            "com.google.android.apps.chrome.document.IncognitoDocumentActivity",
+            "com.google.android.apps.chrome.Main"
     );
 
     @Override
@@ -82,9 +93,6 @@ public class PieSettings extends PreferenceActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.actionbar_kill:
-                killChrome(false);
-                return true;
             case R.id.menu_help:
                 showHelpDialog();
                 return true;
@@ -116,8 +124,8 @@ public class PieSettings extends PreferenceActivity {
         dlgBuilder.show();
     }
 
-    void killChrome(boolean launch) {
-        List<Intent> chromeApps = getInstalledApps();
+    void killChrome(Set<String> extraPkgs, boolean launch) {
+        List<Intent> chromeApps = getInstalledApps(extraPkgs);
         if (chromeApps.isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.chrome_not_found), Toast.LENGTH_SHORT).show();
         } else {
@@ -136,11 +144,12 @@ public class PieSettings extends PreferenceActivity {
         }
     }
 
-    private List<Intent> getInstalledApps() {
+    private List<Intent> getInstalledApps(Set<String> extraPkgs) {
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         PackageManager pm = getPackageManager();
         List<Intent> apps = new ArrayList<Intent>();
-        for (String packageName : CHROME_PACKAGE_NAMES) {
+        extraPkgs.addAll(CHROME_PACKAGE_NAMES);
+        for (String packageName : extraPkgs) {
             Intent launch = pm.getLaunchIntentForPackage(packageName);
             if (launch != null) {
                 am.killBackgroundProcesses(packageName);

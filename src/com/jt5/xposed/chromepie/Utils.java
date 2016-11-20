@@ -1,9 +1,12 @@
 package com.jt5.xposed.chromepie;
 
+import android.os.StrictMode;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.robv.android.xposed.XSharedPreferences;
 import de.robv.android.xposed.XposedHelpers;
 
 public class Utils {
@@ -83,6 +86,15 @@ public class Utils {
         CLASS_SHORTCUT_HELPER = getClass(classLoader, shortcutHelper);
         CLASS_TAB_LAUNCH_TYPE = getClass(classLoader, tabLaunchType);
         CLASS_SHARE_HELPER = getClass(classLoader, shareHelper);
+    }
+
+    static void reloadPreferences(XSharedPreferences prefs) {
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+        try {
+            prefs.reload();
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
+        }
     }
 
     private static Class<?> getClass(ClassLoader classLoader, String[] classes) {
