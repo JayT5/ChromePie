@@ -338,7 +338,10 @@ public class Controller {
 
     void showOverview() {
         try {
-            Utils.callMethod(getLayoutManager(), "showOverview", true);
+            Object layout = getLayoutManager();
+            if (layout != null) {
+                Utils.callMethod(layout, "showOverview", true);
+            }
             return;
         } catch (NoSuchMethodError nsme) {
 
@@ -492,8 +495,11 @@ public class Controller {
 
     private Object getFullscreenHandler() {
         try {
-            Object fullscreenManager = Utils.callMethod(getLayoutManager(), "getFullscreenManager");
-            return XposedHelpers.getObjectField(fullscreenManager, "mHtmlApiHandler");
+            Object layout = getLayoutManager();
+            if (layout != null) {
+                Object fullscreenManager = Utils.callMethod(layout, "getFullscreenManager");
+                return XposedHelpers.getObjectField(fullscreenManager, "mHtmlApiHandler");
+            }
         } catch (NoSuchMethodError | NoSuchFieldError e) {
             XposedBridge.log(TAG + e);
         }
