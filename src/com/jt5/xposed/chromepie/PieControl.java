@@ -20,6 +20,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.content.res.XModuleResources;
+import android.content.res.XmlResourceParser;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +33,11 @@ import android.widget.TextView;
 import com.jt5.xposed.chromepie.view.BaseItem;
 import com.jt5.xposed.chromepie.view.PieMenu;
 
+import org.xmlpull.v1.XmlPullParser;
+
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -155,13 +160,14 @@ public class PieControl implements PieMenu.PieController {
         final TypedArray drawables = mXResources.obtainTypedArray(R.array.pie_item_dark_drawables);
         final String[] actions = mXResources.getStringArray(R.array.pie_item_actions);
         mPie.clearItems();
-        final Map<String, ?> keyMap = mXPreferences.getAll();
+        Map<String, ?> keyMap = mXPreferences.getAll();
         if (keyMap.isEmpty()) {
-            XposedBridge.log(TAG + "Failed to load preferences");
-            return;
+            XposedBridge.log(TAG + "Failed to load preferences, using default values");
+            keyMap = createDefaultsMap();
         }
         for (int i = 1; i <= MAX_SLICES; i++) {
-            if (mXPreferences.getBoolean("screen_slice_" + i, false)) {
+            Boolean enabled = (Boolean) keyMap.get("screen_slice_" + i);
+            if (enabled != null && enabled) {
                 String value = (String) keyMap.get("slice_" + i + "_item_" + i);
                 BaseItem item = initItem(values, drawables, actions, value);
                 mPie.addItem(item);
@@ -175,6 +181,35 @@ public class PieControl implements PieMenu.PieController {
             }
         }
         drawables.recycle();
+    }
+
+    private Map<String, ?> createDefaultsMap() {
+        Map<String, Object> map = new HashMap<>();
+        XmlResourceParser parser = mXResources.getXml(R.xml.aosp_preferences);
+        String namespace = "http://schemas.android.com/apk/res/android";
+        try {
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    if (parser.getName().equals("SwitchPreference")) {
+                        String key = parser.getAttributeValue(namespace, "key");
+                        boolean value = parser.getAttributeBooleanValue(namespace, "defaultValue", true);
+                        map.put(key, value);
+                    } else if (parser.getName().equals("ListPreference")) {
+                        String key = parser.getAttributeValue(namespace, "key");
+                        String value = parser.getAttributeValue(namespace, "defaultValue");
+                        map.put(key, value);
+                    }
+                }
+                eventType = parser.next();
+            }
+        } catch (Exception e) {
+            XposedBridge.log(TAG + e);
+            parser.close();
+            return Collections.emptyMap();
+        }
+        parser.close();
+        return map;
     }
 
     private BaseItem initItem(List<String> values, TypedArray drawables, String[] actions, String value) {
