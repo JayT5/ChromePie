@@ -26,18 +26,15 @@ import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 
 public class Controller {
 
-    private static final String TAG = "ChromePie:Controller: ";
+    static final String TAG = "ChromePie:Controller: ";
     private final ClassLoader mClassLoader;
-    private final Activity mActivity;
+    final Activity mActivity;
     private Unhook mFullscreenWindowFocusHook;
-    private final Boolean mIsDocumentMode;
     private final Menu mMenu;
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
         mActivity = chromeActivity;
-        Utils.initialise(mClassLoader);
-        mIsDocumentMode = isDocumentMode();
         PopupMenu popup = new PopupMenu(mActivity, null);
         mMenu = popup.getMenu();
     }
@@ -87,41 +84,19 @@ public class Controller {
         }
     }
 
-    private Object getDocumentModel(boolean incognito) {
-        try {
-            return Utils.callMethod(Utils.callStaticMethod(Utils.CLASS_CHROME_APPLICATION, "getDocumentTabModelSelector"), "getModel", incognito);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
-        return new Object();
-    }
-
     Object getTabModel() {
-        if (isDocumentMode()) {
-            try {
-                return XposedHelpers.getObjectField(mActivity, "mTabModel");
-            } catch (NoSuchFieldError nsfe) {
+        try {
+            return Utils.callMethod(mActivity, "getCurrentTabModel");
+        } catch (NoSuchMethodError nsme) {
 
+        }
+        try {
+            Object modelSelector = XposedHelpers.getObjectField(mActivity, "mTabModelSelector");
+            if (modelSelector != null) {
+                return Utils.callMethod(modelSelector, "getCurrentModel");
             }
-            try {
-                return XposedHelpers.getObjectField(mActivity, "mTabList");
-            } catch (NoSuchFieldError nsfe) {
-                XposedBridge.log(TAG + nsfe);
-            }
-        } else {
-            try {
-                Object modelSelector = XposedHelpers.getObjectField(mActivity, "mTabModelSelector");
-                if (modelSelector != null) {
-                    return Utils.callMethod(modelSelector, "getCurrentModel");
-                }
-            } catch (NoSuchFieldError | NoSuchMethodError e) {
-
-            }
-            try {
-                return Utils.callMethod(mActivity, "getCurrentTabModel");
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
-            }
+        } catch (NoSuchFieldError | NoSuchMethodError e) {
+            XposedBridge.log(TAG + e);
         }
         return new Object();
     }
@@ -139,7 +114,7 @@ public class Controller {
         return getTabAt(getTabIndex(getCurrentTab()) + i) != null;
     }
 
-    private Object getTabAt(int index) {
+    Object getTabAt(int index) {
         try {
             return Utils.callMethod(getTabModel(), "getTabAt", index);
         } catch (NoSuchMethodError nsme) {
@@ -147,15 +122,6 @@ public class Controller {
         }
         try {
             return Utils.callMethod(getTabModel(), "getTab", index);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
-        return null;
-    }
-
-    private Object getTabById(int id) {
-        try {
-            return Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "getTabById", getTabModel(), id);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -171,16 +137,6 @@ public class Controller {
         }
         try {
             Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "setIndex", getTabModel(), index);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
-    }
-
-    private void showNextTab(Object tab) {
-        try {
-            Object model = getDocumentModel((Boolean) Utils.callMethod(tab, "isIncognito"));
-            int index = (Integer) Utils.callMethod(model, "indexOf", tab);
-            Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "setIndex", model, index);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -264,42 +220,6 @@ public class Controller {
         }
     }
 
-    void closeDocumentTab() {
-        Object nextTab = getNextTabIfClosed();
-        closeCurrentTab();
-        if (nextTab != null) {
-            showNextTab(nextTab);
-        }
-    }
-
-    private Object getNextTabIfClosed() {
-        Object tabToClose = getCurrentTab();
-        try {
-            int closingTabIndex = getTabIndex(tabToClose);
-            Object adjacentTab = getTabAt((closingTabIndex == 0) ? 1 : closingTabIndex - 1);
-            Object parentTab = getTabById((Integer) Utils.callMethod(tabToClose, "getParentId"));
-
-            // Determine which tab to select next according to these rules:
-            // * Select the parent tab if it exists.
-            // * Otherwise, select an adjacent tab if one exists.
-            // * Otherwise, if closing the last incognito tab, select the current normal tab.
-            // * Otherwise, select nothing.
-
-            Object nextTab = null;
-            if (parentTab != null) {
-                nextTab = parentTab;
-            } else if (adjacentTab != null) {
-                nextTab = adjacentTab;
-            } else if (isIncognito()) {
-                nextTab = Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "getCurrentTab", getDocumentModel(false));
-            }
-            return nextTab;
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
-        return null;
-    }
-
     public int getTabCount() {
         try {
             return (Integer) Utils.callMethod(getTabModel(), "getCount");
@@ -353,28 +273,8 @@ public class Controller {
         }
     }
 
-    void documentModeToggleOverview() {
-        try {
-            Object layout = getLayoutManager();
-            if (layout != null) {
-                Utils.callMethod(layout, "toggleOverview");
-            }
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
-    }
-
-    Boolean isTabSwitchingEnabledInDocumentMode() {
-        try {
-            return (Boolean) Utils.callStaticMethod(Utils.CLASS_FEATURE_UTILS, "isTabSwitchingEnabledInDocumentModeInternal");
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        return false;
-    }
-
     public Boolean isInOverview() {
-        if (isTablet() || (isDocumentMode() && !isTabSwitchingEnabledInDocumentMode())) {
+        if (isTablet() || isDocumentMode()) {
             return getTabCount() == 0;
         }
         try {
@@ -393,29 +293,21 @@ public class Controller {
         return false;
     }
 
-    private Object getLayoutManager() {
-        if (isDocumentMode()) {
-            try {
-                return Utils.callMethod(Utils.callMethod(mActivity, "getCompositorViewHolder"), "getLayoutManager");
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
-            }
-        } else {
-            try {
-                return XposedHelpers.getObjectField(mActivity, "mLayoutManager");
-            } catch (NoSuchFieldError nsfe) {
+    Object getLayoutManager() {
+        try {
+            return XposedHelpers.getObjectField(mActivity, "mLayoutManager");
+        } catch (NoSuchFieldError nsfe) {
 
-            }
-            try {
-                return Utils.callMethod(mActivity, "getLayoutManager");
-            } catch (NoSuchMethodError nsme) {
+        }
+        try {
+            return Utils.callMethod(mActivity, "getLayoutManager");
+        } catch (NoSuchMethodError nsme) {
 
-            }
-            try {
-                return Utils.callMethod(mActivity, "getAndSetupOverviewLayout");
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
-            }
+        }
+        try {
+            return Utils.callMethod(mActivity, "getAndSetupOverviewLayout");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
         }
         return null;
     }
@@ -813,20 +705,6 @@ public class Controller {
     }
 
     Boolean isDocumentMode() {
-        if (mIsDocumentMode != null) {
-            return mIsDocumentMode;
-        }
-        try {
-            return (Boolean) Utils.callStaticMethod(Utils.CLASS_FEATURE_UTILS, "isDocumentMode", mActivity);
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            Class<?> featureUtilsInternal = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", mClassLoader);
-            return (Boolean) Utils.callStaticMethod(featureUtilsInternal, "isDocumentMode", mActivity);
-        } catch (ClassNotFoundError | NoSuchMethodError e) {
-            XposedBridge.log(TAG + e);
-        }
         return false;
     }
 
@@ -925,16 +803,9 @@ public class Controller {
         try {
             return (Integer) Utils.callMethod(tab, "getThemeColor");
         } catch (NoSuchMethodError nsme) {
-
+            XposedBridge.log(TAG + nsme);
         }
-        if (isDocumentMode()) {
-            try {
-                return (Integer) Utils.callMethod(mActivity, "getThemeColor");
-            } catch (NoSuchMethodError nsme) {
-
-            }
-        }
-        return 0;
+        return getDefaultPrimaryColor();
     }
 
     public Integer getStatusBarColor(int color) {
@@ -947,7 +818,7 @@ public class Controller {
         return Color.HSVToColor(statusColor);
     }
 
-    private Object getToolbarManager() {
+    Object getToolbarManager() {
         try {
             return XposedHelpers.getObjectField(mActivity, "mToolbarManager");
         } catch (NoSuchFieldError nsfe) {
@@ -959,12 +830,7 @@ public class Controller {
         } catch (NoSuchFieldError nsfe) {
 
         }
-        try {
-            Object helper = XposedHelpers.getObjectField(mActivity, "mDocumentToolbarHelper");
-            return XposedHelpers.getObjectField(helper, "mToolbarManager");
-        } catch (NoSuchFieldError nsfe) {
-            return new Object();
-        }
+        return new Object();
     }
 
     Object getDataReductionSettings() {

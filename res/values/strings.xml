@@ -3,19 +3,19 @@
 
     <string name="app_name">ChromePie</string>
     <string name="app_description">Add Pie Controls to Google Chrome</string>
-    <string name="app_thread_link">Check out the <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">official 
+    <string name="app_thread_link">Check out the <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">official
     thread at XDA Developers</a> for support and feedback</string>
-    <string name="app_about">ChromePie is an Xposed module which adds customisable Pie Controls 
+    <string name="app_about">ChromePie is an Xposed module which adds customisable Pie Controls
         to Google Chrome and Google Chrome Beta.\n\n
         Actions include:
         \n•   Back, forward, refresh, new tab, new incognito tab, close tab
         \n•   Add bookmark, history, request desktop site, find in page
         \n•   Add to home, share, scroll to top, full screen &amp; more
     </string>
-    <string name="app_help">Tap \'Add new slice\' to add a main item which will be initially 
-        displayed when the menu is opened. These main items can contain sub-items which 
-        appear when you move your finger onto a main item. The number of sub-items 
-        displayed is equal to the number of main items created. To perform an action, lift 
+    <string name="app_help">Tap \'Add new slice\' to add a main item which will be initially
+        displayed when the menu is opened. These main items can contain sub-items which
+        appear when you move your finger onto a main item. The number of sub-items
+        displayed is equal to the number of main items created. To perform an action, lift
         your finger when selecting an item. Any changes require Chrome to be restarted.
     </string>
     <string name="app_version">Version: %s</string>
@@ -31,41 +31,38 @@
     <string name="check_new_browsers">Check for new browsers</string>
     <string name="new_browser_added">Support for %s added</string>
     <string name="no_new_browsers">No new supported browsers found</string>
-    
+
     <string name="edit_pie_menu_title">Pie menu</string>
     <string name="edit_pie_menu_summary">Edit Pie menu items</string>
-    
+
     <string name="new_slice">Add new slice</string>
     <string name="pie_slices_cat">Pie Slices</string>
     <string name="hide_launcher_icon_title">Hide launcher icon</string>
-    
+
     <string name="trigger_side">Trigger positions</string>
     <string name="ts_right">Right</string>
     <string name="ts_left">Left</string>
     <string name="ts_bottom">Bottom</string>
-    
+
     <string name="pie_size_title">Pie menu size</string>
     <string name="trigger_area_title">Trigger area size</string>
-    
+
     <string name="donate_title">Donate</string>
     <string name="donate_summary">Touch to support development by donating via PayPal</string>
-    
+
     <string name="reposition_menu_title">Ensure pie menu fits on screen</string>
     <string name="reposition_menu_summary">Reposition the pie menu to prevent it getting cut off when activated too high or low on screen</string>
 
     <string name="pie_theme_color_title">Use site theme colours for pie menu</string>
     <string name="pie_theme_color_summary">Only available on supported sites</string>
 
-    <string name="document_tab_switcher_title">Enable tab switcher in merged tabs &amp; apps</string>
-    <string name="document_tab_switcher_summary">This is a Chrome UX experiment &amp; may break or be removed in future updates</string>
-
     <string name="data_saver_enabled">Data saver enabled</string>
     <string name="data_saver_disabled">Data saver disabled</string>
-    
+
     <string name="slice">Slice</string>
     <string name="pie_item">Pie Item</string>
     <string name="main_item">Main item</string>
-    
+
     <!-- Pie items -->
     <string name="none">None</string>
     <string name="back">Back</string>

@@ -146,11 +146,7 @@ class Item_close_tab extends PieItem {
 
     @Override
     public void onClick(Controller control) {
-        if (control.isDocumentMode()) {
-            control.closeDocumentTab();
-        } else {
-            control.closeCurrentTab();
-        }
+        control.closeCurrentTab();
     }
 }
 
@@ -289,15 +285,7 @@ class Item_show_tabs extends PieItem {
 
     @Override
     public void onClick(Controller control) {
-        if (control.isDocumentMode()) {
-            if (control.isTabSwitchingEnabledInDocumentMode()) {
-                control.documentModeToggleOverview();
-            } else {
-                control.toggleRecentApps();
-            }
-        } else {
-            control.showOverview();
-        }
+        control.showOverview();
     }
 
     @Override

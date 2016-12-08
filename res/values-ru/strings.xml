@@ -74,8 +74,6 @@
     <string name="recent_apps">Недавние приложения</string>
     <string name="data_saver_disabled">Экономия трафика ВЫКЛ</string>
     <string name="data_saver_enabled">Экономия трафика ВКЛ</string>
-    <string name="document_tab_switcher_summary">Экспериментальная функция Chrome UX. Может не работать, может быть удалена в будущих обновлениях</string>
-    <string name="document_tab_switcher_title">Вкладки в списке приложений</string>
     <string name="expand_notifications">Развернуть уведомления</string>
     <string name="toggle_data_saver">ВКЛ/ВЫКЛ экономию трафика</string>
 </resources>

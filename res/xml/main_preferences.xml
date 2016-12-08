@@ -40,11 +40,6 @@
         android:summary="@string/pie_theme_color_summary"
         android:defaultValue="true" />
     <CheckBoxPreference
-        android:key="enable_document_tab_switcher"
-        android:title="@string/document_tab_switcher_title"
-        android:summary="@string/document_tab_switcher_summary"
-        android:defaultValue="false" />
-    <CheckBoxPreference
         android:key="hide_launcher_icon"
         android:title="@string/hide_launcher_icon_title"
         android:defaultValue="false" />

@@ -1,5 +1,6 @@
 package com.jt5.xposed.chromepie;
 
+import android.content.Context;
 import android.os.StrictMode;
 
 import java.lang.reflect.Method;
@@ -95,6 +96,21 @@ public class Utils {
         } finally {
             StrictMode.setThreadPolicy(oldPolicy);
         }
+    }
+
+    static Boolean isDocumentModeEnabled(Context context, ClassLoader classLoader) {
+        try {
+            return (Boolean) callStaticMethod(CLASS_FEATURE_UTILS, "isDocumentMode", context);
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            Class<?> featureUtilsInternal = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", classLoader);
+            return (Boolean) callStaticMethod(featureUtilsInternal, "isDocumentMode", context);
+        } catch (XposedHelpers.ClassNotFoundError | NoSuchMethodError e) {
+
+        }
+        return false;
     }
 
     private static Class<?> getClass(ClassLoader classLoader, String[] classes) {

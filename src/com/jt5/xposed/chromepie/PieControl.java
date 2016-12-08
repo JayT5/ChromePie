@@ -62,7 +62,12 @@ public class PieControl implements PieMenu.PieController {
 
     PieControl(Activity chromeActivity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mChromeActivity = chromeActivity;
-        mController = new Controller(mChromeActivity, classLoader);
+        Utils.initialise(classLoader);
+        if (Utils.isDocumentModeEnabled(mChromeActivity, classLoader)) {
+            mController = new DocumentController(mChromeActivity, classLoader);
+        } else {
+            mController = new Controller(mChromeActivity, classLoader);
+        }
         mXResources = res;
         mXPreferences = prefs;
         Utils.reloadPreferences(mXPreferences);
@@ -72,23 +77,6 @@ public class PieControl implements PieMenu.PieController {
                 "bookmarks", "history", "most_visited", "recent_tabs");
         applyFullscreen();
         mApplyThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
-        if (mController.isDocumentMode() && mXPreferences.getBoolean("enable_document_tab_switcher", false)) {
-            enableTabSwitcherInDocumentMode();
-        }
-    }
-
-    private void enableTabSwitcherInDocumentMode() {
-        try {
-            XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(Utils.CLASS_FEATURE_UTILS,
-                    "isTabSwitchingEnabledInDocumentModeInternal"), new XC_MethodHook() {
-                @Override
-                protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
-                    param.setResult(true);
-                }
-            });
-        } catch (Throwable t) {
-            XposedBridge.log(TAG + "Document mode tab switcher not supported in this build of Chrome");
-        }
     }
 
     void attachToContainer(ViewGroup container) {

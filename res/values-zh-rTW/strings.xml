@@ -26,22 +26,22 @@
     <string name="chrome_killed">Chrome 已停止</string>
     <string name="chrome_not_found">未發現 Chrome</string>
     <string name="chrome_app_chooser">選擇程式</string>
-    
+
     <string name="edit_pie_menu_title">圓餅選單</string>
     <string name="edit_pie_menu_summary">編輯圓餅選單項目</string>
-    
+
     <string name="new_slice">新增項目</string>
     <string name="pie_slices_cat">圓餅項目</string>
     <string name="hide_launcher_icon_title">隱藏程式圖標</string>
-    
+
     <string name="trigger_side">觸發位置</string>
     <string name="ts_right">右</string>
     <string name="ts_left">左</string>
     <string name="ts_bottom">底</string>
-    
+
     <string name="pie_size_title">圓餅選單大小</string>
     <string name="trigger_area_title">觸發範圍大小</string>
-    
+
     <string name="donate_title">捐贈</string>
     <string name="donate_summary">使用PayPal捐贈給開發人員</string>
 
@@ -50,17 +50,14 @@
 
     <string name="pie_theme_color_title">使用網站的顏色(圓餅選單)</string>
     <string name="pie_theme_color_summary">僅可於支援的網站中使用</string>
-    
-    <string name="document_tab_switcher_title">在合併標籤頁和程式，啟用標籤頁切換器</string>
-    <string name="document_tab_switcher_summary">這是Chrome UX實驗功能，可能會崩潰或在未來的更新中移除</string>
-    
+
     <string name="data_saver_enabled">Data saver 已開啟</string>
     <string name="data_saver_disabled">Data saver 已關閉</string>
 
     <string name="slice">主項目</string>
     <string name="pie_item">子項目</string>
     <string name="main_item">主項目</string>
-    
+
     <!-- Pie items -->
     <string name="none">無</string>
     <string name="back">上一頁</string>

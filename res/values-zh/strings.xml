@@ -50,8 +50,6 @@
 
     <string name="pie_theme_color_title">使用网站的颜色(pie菜单)</string>
     <string name="pie_theme_color_summary">只能在支持的网站中使用</string>
-    <string name="document_tab_switcher_title">在合并的标签页和应用中启用tab切换器</string>
-    <string name="document_tab_switcher_summary">这是一个chrome UX的实验性功能且可能引发应用崩溃或在未来的更新中移除</string>
     <string name="slice">主项目</string>
     <string name="pie_item">子项目</string>
     <string name="main_item">主项目</string>
