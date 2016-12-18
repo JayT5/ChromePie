@@ -843,6 +843,31 @@ public class Controller {
         return new Object();
     }
 
+    Boolean isDataReductionEnabled(Object dataSettings) {
+        try {
+            return (Boolean) Utils.callMethod(dataSettings, "isDataReductionProxyEnabled");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return false;
+    }
+
+    boolean setDataReductionEnabled(Object dataSettings, boolean enabled) {
+        try {
+            Utils.callMethod(dataSettings, "setDataReductionProxyEnabled", !enabled);
+            return true;
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            Utils.callMethod(dataSettings, "setDataReductionProxyEnabled", mActivity, !enabled);
+            return true;
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return false;
+    }
+
     Boolean isDownloadHomeEnabled() {
         try {
             Class<?> downloadUtils = XposedHelpers.findClass("org.chromium.chrome.browser.download.DownloadUtils", mClassLoader);

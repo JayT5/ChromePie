@@ -603,30 +603,23 @@ class Item_toggle_data_saver extends PieItem {
     @Override
     protected void onOpen(Controller control, XModuleResources resources) {
         if (mResources == null) mResources = resources;
-        try {
-            boolean enabled = (Boolean) Utils.callMethod(control.getDataReductionSettings(), "isDataReductionProxyEnabled");
-            if (enabled) {
-                ((ImageView) getView()).setColorFilter(0xFF676f73);
-                ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_data_saver_off_white));
-            } else {
-                ((ImageView) getView()).setColorFilter(null);
-                ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_data_saver_white));
-            }
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+        ImageView view = (ImageView) getView();
+        if (control.isDataReductionEnabled(control.getDataReductionSettings())) {
+            view.setColorFilter(0x99000000);
+            view.setImageDrawable(resources.getDrawable(R.drawable.ic_data_saver_off_white));
+        } else {
+            view.setColorFilter(null);
+            view.setImageDrawable(resources.getDrawable(R.drawable.ic_data_saver_white));
         }
     }
 
     @Override
     public void onClick(Controller control) {
-        try {
-            Object dataSettings = control.getDataReductionSettings();
-            boolean enabled = (Boolean) Utils.callMethod(dataSettings, "isDataReductionProxyEnabled");
-            Utils.callMethod(dataSettings, "setDataReductionProxyEnabled", control.getChromeActivity(), !enabled);
+        Object dataSettings = control.getDataReductionSettings();
+        boolean enabled = control.isDataReductionEnabled(dataSettings);
+        if (control.setDataReductionEnabled(dataSettings, enabled)) {
             Toast.makeText(control.getChromeActivity(), mResources.getString(enabled ?
                     R.string.data_saver_disabled : R.string.data_saver_enabled), Toast.LENGTH_SHORT).show();
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
         }
     }
 }
