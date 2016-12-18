@@ -16,6 +16,7 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.BaseAdapter;
 
@@ -121,6 +122,11 @@ public class MenuPreferenceFragment extends PreferenceFragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.removeItem(R.id.menu_check_extra_packages);
     }
 
 }
