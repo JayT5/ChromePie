@@ -3,7 +3,6 @@ package com.jt5.xposed.chromepie;
 import android.app.Activity;
 
 import de.robv.android.xposed.XposedBridge;
-import de.robv.android.xposed.XposedHelpers;
 
 class DocumentController extends Controller {
 
@@ -19,12 +18,12 @@ class DocumentController extends Controller {
     @Override
     Object getTabModel() {
         try {
-            return XposedHelpers.getObjectField(mActivity, "mTabModel");
+            return Utils.getObjectField(mActivity, "mTabModel");
         } catch (NoSuchFieldError nsfe) {
 
         }
         try {
-            return XposedHelpers.getObjectField(mActivity, "mTabList");
+            return Utils.getObjectField(mActivity, "mTabList");
         } catch (NoSuchFieldError nsfe) {
 
         }
@@ -44,8 +43,8 @@ class DocumentController extends Controller {
     @Override
     Object getToolbarManager() {
         try {
-            Object helper = XposedHelpers.getObjectField(mActivity, "mDocumentToolbarHelper");
-            return XposedHelpers.getObjectField(helper, "mToolbarManager");
+            Object helper = Utils.getObjectField(mActivity, "mDocumentToolbarHelper");
+            return Utils.getObjectField(helper, "mToolbarManager");
         } catch (NoSuchFieldError nsfe) {
 
         }

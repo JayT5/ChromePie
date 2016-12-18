@@ -91,7 +91,7 @@ public class Controller {
 
         }
         try {
-            Object modelSelector = XposedHelpers.getObjectField(mActivity, "mTabModelSelector");
+            Object modelSelector = Utils.getObjectField(mActivity, "mTabModelSelector");
             if (modelSelector != null) {
                 return Utils.callMethod(modelSelector, "getCurrentModel");
             }
@@ -182,12 +182,12 @@ public class Controller {
     private Object getTabLaunchType() {
         if (Utils.CLASS_TAB_LAUNCH_TYPE == null) return new Object();
         try {
-            return XposedHelpers.getStaticObjectField(Utils.CLASS_TAB_LAUNCH_TYPE, "FROM_CHROME_UI");
+            return Utils.getStaticObjectField(Utils.CLASS_TAB_LAUNCH_TYPE, "FROM_CHROME_UI");
         } catch (NoSuchFieldError nsfe) {
 
         }
         try {
-            return XposedHelpers.getStaticObjectField(Utils.CLASS_TAB_LAUNCH_TYPE, "FROM_MENU_OR_OVERVIEW");
+            return Utils.getStaticObjectField(Utils.CLASS_TAB_LAUNCH_TYPE, "FROM_MENU_OR_OVERVIEW");
         } catch (NoSuchFieldError nsfe) {
 
         }
@@ -295,7 +295,7 @@ public class Controller {
 
     Object getLayoutManager() {
         try {
-            return XposedHelpers.getObjectField(mActivity, "mLayoutManager");
+            return Utils.getObjectField(mActivity, "mLayoutManager");
         } catch (NoSuchFieldError nsfe) {
 
         }
@@ -377,7 +377,7 @@ public class Controller {
         try {
             Object fullscreenHandler = getFullscreenHandler();
             if (fullscreenHandler != null) {
-                return XposedHelpers.getBooleanField(fullscreenHandler, "mIsPersistentMode");
+                return Utils.getBooleanField(fullscreenHandler, "mIsPersistentMode");
             }
         } catch (NoSuchFieldError nsfe) {
             XposedBridge.log(TAG + nsfe);
@@ -390,7 +390,7 @@ public class Controller {
             Object layout = getLayoutManager();
             if (layout != null) {
                 Object fullscreenManager = Utils.callMethod(layout, "getFullscreenManager");
-                return XposedHelpers.getObjectField(fullscreenManager, "mHtmlApiHandler");
+                return Utils.getObjectField(fullscreenManager, "mHtmlApiHandler");
             }
         } catch (NoSuchMethodError | NoSuchFieldError e) {
             XposedBridge.log(TAG + e);
@@ -489,7 +489,7 @@ public class Controller {
     String getChromeUrl(String page) {
         if (Utils.CLASS_URL_CONSTANTS == null) return "chrome-native://newtab/";
         try {
-            return (String) XposedHelpers.getStaticObjectField(Utils.CLASS_URL_CONSTANTS, page);
+            return (String) Utils.getStaticObjectField(Utils.CLASS_URL_CONSTANTS, page);
         } catch (NoSuchFieldError nsfe) {
             XposedBridge.log(TAG + nsfe);
         }
@@ -636,7 +636,7 @@ public class Controller {
 
     Object getContentView() {
         try {
-            return XposedHelpers.getObjectField(getContentViewCore(), "mContainerViewInternals");
+            return Utils.getObjectField(getContentViewCore(), "mContainerViewInternals");
         } catch (NoSuchFieldError nsfe) {
             XposedBridge.log(TAG + nsfe);
         }
@@ -647,7 +647,7 @@ public class Controller {
         try {
             Object contentViewCore = getContentViewCore();
             if (contentViewCore != null) {
-                return XposedHelpers.getBooleanField(contentViewCore, "mTouchScrollInProgress");
+                return Utils.getBooleanField(contentViewCore, "mTouchScrollInProgress");
             }
         } catch (NoSuchFieldError nsfe) {
             XposedBridge.log(TAG + nsfe);
@@ -686,7 +686,7 @@ public class Controller {
             return getTopControlsDimen();
         }
         try {
-            return (Boolean) XposedHelpers.getBooleanField(contentViewCore, "mTopControlsShrinkBlinkSize") ?
+            return (Boolean) Utils.getBooleanField(contentViewCore, "mTopControlsShrinkBlinkSize") ?
                     (Integer) Utils.callMethod(contentViewCore, "getTopControlsHeightPix") : 0;
         } catch (NoSuchFieldError | NoSuchMethodError e) {
 
@@ -726,7 +726,7 @@ public class Controller {
 
         }
         try {
-            return (EditText) XposedHelpers.getObjectField(locationBar, "mUrlBar");
+            return (EditText) Utils.getObjectField(locationBar, "mUrlBar");
         } catch (NoSuchFieldError nsfe) {
             XposedBridge.log(TAG + nsfe);
         }
@@ -820,13 +820,13 @@ public class Controller {
 
     Object getToolbarManager() {
         try {
-            return XposedHelpers.getObjectField(mActivity, "mToolbarManager");
+            return Utils.getObjectField(mActivity, "mToolbarManager");
         } catch (NoSuchFieldError nsfe) {
 
         }
         try {
-            Object helper = XposedHelpers.getObjectField(mActivity, "mToolbarHelper");
-            return XposedHelpers.getObjectField(helper, "mToolbarManager");
+            Object helper = Utils.getObjectField(mActivity, "mToolbarHelper");
+            return Utils.getObjectField(helper, "mToolbarManager");
         } catch (NoSuchFieldError nsfe) {
 
         }

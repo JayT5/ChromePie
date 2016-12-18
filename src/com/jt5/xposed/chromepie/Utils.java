@@ -3,16 +3,22 @@ package com.jt5.xposed.chromepie;
 import android.content.Context;
 import android.os.StrictMode;
 
+import org.apache.commons.lang3.ClassUtils;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.robv.android.xposed.XSharedPreferences;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class Utils {
 
-    private static final Map<Class<?>, Class<?>> WRAPPERS_TO_PRIMITIVES = getWrappersMap();
+    private static final Map<String, Field> fieldCache = new HashMap<>();
+    private static final Map<String, Method> methodCache = new HashMap<>();
 
     static Class<?> CLASS_TAB_MODEL_UTILS;
     static Class<?> CLASS_LOAD_URL_PARAMS;
@@ -129,15 +135,15 @@ public class Utils {
             throw new NoSuchMethodError("NullPointerException for method: " + methodName);
         }
         try {
-            return XposedHelpers.callMethod(obj, methodName, args);
-        } catch (NoSuchMethodError e) {
-            throw e;
-        } catch (NoClassDefFoundError e) {
             try {
-                return manualMethodFind(obj.getClass(), methodName, args).invoke(obj, args);
-            } catch (Throwable t) {
-                throw new NoSuchMethodError(t.getMessage());
+                return XposedHelpers.callMethod(obj, methodName, args);
+            } catch (NoSuchMethodError e) {
+                return findMethodBestMatch(obj.getClass(), methodName, XposedHelpers.getParameterTypes(args)).invoke(obj, args);
+            } catch (NoClassDefFoundError e) {
+                return findMethodExact(obj.getClass(), methodName, getPrimitiveParameterTypes(args)).invoke(obj, args);
             }
+        } catch (Throwable t) {
+            throw new NoSuchMethodError(t.getMessage());
         }
     }
 
@@ -146,40 +152,81 @@ public class Utils {
             throw new NoSuchMethodError("ClassNotFoundError for static method: " + methodName);
         }
         try {
-            return XposedHelpers.callStaticMethod(clazz, methodName, args);
-        } catch (NoSuchMethodError e) {
-            throw e;
-        } catch (NoClassDefFoundError e) {
             try {
-                return manualMethodFind(clazz, methodName, args).invoke(null, args);
-            } catch (Throwable t) {
-                throw new NoSuchMethodError(t.getMessage());
+                return XposedHelpers.callStaticMethod(clazz, methodName, args);
+            } catch (NoSuchMethodError e) {
+                return findMethodBestMatch(clazz, methodName, XposedHelpers.getParameterTypes(args)).invoke(null, args);
+            } catch (NoClassDefFoundError e) {
+                return findMethodExact(clazz, methodName, getPrimitiveParameterTypes(args)).invoke(null, args);
             }
+        } catch (Throwable t) {
+            throw new NoSuchMethodError(t.getMessage());
         }
     }
 
-    private static Method manualMethodFind(Class<?> clazz, String methodName, Object... args) {
+    private static Method findMethodBestMatch(Class<?> clazz, String methodName, Class<?>[] parameterTypes) {
+        String fullMethodName = clazz.getName() + '#' + methodName + getParametersString(parameterTypes) + "#bestmatch";
+
+        if (methodCache.containsKey(fullMethodName)) {
+            Method method = methodCache.get(fullMethodName);
+            if (method == null)
+                throw new NoSuchMethodError(fullMethodName);
+            return method;
+        }
+
+        Method bestMatch = null;
+        Class<?> clz = clazz;
+        boolean considerPrivateMethods = true;
+        do {
+            for (Method method : clz.getDeclaredMethods()) {
+                // don't consider private methods of superclasses
+                if (!considerPrivateMethods && Modifier.isPrivate(method.getModifiers()))
+                    continue;
+
+                // compare name and parameters
+                if ((method.getName().equals(methodName) || method.getName().startsWith(methodName + "$"))
+                        && ClassUtils.isAssignable(parameterTypes, method.getParameterTypes(), true)) {
+                    // get accessible version of method
+                    bestMatch = method;
+                    break;
+                }
+            }
+            considerPrivateMethods = false;
+        } while ((clz = clz.getSuperclass()) != null);
+
+        if (bestMatch != null) {
+            bestMatch.setAccessible(true);
+            methodCache.put(fullMethodName, bestMatch);
+            return bestMatch;
+        } else {
+            NoSuchMethodError e = new NoSuchMethodError(fullMethodName);
+            methodCache.put(fullMethodName, null);
+            throw e;
+        }
+    }
+
+    private static Method findMethodExact(Class<?> clazz, String methodName, Class<?>[] parameterTypes) {
         Class<?> clz = clazz;
         do {
             try {
-                return XposedHelpers.findMethodExact(clz, methodName, getParameterTypes(args));
+                return XposedHelpers.findMethodExact(clz, methodName, parameterTypes);
             } catch (NoSuchMethodError nsme) {
 
             }
         } while ((clz = clz.getSuperclass()) != null);
-        throw new NoSuchMethodError(clazz + "#" + methodName);
+        throw new NoSuchMethodError(clazz.getName() + '#' + methodName + getParametersString(parameterTypes));
     }
 
     /**
      * Return an array with the classes of the given objects. If an object
      * is a wrapper for a primitive type, then the primitive type is used
      */
-    private static Class<?>[] getParameterTypes(Object... args) {
+    private static Class<?>[] getPrimitiveParameterTypes(Object... args) {
         Class<?>[] clazzes = new Class<?>[args.length];
         for (int i = 0; i < args.length; i++) {
             if (args[i] != null) {
-                if (isWrapperType(args[i].getClass())) {
-                    clazzes[i] = WRAPPERS_TO_PRIMITIVES.get(args[i].getClass());
+                if (ClassUtils.isPrimitiveWrapper(args[i].getClass())) {
+                    clazzes[i] = ClassUtils.wrapperToPrimitive(args[i].getClass());
                 } else {
                     clazzes[i] = args[i].getClass();
                 }
@@ -188,22 +235,115 @@ public class Utils {
         return clazzes;
     }
 
-    private static boolean isWrapperType(Class<?> clazz) {
-        return WRAPPERS_TO_PRIMITIVES.containsKey(clazz);
+    private static String getParametersString(Class<?>... clazzes) {
+        StringBuilder sb = new StringBuilder("(");
+        boolean first = true;
+        for (Class<?> clazz : clazzes) {
+            if (first)
+                first = false;
+            else
+                sb.append(",");
+
+            if (clazz != null)
+                sb.append(clazz.getCanonicalName());
+            else
+                sb.append("null");
+        }
+        sb.append(")");
+        return sb.toString();
     }
 
-    private static Map<Class<?>, Class<?>> getWrappersMap() {
-        Map<Class<?>, Class<?>> map = new HashMap<>();
-        map.put(Boolean.class, boolean.class);
-        map.put(Character.class, char.class);
-        map.put(Byte.class, byte.class);
-        map.put(Short.class, short.class);
-        map.put(Integer.class, int.class);
-        map.put(Long.class, long.class);
-        map.put(Float.class, float.class);
-        map.put(Double.class, double.class);
-        map.put(Void.class, void.class);
-        return map;
+    static Object getObjectField(Object obj, String fieldName) {
+        try {
+            return XposedHelpers.getObjectField(obj, fieldName);
+        } catch (NoSuchFieldError e) {
+
+        }
+        try {
+            return findField(obj.getClass(), fieldName).get(obj);
+        } catch (IllegalAccessException e) {
+            // should not happen
+            XposedBridge.log(e);
+            throw new IllegalAccessError(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    static boolean getBooleanField(Object obj, String fieldName) {
+        try {
+            return XposedHelpers.getBooleanField(obj, fieldName);
+        } catch (NoSuchFieldError e) {
+
+        }
+        try {
+            return findField(obj.getClass(), fieldName).getBoolean(obj);
+        } catch (IllegalAccessException e) {
+            // should not happen
+            XposedBridge.log(e);
+            throw new IllegalAccessError(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    static Object getStaticObjectField(Class<?> clazz, String fieldName) {
+        try {
+            return XposedHelpers.getStaticObjectField(clazz, fieldName);
+        } catch (NoSuchFieldError e) {
+
+        }
+        try {
+            return findField(clazz, fieldName).get(null);
+        } catch (IllegalAccessException e) {
+            // should not happen
+            XposedBridge.log(e);
+            throw new IllegalAccessError(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            throw e;
+        }
+    }
+
+    private static Field findField(Class<?> clazz, String fieldName) {
+        String fullFieldName = clazz.getName() + '#' + fieldName;
+
+        if (fieldCache.containsKey(fullFieldName)) {
+            Field field = fieldCache.get(fullFieldName);
+            if (field == null)
+                throw new NoSuchFieldError(fullFieldName);
+            return field;
+        }
+
+        try {
+            Field field = findFieldRecursiveImpl(clazz, fieldName);
+            field.setAccessible(true);
+            fieldCache.put(fullFieldName, field);
+            return field;
+        } catch (NoSuchFieldException e) {
+            fieldCache.put(fullFieldName, null);
+            throw new NoSuchFieldError(fullFieldName);
+        }
+    }
+
+    private static Field findFieldRecursiveImpl(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            Class<?> clz = clazz;
+            boolean considerPrivateFields = true;
+            do {
+                for (Field field : clz.getDeclaredFields()) {
+                    // don't consider private fields of superclasses
+                    if (!considerPrivateFields && Modifier.isPrivate(field.getModifiers()))
+                        continue;
+
+                    if (field.getName().equals(fieldName) || field.getName().startsWith(fieldName + "$"))
+                        return field;
+                }
+                considerPrivateFields = false;
+            } while ((clz = clz.getSuperclass()) != null);
+            throw e;
+        }
     }
 
 }
