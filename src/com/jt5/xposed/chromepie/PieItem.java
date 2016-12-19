@@ -180,8 +180,7 @@ class Item_bookmarks extends PieItem {
     @Override
     public void onClick(final Controller control) {
         if (control.getTabCount() == 0) {
-            String ntp = control.getChromeUrl("NTP_URL");
-            control.launchUrl(ntp);
+            control.createNewTab();
             // Allow time for the new tab animation to finish
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
@@ -189,7 +188,7 @@ class Item_bookmarks extends PieItem {
                 public void run() {
                     Item_bookmarks.super.onClick(control);
                 }
-            }, 150);
+            }, 100);
         } else {
             super.onClick(control);
         }
@@ -220,11 +219,9 @@ class Item_history extends PieItem {
     @Override
     public void onClick(Controller control) {
         if (control.getTabCount() == 0) {
-            String history = control.getChromeUrl("HISTORY_URL");
-            control.launchUrl(history);
-        } else {
-            super.onClick(control);
+            control.createNewTab();
         }
+        super.onClick(control);
     }
 }
 
@@ -240,11 +237,10 @@ class Item_most_visited extends PieItem {
 
     @Override
     public void onClick(Controller control) {
-        String ntp = control.getChromeUrl("NTP_URL");
         if (control.getTabCount() == 0) {
-            control.launchUrl(ntp);
+            control.createNewTab();
         } else {
-            control.loadUrl(ntp);
+            control.loadUrl(Controller.NTP_URL);
         }
     }
 }
@@ -262,11 +258,9 @@ class Item_recent_tabs extends PieItem {
     @Override
     public void onClick(Controller control) {
         if (control.getTabCount() == 0) {
-            String recents = control.getChromeUrl("RECENT_TABS_URL");
-            control.launchUrl(recents);
-        } else {
-            super.onClick(control);
+            control.createNewTab();
         }
+        super.onClick(control);
     }
 }
 

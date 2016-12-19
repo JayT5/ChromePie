@@ -31,6 +31,7 @@ public class Controller {
     final Activity mActivity;
     private Unhook mFullscreenWindowFocusHook;
     private final Menu mMenu;
+    static final String NTP_URL = "chrome-native://newtab/";
 
     Controller(Activity chromeActivity, ClassLoader classLoader) {
         mClassLoader = classLoader;
@@ -142,7 +143,11 @@ public class Controller {
         }
     }
 
-    void launchUrl(String url) {
+    void createNewTab() {
+        launchUrl(NTP_URL);
+    }
+
+    private void launchUrl(String url) {
         try {
             Object tabCreator = Utils.callMethod(mActivity, "getTabCreator", false);
             Utils.callMethod(tabCreator, "launchUrl", url, getTabLaunchType());
@@ -484,16 +489,6 @@ public class Controller {
     Boolean isOnNewTabPage() {
         String url = getUrl();
         return (url.startsWith("chrome://") || url.startsWith("chrome-native://"));
-    }
-
-    String getChromeUrl(String page) {
-        if (Utils.CLASS_URL_CONSTANTS == null) return "chrome-native://newtab/";
-        try {
-            return (String) Utils.getStaticObjectField(Utils.CLASS_URL_CONSTANTS, page);
-        } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
-        }
-        return "chrome-native://newtab/";
     }
 
     Boolean isTablet() {
