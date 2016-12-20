@@ -642,3 +642,14 @@ class Item_downloads extends PieItem {
         setEnabled(control.isDownloadHomeEnabled());
     }
 }
+
+class Item_open_recently_closed extends PieItem {
+    public Item_open_recently_closed(View view, String id, int action) {
+        super(view, id, action);
+    }
+
+    @Override
+    protected void onOpen(Controller control, XModuleResources resources) {
+        setEnabled(!control.isIncognito() && control.hasRecentlyClosedTabs());
+    }
+}

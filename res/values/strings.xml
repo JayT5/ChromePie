@@ -100,5 +100,6 @@
     <string name="toggle_data_saver">Toggle data saver</string>
     <string name="expand_notifications">Expand notifications</string>
     <string name="downloads">Downloads</string>
+    <string name="open_recently_closed">Open recently closed tab</string>
 
 </resources>

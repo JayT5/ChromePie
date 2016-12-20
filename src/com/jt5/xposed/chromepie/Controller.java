@@ -18,6 +18,8 @@ import android.widget.PopupMenu;
 
 import com.jt5.xposed.chromepie.broadcastreceiver.PieReceiver;
 
+import java.util.List;
+
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodHook.Unhook;
 import de.robv.android.xposed.XposedBridge;
@@ -869,6 +871,17 @@ public class Controller {
             return (Boolean) Utils.callStaticMethod(downloadUtils, "isDownloadHomeEnabled");
         } catch (ClassNotFoundError | NoSuchMethodError e) {
 
+        }
+        return false;
+    }
+
+    boolean hasRecentlyClosedTabs() {
+        try {
+            List tabs = (List) Utils.callMethod(Utils.getObjectField(
+                    getTabModel(), "mRecentlyClosedBridge"), "getRecentlyClosedTabs");
+            return tabs != null && !tabs.isEmpty();
+        } catch (NoSuchFieldError | NoSuchMethodError e) {
+            XposedBridge.log(TAG + e);
         }
         return false;
     }
