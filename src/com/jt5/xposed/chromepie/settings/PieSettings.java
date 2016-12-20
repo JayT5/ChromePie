@@ -40,7 +40,7 @@ public class PieSettings extends PreferenceActivity {
         "org.notphenom.swe.browser",
         "com.rsbrowser.browser",
         "com.mokee.yubrowser",
-        "com.hsv.freeadblockerbrowser"
+        "com.hsv.freeadblockerbrowser",
         "com.arter97.swe_browser"
     );
 
