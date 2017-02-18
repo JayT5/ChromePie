@@ -147,7 +147,7 @@ public class PieSettings extends PreferenceActivity {
     private List<Intent> getInstalledApps(Set<String> extraPkgs) {
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         PackageManager pm = getPackageManager();
-        List<Intent> apps = new ArrayList<Intent>();
+        List<Intent> apps = new ArrayList<>();
         extraPkgs.addAll(CHROME_PACKAGE_NAMES);
         for (String packageName : extraPkgs) {
             Intent launch = pm.getLaunchIntentForPackage(packageName);

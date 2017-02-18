@@ -4,9 +4,9 @@ import android.app.Activity;
 
 import de.robv.android.xposed.XposedBridge;
 
-class DocumentController extends Controller {
+class ChromeDocumentHelper extends ChromeHelper {
 
-    DocumentController(Activity activity, ClassLoader classLoader) {
+    ChromeDocumentHelper(Activity activity, ClassLoader classLoader) {
         super(activity, classLoader);
     }
 

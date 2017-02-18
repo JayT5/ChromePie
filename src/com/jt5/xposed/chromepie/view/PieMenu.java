@@ -16,12 +16,6 @@
 
 package com.jt5.xposed.chromepie.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
@@ -30,13 +24,11 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.content.res.XModuleResources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -44,9 +36,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.jt5.xposed.chromepie.Controller;
 import com.jt5.xposed.chromepie.PieItem;
 import com.jt5.xposed.chromepie.R;
+import com.jt5.xposed.chromepie.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.robv.android.xposed.XSharedPreferences;
 
@@ -58,29 +53,16 @@ public class PieMenu extends FrameLayout {
     public interface PieController {
         /**
          * called before menu opens to customize menu
-         * returns if pie state has been changed
          */
-        public boolean onOpen();
+        void onOpen();
 
-    }
+        void onClick(PieItem item);
 
-    /**
-     * A view like object that lives off of the pie menu
-     */
-    public interface PieView {
+        boolean shouldShowMenu(Trigger triggerPosition);
 
-        interface OnLayoutListener {
-            public void onPieLayout(int ax, int ay, boolean left);
-        }
+        void requestTabFocus();
 
-        public void setLayoutListener(OnLayoutListener l);
-
-        public void layout(int anchorX, int anchorY, boolean onleft, float angle,
-                int parentHeight);
-
-        public void draw(Canvas c);
-
-        public boolean onTouchEvent(MotionEvent evt);
+        int getTopControlsHeight();
 
     }
 
@@ -93,19 +75,17 @@ public class PieMenu extends FrameLayout {
 
     private boolean mOpen;
     private PieController mController;
-    private final Controller mControl;
     private ValueAnimator mAnimator;
+    private boolean mAnimating;
 
     private List<BaseItem> mItems;
     private int mLevels;
     private int[] mCounts;
-    private PieView mPieView = null;
 
     // sub menus
     private List<BaseItem> mCurrentItems;
     private PieItem mOpenItem;
 
-    private Drawable mBackground;
     private Paint mNormalPaint;
     private Paint mSelectedPaint;
     private Paint mSubPaint;
@@ -113,28 +93,23 @@ public class PieMenu extends FrameLayout {
     // touch handling
     private PieItem mCurrentItem;
 
-    private boolean mUseBackground = false;
-    private boolean mAnimating;
     private boolean mRepositionMenu;
-
     private Trigger mCurrentTrigger;
-    private List<Trigger> mEnabledTriggers;
 
-    private enum Trigger {
+    public enum Trigger {
         LEFT,
         RIGHT,
         BOTTOM,
         NONE
     }
 
-    public PieMenu(Context context, Controller control, XModuleResources res, XSharedPreferences prefs) {
+    public PieMenu(Context context, XModuleResources res, XSharedPreferences prefs) {
         super(context);
-        mControl = control;
         init(res, prefs);
     }
 
     private void init(XModuleResources res, XSharedPreferences prefs) {
-        mItems = new ArrayList<BaseItem>();
+        mItems = new ArrayList<>();
         mLevels = 0;
         mCounts = new int[MAX_LEVELS];
         int defRadiusInc = res.getInteger(R.integer.qc_radius_increment);
@@ -160,35 +135,22 @@ public class PieMenu extends FrameLayout {
         mSubPaint.setColor(res.getColor(R.color.qc_sub));
         mSubPaint.setAntiAlias(true);
         mRepositionMenu = prefs.getBoolean("reposition_menu", false);
-        mEnabledTriggers = initTriggerPositions(prefs);
-    }
-
-    private List<Trigger> initTriggerPositions(XSharedPreferences prefs) {
-        Set<String> triggerSet = prefs.getStringSet("trigger_side_set",
-                new HashSet<>(Arrays.asList("0", "1", "2")));
-        List<Trigger> triggerList = new ArrayList<>();
-        for (String trigger : triggerSet) {
-            triggerList.add(Trigger.values()[Integer.valueOf(trigger)]);
-        }
-        return triggerList;
     }
 
     public void setThemeColors(int themeColor) {
-        int statusColor = mControl.getStatusBarColor(themeColor);
-        int tintedColor = applyColorTint(themeColor, 0.2f);
-        mNormalPaint.setColor(applyColorAlpha(themeColor, 224));
-        mSelectedPaint.setColor(applyColorAlpha(statusColor, 224));
-        mSubPaint.setColor(applyColorAlpha(tintedColor, 240));
-        setTabCountBackgroundColor(applyColorTint(themeColor, 0.35f));
+        int statusColor = Utils.getDarkenedColor(themeColor);
+        int tintedColor = Utils.applyColorTint(themeColor, 0.2f);
+        mNormalPaint.setColor(Utils.applyColorAlpha(themeColor, 224));
+        mSelectedPaint.setColor(Utils.applyColorAlpha(statusColor, 224));
+        mSubPaint.setColor(Utils.applyColorAlpha(tintedColor, 240));
+        setTabCountBackgroundColor(Utils.applyColorTint(themeColor, 0.35f));
     }
 
     private void setTabCountBackgroundColor(int color) {
         List<PieItem> items = findItemsById("show_tabs");
-        if (!items.isEmpty()) {
-            for (PieItem item : items) {
-                ((GradientDrawable) ((ViewGroup) item.getView()).getChildAt(1)
-                        .getBackground()).setColor(color);
-            }
+        for (PieItem item : items) {
+            ((GradientDrawable) ((ViewGroup) item.getView()).getChildAt(1)
+                    .getBackground()).setColor(color);
         }
     }
 
@@ -199,26 +161,8 @@ public class PieMenu extends FrameLayout {
         setTabCountBackgroundColor(res.getColor(R.color.qc_tab_nr));
     }
 
-    private int applyColorTint(int color, float factor) {
-        int r1 = Color.red(color);
-        int g1 = Color.green(color);
-        int b1 = Color.blue(color);
-        int r2 = (int) (r1 + (factor * (255 - r1)));
-        int g2 = (int) (g1 + (factor * (255 - g1)));
-        int b2 = (int) (b1 + (factor * (255 - b1)));
-        return Color.rgb(r2, g2, b2);
-    }
-
-    private int applyColorAlpha(int color, int alpha) {
-        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
-    }
-
     public void setController(PieController ctl) {
         mController = ctl;
-    }
-
-    public void setUseBackground(boolean useBackground) {
-        mUseBackground = useBackground;
     }
 
     public void addItem(BaseItem item) {
@@ -238,7 +182,7 @@ public class PieMenu extends FrameLayout {
     }
 
     public List<BaseItem> getItems() {
-        List<BaseItem> subItems = new ArrayList<BaseItem>();
+        List<BaseItem> subItems = new ArrayList<>();
         for (BaseItem item : mItems) {
             subItems.add(item);
             if (item.hasItems()) {
@@ -253,7 +197,7 @@ public class PieMenu extends FrameLayout {
     }
 
     public List<PieItem> findItemsById(String id) {
-        List<PieItem> items = new ArrayList<PieItem>();
+        List<PieItem> items = new ArrayList<>();
         for (BaseItem item : getItems()) {
             if (item.getId() != null && item.getId().equals(id)) {
                 items.add((PieItem) item);
@@ -271,6 +215,9 @@ public class PieMenu extends FrameLayout {
     }
 
     private Trigger getTriggerPosition(float x, float y) {
+        if (y < mController.getTopControlsHeight()) {
+            return Trigger.NONE;
+        }
         if ((x > mSlop) && (x < getWidth() - mSlop) && (y > getHeight() - mSlop)) {
             return Trigger.BOTTOM;
         } else if (x > getWidth() - mSlop) {
@@ -295,16 +242,13 @@ public class PieMenu extends FrameLayout {
             mAnimating = false;
             mCurrentItem = null;
             mOpenItem = null;
-            mPieView = null;
-            mControl.requestTabFocus();
+            mController.requestTabFocus();
             mCurrentItems = mItems;
             for (BaseItem item : mCurrentItems) {
                 item.setSelected(false);
                 item.setAlpha(0f);
             }
-            if (mController != null) {
-                boolean changed = mController.onOpen();
-            }
+            mController.onOpen();
             layoutPie();
             animateOpen();
         }
@@ -345,7 +289,7 @@ public class PieMenu extends FrameLayout {
             } else {
                 mCenter.x = getWidth();
             }
-            int topControlsHeight = mControl.getTopControlsHeight();
+            int topControlsHeight = mController.getTopControlsHeight();
             if (mRepositionMenu && getHeight() - topControlsHeight > 2 * radius) {
                 mCenter.y = Math.min(Math.max(y, radius + topControlsHeight), getHeight() - radius);
             } else {
@@ -407,22 +351,6 @@ public class PieMenu extends FrameLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         if (mOpen) {
-            int state;
-            if (mUseBackground) {
-                int w = mBackground.getIntrinsicWidth();
-                int h = mBackground.getIntrinsicHeight();
-                int left = mCenter.x - w;
-                int top = mCenter.y - h / 2;
-                mBackground.setBounds(left, top, left + w, top + h);
-                state = canvas.save();
-                if (mCurrentTrigger == Trigger.LEFT) {
-                    canvas.scale(-1, 1);
-                } else if (mCurrentTrigger == Trigger.BOTTOM) {
-                    canvas.rotate(90, mCenter.x, mCenter.y);
-                }
-                mBackground.draw(canvas);
-                canvas.restoreToCount(state);
-            }
             // draw base menu
             PieItem last = mCurrentItem;
             if (mOpenItem != null) {
@@ -435,9 +363,6 @@ public class PieMenu extends FrameLayout {
             }
             if (last != null) {
                 drawItem(canvas, last);
-            }
-            if (mPieView != null) {
-                mPieView.draw(canvas);
             }
         }
     }
@@ -494,25 +419,22 @@ public class PieMenu extends FrameLayout {
         float y = evt.getY();
         int action = evt.getActionMasked();
         if (MotionEvent.ACTION_DOWN == action) {
-            if (shouldShowMenu(x, y)) {
+            mCurrentTrigger = getTriggerPosition(x, y);
+            if (mController.shouldShowMenu(mCurrentTrigger)) {
                 setCenter((int) x, (int) y);
                 show(true);
                 return true;
             }
         } else if (MotionEvent.ACTION_UP == action) {
             if (mOpen) {
-                boolean handled = false;
-                if (mPieView != null) {
-                    handled = mPieView.onTouchEvent(evt);
-                }
                 PieItem item = mCurrentItem;
                 if (!mAnimating) {
                     deselect();
                 }
                 show(false);
-                if (!handled && (item != null) && (item.getView() != null) && (item.isEnabled())) {
+                if ((item != null) && (item.getView() != null) && item.isEnabled()) {
                     if ((item == mOpenItem) || !mAnimating) {
-                        item.onClick(mControl);
+                        mController.onClick(item);
                     }
                 }
                 return true;
@@ -528,16 +450,8 @@ public class PieMenu extends FrameLayout {
             return false;
         } else if (MotionEvent.ACTION_MOVE == action) {
             if (mAnimating) return false;
-            boolean handled = false;
             PointF polar = getPolar(x, y);
             int maxr = mRadius + mLevels * mRadiusInc + 50;
-            if (mPieView != null) {
-                handled = mPieView.onTouchEvent(evt);
-            }
-            if (handled) {
-                invalidate();
-                return false;
-            }
             if (polar.y < mRadius) {
                 if (mOpenItem != null) {
                     closeSub();
@@ -559,30 +473,11 @@ public class PieMenu extends FrameLayout {
             BaseItem item = findItem(polar);
             if (item != null && mCurrentItem != item) {
                 onEnter(item);
-                if (item.isPieView() && item.getView() != null) {
-                    int cx = item.getView().getLeft() + ((mCurrentTrigger == Trigger.LEFT)
-                            ? item.getView().getWidth() : 0);
-                    int cy = item.getView().getTop();
-                    mPieView = item.getPieView();
-                    layoutPieView(mPieView, cx, cy,
-                            (item.getStartAngle() + item.getSweep()) / 2);
-                }
                 invalidate();
             }
         }
         // always re-dispatch event
         return false;
-    }
-
-    private boolean shouldShowMenu(float x, float y) {
-        mCurrentTrigger = getTriggerPosition(x, y);
-        return mEnabledTriggers.contains(mCurrentTrigger) && !mControl.isInFullscreenVideo() &&
-                (mControl.isInOverview() == (mControl.getTabCount() == 0)) && y > mControl.getTopControlsHeight() &&
-                (mControl.getUrlBar() != null && !mControl.getUrlBar().hasFocus()) && !mControl.touchScrollInProgress();
-    }
-
-    private void layoutPieView(PieView pv, int x, int y, float angle) {
-        pv.layout(x, y, mCurrentTrigger == Trigger.LEFT, angle, getHeight());
     }
 
     /**
@@ -599,7 +494,6 @@ public class PieMenu extends FrameLayout {
             // clear up stack
             //playSoundEffect(SoundEffectConstants.CLICK);
             item.setSelected(true);
-            mPieView = null;
             mCurrentItem = (PieItem) item;
             if ((mCurrentItem != mOpenItem) && mCurrentItem.hasItems()) {
                 openSub(mCurrentItem);
@@ -670,7 +564,7 @@ public class PieMenu extends FrameLayout {
                 for (BaseItem item : mCurrentItems) {
                     item.setAnimationAngle(0);
                 }
-                mCurrentItems = new ArrayList<BaseItem>(mItems.size());
+                mCurrentItems = new ArrayList<>(mItems.size());
                 int i = 0, j = 0;
                 while (i < mItems.size()) {
                     if (mItems.get(i) == item) {
@@ -706,7 +600,6 @@ public class PieMenu extends FrameLayout {
                     item.setAnimationAngle(0);
                 }
                 mCurrentItems = mItems;
-                mPieView = null;
                 animateIn(mOpenItem, new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator a) {
@@ -731,7 +624,6 @@ public class PieMenu extends FrameLayout {
             mCurrentItems = mItems;
         }
         mCurrentItem = null;
-        mPieView = null;
     }
 
     private PointF getPolar(float x, float y) {

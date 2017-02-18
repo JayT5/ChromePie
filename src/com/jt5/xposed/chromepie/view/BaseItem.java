@@ -22,15 +22,12 @@ import java.util.List;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.jt5.xposed.chromepie.view.PieMenu.PieView;
-
 /**
  * Pie menu item
  */
 public class BaseItem {
 
     private final View mView;
-    private PieView mPieView;
     private final int level;
     private float start;
     private float sweep;
@@ -40,8 +37,8 @@ public class BaseItem {
     private boolean mSelected;
     private boolean mEnabled;
     private List<BaseItem> mItems;
-    private int mMenuActionId;
-    private String mId;
+    private final int mMenuActionId;
+    private final String mId;
 
     public BaseItem(View view, String id) {
         this(view, id, 0);
@@ -59,24 +56,17 @@ public class BaseItem {
         mEnabled = true;
     }
 
-    public BaseItem(View view, int level, PieView sym) {
-        mView = view;
-        this.level = level;
-        mPieView = sym;
-        mEnabled = false;
-    }
-
-    public boolean hasItems() {
+    protected boolean hasItems() {
         return mItems != null;
     }
 
-    public List<BaseItem> getItems() {
+    protected List<BaseItem> getItems() {
         return mItems;
     }
 
     public void addItem(BaseItem item) {
         if (mItems == null) {
-            mItems = new ArrayList<BaseItem>();
+            mItems = new ArrayList<>();
         }
         mItems.add(item);
     }
@@ -88,7 +78,7 @@ public class BaseItem {
         }
     }
 
-    public void setAnimationAngle(float a) {
+    void setAnimationAngle(float a) {
         animate = a;
     }
 
@@ -100,7 +90,7 @@ public class BaseItem {
         mEnabled = enabled;
     }
 
-    public boolean isEnabled() {
+    protected boolean isEnabled() {
         return mEnabled;
     }
 
@@ -112,18 +102,18 @@ public class BaseItem {
         return mMenuActionId;
     }
 
-    public void setSelected(boolean s) {
+    protected void setSelected(boolean s) {
         mSelected = s;
         if (mView != null) {
             mView.setSelected(s);
         }
     }
 
-    public boolean isSelected() {
+    boolean isSelected() {
         return mSelected;
     }
 
-    public int getLevel() {
+    protected int getLevel() {
         return level;
     }
 
@@ -134,43 +124,28 @@ public class BaseItem {
         outer = outside;
     }
 
-    public float getStart() {
+    float getStart() {
         return start;
     }
 
-    public float getStartAngle() {
+    protected float getStartAngle() {
         return start + animate;
     }
 
-    public float getSweep() {
+    float getSweep() {
         return sweep;
     }
 
-    public int getInnerRadius() {
+    int getInnerRadius() {
         return inner;
     }
 
-    public int getOuterRadius() {
+    int getOuterRadius() {
         return outer;
-    }
-
-    public boolean isPieView() {
-        return (mPieView != null);
     }
 
     public View getView() {
         return mView;
-    }
-
-    public void setPieView(PieView sym) {
-        mPieView = sym;
-    }
-
-    public PieView getPieView() {
-        if (mEnabled) {
-            return mPieView;
-        }
-        return null;
     }
 
 }

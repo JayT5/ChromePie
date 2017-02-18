@@ -26,23 +26,24 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 
-public class Controller {
+class ChromeHelper {
 
-    static final String TAG = "ChromePie:Controller: ";
-    private final ClassLoader mClassLoader;
+    static final String TAG = "ChromePie:ChromeHelper: ";
+    static final String NTP_URL = "chrome-native://newtab/";
+
     final Activity mActivity;
     private Unhook mFullscreenWindowFocusHook;
     private final Menu mMenu;
-    static final String NTP_URL = "chrome-native://newtab/";
+    private final ClassLoader mClassLoader;
 
-    Controller(Activity chromeActivity, ClassLoader classLoader) {
+    ChromeHelper(Activity activity, ClassLoader classLoader) {
+        mActivity = activity;
         mClassLoader = classLoader;
-        mActivity = chromeActivity;
         PopupMenu popup = new PopupMenu(mActivity, null);
         mMenu = popup.getMenu();
     }
 
-    Activity getChromeActivity() {
+    Activity getActivity() {
         return mActivity;
     }
 
@@ -227,7 +228,7 @@ public class Controller {
         }
     }
 
-    public int getTabCount() {
+    int getTabCount() {
         try {
             return (Integer) Utils.callMethod(getTabModel(), "getCount");
         } catch (NoSuchMethodError nsme) {
@@ -245,7 +246,7 @@ public class Controller {
         }
     }
 
-    public void requestTabFocus() {
+    void requestTabFocus() {
         Object tab = getCurrentTab();
         if (tab == null) {
             return;
@@ -280,7 +281,7 @@ public class Controller {
         }
     }
 
-    public Boolean isInOverview() {
+    Boolean isInOverview() {
         if (isTablet() || isDocumentMode()) {
             return getTabCount() == 0;
         }
@@ -380,7 +381,7 @@ public class Controller {
         }
     }
 
-    public Boolean isInFullscreenVideo() {
+    Boolean isInFullscreenVideo() {
         try {
             Object fullscreenHandler = getFullscreenHandler();
             if (fullscreenHandler != null) {
@@ -640,7 +641,7 @@ public class Controller {
         return new Object();
     }
 
-    public Boolean touchScrollInProgress() {
+    Boolean touchScrollInProgress() {
         try {
             Object contentViewCore = getContentViewCore();
             if (contentViewCore != null) {
@@ -677,7 +678,7 @@ public class Controller {
         return new Object();
     }
 
-    public Integer getTopControlsHeight() {
+    Integer getTopControlsHeight() {
         Object contentViewCore = getContentViewCore();
         if (contentViewCore == null) {
             return getTopControlsDimen();
@@ -715,7 +716,7 @@ public class Controller {
         return (locationBar == null) ? new Object() : locationBar;
     }
 
-    public EditText getUrlBar() {
+    EditText getUrlBar() {
         Object locationBar = getLocationBar();
         try {
             return (EditText) Utils.callMethod(locationBar, "getUrlBar");
@@ -803,16 +804,6 @@ public class Controller {
             XposedBridge.log(TAG + nsme);
         }
         return getDefaultPrimaryColor();
-    }
-
-    public Integer getStatusBarColor(int color) {
-        if (isDefaultPrimaryColor(color)) {
-            return color;
-        }
-        float[] statusColor = new float[3];
-        Color.colorToHSV(color, statusColor);
-        statusColor[2] *= 0.6f;
-        return Color.HSVToColor(statusColor);
     }
 
     Object getToolbarManager() {

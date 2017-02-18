@@ -35,11 +35,14 @@ import com.jt5.xposed.chromepie.view.PieMenu;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodHook.Unhook;
@@ -52,41 +55,42 @@ import de.robv.android.xposed.XposedHelpers;
  */
 public class PieControl implements PieMenu.PieController {
 
-    private final Activity mChromeActivity;
-    private final XModuleResources mXResources;
-    private PieMenu mPie;
-    private final Controller mController;
-    private final int mItemSize;
-    private final XSharedPreferences mXPreferences;
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
-    private static List<String> mNoTabActions;
-    private int mThemeColor = 0;
-    private Unhook mFinishPageLoadHook;
-    private final boolean mApplyThemeColor;
 
-    PieControl(Activity chromeActivity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
-        mChromeActivity = chromeActivity;
+    private final Activity mActivity;
+    private final ChromeHelper mHelper;
+    private PieMenu mPie;
+    private final XModuleResources mXResources;
+    private final XSharedPreferences mXPreferences;
+    private final int mItemSize;
+    private Unhook mFinishPageLoadHook;
+    private final List<PieMenu.Trigger> mEnabledTriggers;
+    private final boolean mApplyThemeColor;
+    private int mThemeColor;
+    private final List<String> mNoTabActions;
+
+    PieControl(Activity activity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
+        mActivity = activity;
         Utils.initialise(classLoader);
-        if (Utils.isDocumentModeEnabled(mChromeActivity, classLoader)) {
-            mController = new DocumentController(mChromeActivity, classLoader);
+        if (Utils.isDocumentModeEnabled(mActivity, classLoader)) {
+            mHelper = new ChromeDocumentHelper(mActivity, classLoader);
         } else {
-            mController = new Controller(mChromeActivity, classLoader);
+            mHelper = new ChromeHelper(mActivity, classLoader);
         }
         mXResources = res;
         mXPreferences = prefs;
         Utils.reloadPreferences(mXPreferences);
         mItemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
-        mNoTabActions = Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit",
-                "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver", "expand_notifications",
-                "bookmarks", "history", "most_visited", "recent_tabs");
+        mEnabledTriggers = initTriggerPositions();
         applyFullscreen();
         mApplyThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
+        mNoTabActions = getNoTabActions();
     }
 
     void attachToContainer(ViewGroup container) {
         if (mPie == null) {
-            mPie = new PieMenu(mChromeActivity, mController, mXResources, mXPreferences);
+            mPie = new PieMenu(mActivity, mXResources, mXPreferences);
             LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
             mPie.setLayoutParams(lp);
             populateMenu();
@@ -111,30 +115,46 @@ public class PieControl implements PieMenu.PieController {
     }
 
     private void applyFullscreen() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mChromeActivity);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mActivity);
         boolean defValue = false;
         if (prefs.contains("chromepie_apply_fullscreen")) {
             defValue = prefs.getBoolean("chromepie_apply_fullscreen", false);
             prefs.edit().remove("chromepie_apply_fullscreen").apply();
         }
-        mController.setFullscreen(mXPreferences.getBoolean("launch_in_fullscreen", defValue));
+        mHelper.setFullscreen(mXPreferences.getBoolean("launch_in_fullscreen", defValue));
+    }
+
+    private List<String> getNoTabActions() {
+        return Arrays.asList("new_tab", "new_incognito_tab", "fullscreen",
+                "settings", "exit", "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver",
+                "expand_notifications", "bookmarks", "history", "most_visited", "recent_tabs");
+    }
+
+    private List<PieMenu.Trigger> initTriggerPositions() {
+        Set<String> triggerSet = mXPreferences.getStringSet("trigger_side_set",
+                new HashSet<>(Arrays.asList("0", "1", "2")));
+        List<PieMenu.Trigger> triggerList = new ArrayList<>();
+        for (String trigger : triggerSet) {
+            triggerList.add(PieMenu.Trigger.values()[Integer.valueOf(trigger)]);
+        }
+        return triggerList;
     }
 
     @Override
-    public boolean onOpen() {
-        if (mController.getCurrentTab() == null) {
-            if (mController.isDocumentMode()) {
-                return false;
+    public void onOpen() {
+        if (mHelper.getCurrentTab() == null) {
+            if (mHelper.isDocumentMode()) {
+                return;
             }
         } else if (mFinishPageLoadHook == null) {
             hookFinishPageLoad();
         }
 
         if (mApplyThemeColor) {
-            int color = mController.getThemeColor();
+            int color = mHelper.getThemeColor();
             if (mThemeColor != color) {
                 mThemeColor = color;
-                if (mController.shouldUseThemeColor(mThemeColor)) {
+                if (mHelper.shouldUseThemeColor(mThemeColor)) {
                     mPie.setThemeColors(color);
                 } else {
                     mPie.setDefaultColors(mXResources);
@@ -142,7 +162,7 @@ public class PieControl implements PieMenu.PieController {
             }
         }
 
-        final int tabCount = mController.getTabCount();
+        final int tabCount = mHelper.getTabCount();
         final List<BaseItem> items = mPie.getItems();
         for (BaseItem item : items) {
             boolean shouldEnable = (tabCount != 0) || mNoTabActions.contains(item.getId());
@@ -150,9 +170,30 @@ public class PieControl implements PieMenu.PieController {
             if (!shouldEnable || item.getView() == null) {
                 continue;
             }
-            ((PieItem) item).onOpen(mController, mXResources);
+            ((PieItem) item).onOpen(mHelper, mXResources);
         }
-        return true;
+    }
+
+    @Override
+    public void onClick(PieItem item) {
+        item.onClick(mHelper);
+    }
+
+    @Override
+    public boolean shouldShowMenu(PieMenu.Trigger triggerPosition) {
+        return mEnabledTriggers.contains(triggerPosition) && !mHelper.isInFullscreenVideo() &&
+                (mHelper.isInOverview() == (mHelper.getTabCount() == 0)) && !mHelper.touchScrollInProgress() &&
+                (mHelper.getUrlBar() != null && !mHelper.getUrlBar().hasFocus());
+    }
+
+    @Override
+    public void requestTabFocus() {
+        mHelper.requestTabFocus();
+    }
+
+    @Override
+    public int getTopControlsHeight() {
+        return mHelper.getTopControlsHeight();
     }
 
     private void populateMenu() {
@@ -217,7 +258,7 @@ public class PieControl implements PieMenu.PieController {
             int index = values.indexOf(value);
             if (index >= 0) {
                 String action = actions[index];
-                return makeItem(value, drawables.getResourceId(index, R.drawable.null_icon), mController.getResIdentifier(action));
+                return makeItem(value, drawables.getResourceId(index, R.drawable.null_icon), mHelper.getResIdentifier(action));
             }
         }
         return makeFiller();
@@ -228,7 +269,7 @@ public class PieControl implements PieMenu.PieController {
         if (id.equals("show_tabs")) {
             view = makeTabsView(iconRes);
         } else {
-            view = new ImageView(mChromeActivity);
+            view = new ImageView(mActivity);
             ((ImageView) view).setImageDrawable(mXResources.getDrawable(iconRes));
             view.setMinimumWidth(mItemSize);
             view.setMinimumHeight(mItemSize);
@@ -248,11 +289,11 @@ public class PieControl implements PieMenu.PieController {
     }
 
     private View makeTabsView(int iconRes) {
-        LayoutInflater li = mChromeActivity.getLayoutInflater();
+        LayoutInflater li = mActivity.getLayoutInflater();
         ViewGroup view = (ViewGroup) li.inflate(mXResources.getLayout(R.layout.qc_tabs_view), null);
         TextView count = (TextView) view.getChildAt(1);
         count.setBackground(mXResources.getDrawable(R.drawable.tab_nr));
-        count.setText(Integer.toString(mController.getTabCount()));
+        count.setText(Integer.toString(mHelper.getTabCount()));
         ImageView icon = (ImageView) view.getChildAt(0);
         icon.setImageDrawable(mXResources.getDrawable(iconRes));
         icon.setScaleType(ScaleType.CENTER);
@@ -276,7 +317,7 @@ public class PieControl implements PieMenu.PieController {
 
         try {
             mFinishPageLoadHook = XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(
-                    mController.getCurrentTab().getClass(), "didFinishPageLoad"), pageLoadHook);
+                    mHelper.getCurrentTab().getClass(), "didFinishPageLoad"), pageLoadHook);
         } catch (Throwable t) {
             XposedBridge.log(TAG + t);
         }

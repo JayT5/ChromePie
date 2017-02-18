@@ -1,6 +1,7 @@
 package com.jt5.xposed.chromepie;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.StrictMode;
 
 import org.apache.commons.lang3.ClassUtils;
@@ -22,7 +23,6 @@ public class Utils {
 
     static Class<?> CLASS_TAB_MODEL_UTILS;
     static Class<?> CLASS_LOAD_URL_PARAMS;
-    static Class<?> CLASS_URL_CONSTANTS;
     static Class<?> CLASS_DEVICE_UTILS;
     static Class<?> CLASS_FEATURE_UTILS;
     static Class<?> CLASS_DISTILLER_URL_UTILS;
@@ -41,10 +41,6 @@ public class Utils {
         String[] loadUrlParams = {
                 "org.chromium.content_public.browser.LoadUrlParams",
                 "org.chromium.content.browser.LoadUrlParams"
-        };
-        String[] urlConstants = {
-                "org.chromium.chrome.browser.UrlConstants",
-                "com.google.android.apps.chrome.UrlConstants"
         };
         String[] deviceUtils = {
                 "org.chromium.ui.base.DeviceFormFactor",
@@ -83,7 +79,6 @@ public class Utils {
 
         CLASS_TAB_MODEL_UTILS = getClass(classLoader, tabModelUtils);
         CLASS_LOAD_URL_PARAMS = getClass(classLoader, loadUrlParams);
-        CLASS_URL_CONSTANTS = getClass(classLoader, urlConstants);
         CLASS_DEVICE_UTILS = getClass(classLoader, deviceUtils);
         CLASS_FEATURE_UTILS = getClass(classLoader, featureUtilities);
         CLASS_DISTILLER_URL_UTILS = getClass(classLoader, distillerUrlUtils);
@@ -117,6 +112,27 @@ public class Utils {
 
         }
         return false;
+    }
+
+    public static int getDarkenedColor(int color) {
+        float[] statusColor = new float[3];
+        Color.colorToHSV(color, statusColor);
+        statusColor[2] *= 0.6f;
+        return Color.HSVToColor(statusColor);
+    }
+
+    public static int applyColorTint(int color, float factor) {
+        int r1 = Color.red(color);
+        int g1 = Color.green(color);
+        int b1 = Color.blue(color);
+        int r2 = (int) (r1 + (factor * (255 - r1)));
+        int g2 = (int) (g1 + (factor * (255 - g1)));
+        int b2 = (int) (b1 + (factor * (255 - b1)));
+        return Color.rgb(r2, g2, b2);
+    }
+
+    public static int applyColorAlpha(int color, int alpha) {
+        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
     private static Class<?> getClass(ClassLoader classLoader, String[] classes) {

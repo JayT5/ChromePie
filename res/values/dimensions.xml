@@ -11,16 +11,9 @@
     License.
 -->
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
-    <dimen name="qc_radius_start">65dp</dimen>
     <integer name="qc_radius_increment">80</integer>
     <integer name="qc_slop">10</integer>
     <dimen name="qc_touch_offset">15dp</dimen>
-    <dimen name="qc_tab_title_height">24dp</dimen>
-    <dimen name="qc_thumb_width">150dp</dimen>
-    <dimen name="qc_thumb_height">100dp</dimen>
     <dimen name="qc_item_size">40dp</dimen>
     <dimen name="qc_direct_share_icon_size">35dp</dimen>
     <dimen name="item_height">67dp</dimen>
