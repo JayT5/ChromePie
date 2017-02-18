@@ -1,79 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="add_bookmark">Добавить закладку</string>
-    <string name="add_to_home">Добавить на главный экран</string>
-    <string name="app_about">"ChromePie - это Xposed модуль, который добавляет настраиваемые элементы управления в Google Chrome и Google Chrome Beta.
 
-Действия:
-• Назад, вперед, обновить, новая вкладка, новая вкладка инкогнито, закрыть вкладку
-• Добавить закладку, история, переход на полную версию, поиск на странице
-• Добавить на главный экран, отправить, перейти к началу, на весь экран и  т.д."</string>
-    <string name="app_description">Добавление элементов управления в Google Chrome</string>
-    <string name="app_help">"Нажмите \"Добавить новый элемент\", чтобы добавить основной элемент, который будет изначально отображаться при открытии меню. Основные элементы могут содержать пункты, которые появляются, когда Вы перемещаете палец на основной элемент. Количество отображаемых пунктов равно числу основных элементов. Для выполнения действий выберите элемент и поднимите палец. Для применения любых изменений требуются перезапуск Chrome."</string>
-    <string name="app_help_title">Справка</string>
     <string name="app_name">ChromePie</string>
-    <string name="app_thread_link">Для поддержки и отзывов посетите <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531"> - официальную страницу на XDA Developers</a></string>
-    <string name="app_version">Версия: %s</string>
-    <string name="back">Назад</string>
-    <string name="bookmarks">Закладки</string>
-    <string name="chrome_killed">Chrome закрыт</string>
-    <string name="close_all">Закрыть все</string>
-    <string name="close_tab">Закрыть вкладку</string>
-    <string name="desktop_site">Полная версия</string>
-    <string name="donate_summary">Нажмите, чтобы поддержать развитие, пожертвовав через PayPal</string>
-    <string name="donate_title">Пожертвовать</string>
-    <string name="edit_pie_menu_summary">Изменить элементы</string>
-    <string name="edit_pie_menu_title">Меню элементов</string>
-    <string name="edit_url">Изменить URL</string>
-    <string name="exit">Выход</string>
-    <string name="find_in_page">Поиск на странице</string>
-    <string name="forward">Вперед</string>
-    <string name="fullscreen">На весь экран</string>
-    <string name="help">Справка</string>
-    <string name="hide_launcher_icon_title">Скрыть иконку в лаунчере</string>
-    <string name="history">История</string>
-    <string name="kill_chrome">Перезапуск Chrome</string>
-    <string name="kill_chrome_summary">Перезапуск Chrome для применения изменений</string>
-    <string name="load_defaults_title">Установить значения по умолчанию</string>
-    <string name="main_item">основной</string>
-    <string name="menu_kill">Закрыть Chrome</string>
-    <string name="most_visited">Часто посещаемые</string>
-    <string name="new_incognito_tab">Новая вкладка инкогнито</string>
-    <string name="new_slice">Добавить новый элемент</string>
-    <string name="new_tab">Новая вкладка</string>
-    <string name="next_tab">Следующая вкладка</string>
-    <string name="none">Нет</string>
-    <string name="pie_item">Пункт</string>
-    <string name="pie_size_title">Размер элемента</string>
-    <string name="pie_slices_cat">Элементы</string>
-    <string name="previous_tab">Предыдущая вкладка</string>
-    <string name="print">Печать</string>
-    <string name="recent_tabs">Недавние вкладки</string>
-    <string name="refresh">Обновить</string>
-    <string name="scroll_to_top">Прокрутка вверх</string>
-    <string name="settings">Настройки</string>
-    <string name="share">Отправить</string>
-    <string name="show_tabs">Показать вкладки</string>
-    <string name="slice">Элемент</string>
-    <string name="trigger_area_title">Размер зоны запуска</string>
-    <string name="trigger_side">Сторона запуска</string>
-    <string name="ts_left">Левая</string>
-    <string name="ts_right">Правая</string>
-    <string name="chrome_app_chooser">Выберите приложение</string>
-    <string name="chrome_not_found">Chrome не найден</string>
-    <string name="direct_share">Прямая передача</string>
-    <string name="go_to_home">На домашний экран</string>
-    <string name="pie_theme_color_summary">Использовать цвета темы сайта для элементов (доступно на поддерживаемых сайтах)</string>
-    <string name="pie_theme_color_title">Цвета сайта для элементов</string>
-    <string name="reader_mode">Режим чтения</string>
-    <string name="reposition_menu_summary">Расположить элементы так, чтобы они не обрезались при открытии</string>
-    <string name="reposition_menu_title">Разместить на экране</string>
-    <string name="scroll_to_bottom">Прокрутка вниз</string>
-    <string name="ts_bottom">Внизу</string>
-    <string name="voice_search">Голосовой поиск</string>
-    <string name="recent_apps">Недавние приложения</string>
-    <string name="data_saver_disabled">Экономия трафика ВЫКЛ</string>
-    <string name="data_saver_enabled">Экономия трафика ВКЛ</string>
-    <string name="expand_notifications">Развернуть уведомления</string>
-    <string name="toggle_data_saver">ВКЛ/ВЫКЛ экономию трафика</string>
+    <string name="app_description">Add Pie Controls to Google Chrome</string>
+    <string name="app_thread_link">Check out the <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">official
+    thread at XDA Developers</a> for support and feedback</string>
+    <string name="app_about">ChromePie is an Xposed module which adds customisable Pie Controls
+        to Google Chrome and Google Chrome Beta.\n\n
+        Actions include:
+        \n•   Back, forward, refresh, new tab, new incognito tab, close tab
+        \n•   Add bookmark, history, request desktop site, find in page
+        \n•   Add to home, share, scroll to top, full screen &amp; more
+    </string>
+    <string name="app_help">Tap \'Add new slice\' to add a main item which will be initially
+        displayed when the menu is opened. These main items can contain sub-items which
+        appear when you move your finger onto a main item. The number of sub-items
+        displayed is equal to the number of main items created. To perform an action, lift
+        your finger when selecting an item. Any changes require Chrome to be restarted.
+    </string>
+    <string name="app_version">Version: %s</string>
+    <string name="app_help_title">Help</string>
+    <string name="load_defaults_title">Load default values</string>
+
+    <string name="kill_chrome">Restart Chrome</string>
+    <string name="kill_chrome_summary">Changes require Chrome to be restarted</string>
+    <string name="menu_kill">Kill Chrome</string>
+    <string name="chrome_killed">Chrome killed</string>
+    <string name="chrome_not_found">Chrome not found</string>
+    <string name="chrome_app_chooser">Select app</string>
+    <string name="check_new_browsers">Check for new browsers</string>
+    <string name="new_browser_added">Support for %s added</string>
+    <string name="no_new_browsers">No new supported browsers found</string>
+
+    <string name="edit_pie_menu_title">Pie menu</string>
+    <string name="edit_pie_menu_summary">Edit Pie menu items</string>
+
+    <string name="new_slice">Add new slice</string>
+    <string name="pie_slices_cat">Pie Slices</string>
+    <string name="hide_launcher_icon_title">Hide launcher icon</string>
+
+    <string name="trigger_side">Trigger positions</string>
+    <string name="ts_right">Right</string>
+    <string name="ts_left">Left</string>
+    <string name="ts_bottom">Bottom</string>
+
+    <string name="pie_size_title">Pie menu size</string>
+    <string name="trigger_area_title">Trigger area size</string>
+
+    <string name="donate_title">Donate</string>
+    <string name="donate_summary">Touch to support development by donating via PayPal</string>
+
+    <string name="reposition_menu_title">Ensure pie menu fits on screen</string>
+    <string name="reposition_menu_summary">Reposition the pie menu to prevent it getting cut off when activated too high or low on screen</string>
+
+    <string name="pie_theme_color_title">Use site theme colours for pie menu</string>
+    <string name="pie_theme_color_summary">Only available on supported sites</string>
+
+    <string name="data_saver_enabled">Data saver enabled</string>
+    <string name="data_saver_disabled">Data saver disabled</string>
+
+    <string name="slice">Slice</string>
+    <string name="pie_item">Pie Item</string>
+    <string name="main_item">Main item</string>
+
+    <!-- Pie items -->
+    <string name="none">None</string>
+    <string name="back">Back</string>
+    <string name="forward">Forward</string>
+    <string name="refresh">Refresh</string>
+    <string name="edit_url">Edit URL</string>
+    <string name="find_in_page">Find in page</string>
+    <string name="share">Share</string>
+    <string name="bookmarks">Bookmarks</string>
+    <string name="add_bookmark">Add bookmark</string>
+    <string name="history">History</string>
+    <string name="new_tab">New tab</string>
+    <string name="close_tab">Close tab</string>
+    <string name="new_incognito_tab">New incognito tab</string>
+    <string name="close_all">Close all</string>
+    <string name="show_tabs">Show tabs</string>
+    <string name="fullscreen">Fullscreen</string>
+    <string name="settings">Settings</string>
+    <string name="desktop_site">Request desktop site</string>
+    <string name="add_to_home">Add to home</string>
+    <string name="recent_tabs">Recent tabs</string>
+    <string name="most_visited">Most visited</string>
+    <string name="print">Print</string>
+    <string name="help">Help</string>
+    <string name="scroll_to_top">Scroll to top</string>
+    <string name="go_to_home">Go to home screen</string>
+    <string name="exit">Exit</string>
+    <string name="next_tab">Next tab</string>
+    <string name="previous_tab">Previous tab</string>
+    <string name="reader_mode">Reader mode</string>
+    <string name="scroll_to_bottom">Scroll to bottom</string>
+    <string name="direct_share">Direct share</string>
+    <string name="voice_search">Voice search</string>
+    <string name="recent_apps">Recent apps</string>
+    <string name="toggle_data_saver">Toggle data saver</string>
+    <string name="expand_notifications">Expand notifications</string>
+    <string name="downloads">Downloads</string>
+    <string name="open_recently_closed">Open recently closed tab</string>
+
 </resources>
