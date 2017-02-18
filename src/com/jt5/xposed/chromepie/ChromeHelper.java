@@ -868,9 +868,12 @@ class ChromeHelper {
 
     boolean hasRecentlyClosedTabs() {
         try {
-            List tabs = (List) Utils.callMethod(Utils.getObjectField(
-                    getTabModel(), "mRecentlyClosedBridge"), "getRecentlyClosedTabs");
-            return tabs != null && !tabs.isEmpty();
+            Object tabModel = getTabModel();
+            List recentTabs = (List) Utils.callMethod(Utils.getObjectField(
+                    tabModel, "mRecentlyClosedBridge"), "getRecentlyClosedTabs");
+            Object rewoundTabs = Utils.getObjectField(tabModel, "mRewoundList");
+            return (recentTabs != null && !recentTabs.isEmpty()) ||
+                    (Boolean) Utils.callMethod(rewoundTabs, "hasPendingClosures");
         } catch (NoSuchFieldError | NoSuchMethodError e) {
             XposedBridge.log(TAG + e);
         }
