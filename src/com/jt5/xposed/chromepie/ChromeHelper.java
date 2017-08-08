@@ -554,6 +554,11 @@ class ChromeHelper {
 
     Boolean addToHomeSupported() {
         try {
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_SHORTCUT_HELPER, "isAddToHomeIntentSupported");
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
             return (Boolean) Utils.callStaticMethod(Utils.CLASS_SHORTCUT_HELPER, "isAddToHomeIntentSupported", mActivity);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
