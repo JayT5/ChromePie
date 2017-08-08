@@ -632,17 +632,6 @@ class Item_expand_notifications extends PieItem {
     }
 }
 
-class Item_downloads extends PieItem {
-    public Item_downloads(View view, String id, int action) {
-        super(view, id, action);
-    }
-
-    @Override
-    protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled(helper.isDownloadHomeEnabled());
-    }
-}
-
 class Item_open_recently_closed extends PieItem {
     public Item_open_recently_closed(View view, String id, int action) {
         super(view, id, action);
