@@ -18,8 +18,8 @@ package com.jt5.xposed.chromepie;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.content.res.XModuleResources;
 import android.content.res.XmlResourceParser;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -61,7 +61,7 @@ public class PieControl implements PieMenu.PieController {
     private final Activity mActivity;
     private final ChromeHelper mHelper;
     private PieMenu mPie;
-    private final XModuleResources mXResources;
+    private final Resources mXResources;
     private final XSharedPreferences mXPreferences;
     private final int mItemSize;
     private Unhook mFinishPageLoadHook;
@@ -70,7 +70,7 @@ public class PieControl implements PieMenu.PieController {
     private int mThemeColor;
     private final List<String> mNoTabActions;
 
-    PieControl(Activity activity, XModuleResources res, XSharedPreferences prefs, ClassLoader classLoader) {
+    PieControl(Activity activity, Resources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mActivity = activity;
         Utils.initialise(classLoader);
         if (Utils.isDocumentModeEnabled(mActivity, classLoader)) {

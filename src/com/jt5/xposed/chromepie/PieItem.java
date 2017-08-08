@@ -3,7 +3,7 @@ package com.jt5.xposed.chromepie;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.XModuleResources;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -33,7 +33,7 @@ public class PieItem extends BaseItem {
         super(view, id, action);
     }
 
-    void onOpen(ChromeHelper helper, XModuleResources resources) {
+    void onOpen(ChromeHelper helper, Resources resources) {
 
     }
 
@@ -49,7 +49,7 @@ class Item_back extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.canGoBack());
     }
 
@@ -77,7 +77,7 @@ class Item_forward extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.canGoForward());
     }
 }
@@ -88,7 +88,7 @@ class Item_refresh extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         if (helper.isLoading()) {
             ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_stop_white));
         } else {
@@ -119,7 +119,7 @@ class Item_new_tab extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         if (helper.isDocumentMode()) {
             setEnabled(!helper.isOnNewTabPage() || helper.isIncognito());
         }
@@ -132,7 +132,7 @@ class Item_new_incognito_tab extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         if (helper.isDocumentMode()) {
             setEnabled(!(helper.isOnNewTabPage() && helper.isIncognito()));
         }
@@ -201,7 +201,7 @@ class Item_add_bookmark extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         if (helper.bookmarkExists()) {
             ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_add_bookmark_white));
         } else {
@@ -231,7 +231,7 @@ class Item_most_visited extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(!helper.isIncognito());
     }
 
@@ -251,7 +251,7 @@ class Item_recent_tabs extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.syncSupported() && !helper.isIncognito());
     }
 
@@ -270,7 +270,7 @@ class Item_show_tabs extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         int tabCount = helper.getTabCount();
         setEnabled(!helper.isTablet() && tabCount != 0);
         TextView tv = (TextView) ((ViewGroup) getView()).getChildAt(1);
@@ -299,7 +299,7 @@ class Item_add_to_home extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.addToHomeSupported() && !helper.isIncognito() && !helper.isOnNewTabPage());
     }
 }
@@ -310,7 +310,7 @@ class Item_find_in_page extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.tabSupportsFinding());
     }
 }
@@ -342,7 +342,7 @@ class Item_desktop_site extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         if (helper.isDesktopUserAgent()) {
             ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_mobile_site_white));
         } else {
@@ -357,7 +357,7 @@ class Item_fullscreen extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         if (helper.isFullscreen()) {
             ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_exit_white));
         } else {
@@ -377,7 +377,7 @@ class Item_scroll_to_top extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.getContentViewCore() != null);
     }
 
@@ -400,7 +400,7 @@ class Item_scroll_to_bottom extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.getContentViewCore() != null);
     }
 
@@ -423,7 +423,7 @@ class Item_share extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(!helper.isOnNewTabPage());
     }
 }
@@ -437,7 +437,7 @@ class Item_direct_share extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         ComponentName compName = helper.getShareComponentName();
         setEnabled(compName != null && !helper.isOnNewTabPage());
         ImageView iv = (ImageView) getView();
@@ -467,7 +467,7 @@ class Item_print extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.printingEnabled() && !helper.isOnNewTabPage() && Build.VERSION.SDK_INT >= 19);
     }
 }
@@ -501,7 +501,7 @@ class Item_next_tab extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.tabExistsAtIndex(1));
     }
 
@@ -520,7 +520,7 @@ class Item_previous_tab extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.tabExistsAtIndex(-1));
     }
 
@@ -539,7 +539,7 @@ class Item_reader_mode extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled((helper.getWebContents() != null && helper.nativeIsUrlDistillable()) || helper.isDistilledPage());
     }
 
@@ -562,7 +562,7 @@ class Item_voice_search extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.isVoiceSearchEnabled());
     }
 
@@ -588,14 +588,14 @@ class Item_recent_apps extends PieItem {
 }
 
 class Item_toggle_data_saver extends PieItem {
-    private XModuleResources mResources;
+    private Resources mResources;
 
     public Item_toggle_data_saver(View view, String id, int action) {
         super(view, id);
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         if (mResources == null) mResources = resources;
         ImageView view = (ImageView) getView();
         if (helper.isDataReductionEnabled(helper.getDataReductionSettings())) {
@@ -638,7 +638,7 @@ class Item_downloads extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.isDownloadHomeEnabled());
     }
 }
@@ -649,7 +649,7 @@ class Item_open_recently_closed extends PieItem {
     }
 
     @Override
-    protected void onOpen(ChromeHelper helper, XModuleResources resources) {
+    protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(!helper.isIncognito() && helper.hasRecentlyClosedTabs());
     }
 }

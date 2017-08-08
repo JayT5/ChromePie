@@ -22,7 +22,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
-import android.content.res.XModuleResources;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -103,12 +103,12 @@ public class PieMenu extends FrameLayout {
         NONE
     }
 
-    public PieMenu(Context context, XModuleResources res, XSharedPreferences prefs) {
+    public PieMenu(Context context, Resources res, XSharedPreferences prefs) {
         super(context);
         init(res, prefs);
     }
 
-    private void init(XModuleResources res, XSharedPreferences prefs) {
+    private void init(Resources res, XSharedPreferences prefs) {
         mItems = new ArrayList<>();
         mLevels = 0;
         mCounts = new int[MAX_LEVELS];
@@ -154,7 +154,7 @@ public class PieMenu extends FrameLayout {
         }
     }
 
-    public void setDefaultColors(XModuleResources res) {
+    public void setDefaultColors(Resources res) {
         mNormalPaint.setColor(res.getColor(R.color.qc_normal));
         mSelectedPaint.setColor(res.getColor(R.color.qc_selected));
         mSubPaint.setColor(res.getColor(R.color.qc_sub));
