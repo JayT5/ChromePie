@@ -67,7 +67,7 @@ public class SubPreferenceFragment extends PreferenceFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.removeItem(R.id.menu_load_defaults);
-        menu.removeItem(R.id.menu_check_extra_packages);
+        menu.removeItem(R.id.actionbar_kill);
     }
 
 }

@@ -6,8 +6,11 @@ import android.app.AlertDialog.Builder;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceActivity;
@@ -22,6 +25,8 @@ import com.jt5.xposed.chromepie.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -110,7 +115,7 @@ public class PieSettings extends PreferenceActivity {
         try {
             ((TextView) helpView.findViewById(R.id.version)).setText(getString(R.string.app_version,
                     getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
-        } catch (NameNotFoundException e) {
+        } catch (PackageManager.NameNotFoundException e) {
 
         }
 
@@ -124,18 +129,18 @@ public class PieSettings extends PreferenceActivity {
         dlgBuilder.show();
     }
 
-    void killChrome(Set<String> extraPkgs, boolean launch) {
-        List<Intent> chromeApps = getInstalledApps(extraPkgs);
-        if (chromeApps.isEmpty()) {
+    void killProcesses(SharedPreferences preferences, boolean launch) {
+        List<Intent> intents = getLaunchIntents(preferences);
+        if (intents.isEmpty()) {
             Toast.makeText(this, getResources().getString(R.string.chrome_not_found), Toast.LENGTH_SHORT).show();
         } else {
             if (launch) {
-                if (chromeApps.size() == 1) {
-                    startActivity(chromeApps.get(0));
+                if (intents.size() == 1) {
+                    startActivity(intents.get(0));
                 } else {
-                    Intent chooserIntent = Intent.createChooser(chromeApps.remove(chromeApps.size() - 1),
+                    Intent chooserIntent = Intent.createChooser(intents.remove(intents.size() - 1),
                             getResources().getString(R.string.chrome_app_chooser));
-                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, chromeApps.toArray(new Parcelable[chromeApps.size()]));
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intents.toArray(new Parcelable[intents.size()]));
                     startActivity(chooserIntent);
                 }
             } else {
@@ -144,19 +149,53 @@ public class PieSettings extends PreferenceActivity {
         }
     }
 
-    private List<Intent> getInstalledApps(Set<String> extraPkgs) {
+    private List<Intent> getLaunchIntents(SharedPreferences preferences) {
+        Set<String> packages = getExtraPackages(preferences);
+        packages.addAll(CHROME_PACKAGE_NAMES);
         ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         PackageManager pm = getPackageManager();
-        List<Intent> apps = new ArrayList<>();
-        extraPkgs.addAll(CHROME_PACKAGE_NAMES);
-        for (String packageName : extraPkgs) {
+        List<Intent> intents = new ArrayList<>();
+        for (String packageName : packages) {
             Intent launch = pm.getLaunchIntentForPackage(packageName);
             if (launch != null) {
                 am.killBackgroundProcesses(packageName);
-                apps.add(launch);
+                intents.add(launch);
             }
         }
-        return apps;
+        return intents;
+    }
+
+    private Set<String> getExtraPackages(SharedPreferences preferences) {
+        Set<String> existingPkgs = new HashSet<>(preferences.getStringSet("extra_packages", new HashSet<String>()));
+        Set<String> newPkgs = new HashSet<>();
+        PackageManager pm = getPackageManager();
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse("http://www.google.com"));
+        List<ResolveInfo> browsers = pm.queryIntentActivities(intent, 0);
+
+        for (ResolveInfo resInfo : browsers) {
+            String pkg = resInfo.activityInfo.packageName;
+            if (!CHROME_PACKAGE_NAMES.contains(pkg) && !existingPkgs.contains(pkg)) {
+                try {
+                    ActivityInfo[] activities = pm.getPackageInfo(pkg, PackageManager.GET_ACTIVITIES).activities;
+                    List<String> activityNames = new ArrayList<>();
+                    for (ActivityInfo actInfo : activities) {
+                        activityNames.add(actInfo.name);
+                    }
+                    if (!Collections.disjoint(CHROME_ACTIVITY_CLASSES, activityNames)) {
+                        newPkgs.add(pkg);
+                    }
+                } catch (PackageManager.NameNotFoundException ignored) {}
+            }
+        }
+
+        if (!newPkgs.isEmpty()) {
+            existingPkgs.addAll(newPkgs);
+            preferences.edit().putStringSet("extra_packages", existingPkgs).apply();
+        }
+
+        return existingPkgs;
     }
 
 }

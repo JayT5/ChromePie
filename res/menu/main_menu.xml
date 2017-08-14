@@ -8,11 +8,6 @@
         android:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/menu_check_extra_packages"
-        android:title="@string/check_new_browsers"
-        android:showAsAction="withText" />
-
-    <item
         android:id="@+id/menu_load_defaults"
         android:title="@string/load_defaults_title"
         android:showAsAction="withText" />

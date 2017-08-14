@@ -1,7 +1,5 @@
 package com.jt5.xposed.chromepie.settings;
 
-import java.util.Map;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -16,13 +14,14 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.BaseAdapter;
 
 import com.jt5.xposed.chromepie.PieControl;
 import com.jt5.xposed.chromepie.R;
 import com.jt5.xposed.chromepie.settings.preference.PieMainPreference;
+
+import java.util.Map;
 
 public class MenuPreferenceFragment extends PreferenceFragment {
 
@@ -116,17 +115,15 @@ public class MenuPreferenceFragment extends PreferenceFragment {
                 loadDefaultValues(true);
                 loadPreferences();
                 return true;
+            case R.id.actionbar_kill:
+                ((PieSettings) getActivity()).killProcesses(mSharedPrefs, false);
+                return true;
             case android.R.id.home:
                 getActivity().finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        menu.removeItem(R.id.menu_check_extra_packages);
     }
 
 }

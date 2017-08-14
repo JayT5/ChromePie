@@ -4,12 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
@@ -19,15 +15,8 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.jt5.xposed.chromepie.R;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class PiePreferenceFragment extends PreferenceFragment {
 
@@ -49,8 +38,6 @@ public class PiePreferenceFragment extends PreferenceFragment {
         mPrefs.edit().putBoolean("readable", !readable).commit();
         setHasOptionsMenu(true);
 
-        findNewPackages(false);
-
         // If SharedPreferences does not contain this preference,
         // we can presume this is a new install
         if (!mPrefs.contains("screen_slice_1")) {
@@ -62,8 +49,7 @@ public class PiePreferenceFragment extends PreferenceFragment {
         killChrome.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                Set<String> extraPkgs = new HashSet<>(mPrefs.getStringSet("extra_packages", new HashSet<String>()));
-                ((PieSettings) getActivity()).killChrome(extraPkgs, true);
+                ((PieSettings) getActivity()).killProcesses(mPrefs, true);
                 return true;
             }
         });
@@ -95,11 +81,7 @@ public class PiePreferenceFragment extends PreferenceFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.actionbar_kill:
-                Set<String> extraPkgs = new HashSet<>(mPrefs.getStringSet("extra_packages", new HashSet<String>()));
-                ((PieSettings) getActivity()).killChrome(extraPkgs, false);
-                return true;
-            case R.id.menu_check_extra_packages:
-                findNewPackages(true);
+                ((PieSettings) getActivity()).killProcesses(mPrefs, false);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -109,43 +91,6 @@ public class PiePreferenceFragment extends PreferenceFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.removeItem(R.id.menu_load_defaults);
-    }
-
-    private void findNewPackages(boolean fromMenu) {
-        Set<String> extraPkgs = mPrefs.getStringSet("extra_packages", new HashSet<String>());
-        Set<String> newPkgs = new HashSet<>();
-        PackageManager pm = getActivity().getPackageManager();
-
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse("http://www.google.com"));
-        List<ResolveInfo> browsers = pm.queryIntentActivities(intent, 0);
-
-        for (ResolveInfo resInfo : browsers) {
-            String pkg = resInfo.activityInfo.packageName;
-            if (!PieSettings.CHROME_PACKAGE_NAMES.contains(pkg) && !extraPkgs.contains(pkg)) {
-                try {
-                    ActivityInfo[] activities = pm.getPackageInfo(pkg, PackageManager.GET_ACTIVITIES).activities;
-                    List<String> activityNames = new ArrayList<>();
-                    for (ActivityInfo actInfo : activities) {
-                        activityNames.add(actInfo.name);
-                    }
-                    if (!Collections.disjoint(PieSettings.CHROME_ACTIVITY_CLASSES, activityNames)) {
-                        Toast.makeText(getActivity(), getString(R.string.new_browser_added,
-                                resInfo.loadLabel(pm)), Toast.LENGTH_SHORT).show();
-                        newPkgs.add(pkg);
-                    }
-                } catch (PackageManager.NameNotFoundException e) {
-
-                }
-            }
-        }
-
-        if (!newPkgs.isEmpty()) {
-            newPkgs.addAll(extraPkgs);
-            mPrefs.edit().putStringSet("extra_packages", newPkgs).apply();
-        } else if (fromMenu) {
-            Toast.makeText(getActivity(), getString(R.string.no_new_browsers), Toast.LENGTH_SHORT).show();
-        }
     }
 
 }
