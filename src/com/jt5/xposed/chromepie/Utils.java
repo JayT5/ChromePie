@@ -1,14 +1,18 @@
 package com.jt5.xposed.chromepie;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.XmlResourceParser;
 import android.graphics.Color;
 import android.os.StrictMode;
 
 import org.apache.commons.lang3.ClassUtils;
+import org.xmlpull.v1.XmlPullParser;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +21,8 @@ import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 
 public class Utils {
+
+    private static final String TAG = "ChromePie:Utils ";
 
     private static final Map<String, Field> fieldCache = new HashMap<>();
     private static final Map<String, Method> methodCache = new HashMap<>();
@@ -114,10 +120,10 @@ public class Utils {
         return false;
     }
 
-    public static int getDarkenedColor(int color) {
+    public static int getDarkenedColor(int color, float factor) {
         float[] statusColor = new float[3];
         Color.colorToHSV(color, statusColor);
-        statusColor[2] *= 0.6f;
+        statusColor[2] *= factor;
         return Color.HSVToColor(statusColor);
     }
 
@@ -133,6 +139,35 @@ public class Utils {
 
     public static int applyColorAlpha(int color, int alpha) {
         return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
+    }
+
+    static Map<String, ?> createDefaultsMap(Resources resources) {
+        Map<String, Object> map = new HashMap<>();
+        XmlResourceParser parser = resources.getXml(R.xml.aosp_preferences);
+        String namespace = "http://schemas.android.com/apk/res/android";
+        try {
+            int eventType = parser.getEventType();
+            while (eventType != XmlPullParser.END_DOCUMENT) {
+                if (eventType == XmlPullParser.START_TAG) {
+                    if (parser.getName().equals("SwitchPreference")) {
+                        String key = parser.getAttributeValue(namespace, "key");
+                        boolean value = parser.getAttributeBooleanValue(namespace, "defaultValue", true);
+                        map.put(key, value);
+                    } else if (parser.getName().equals("ListPreference")) {
+                        String key = parser.getAttributeValue(namespace, "key");
+                        String value = parser.getAttributeValue(namespace, "defaultValue");
+                        map.put(key, value);
+                    }
+                }
+                eventType = parser.next();
+            }
+        } catch (Exception e) {
+            XposedBridge.log(TAG + e);
+            parser.close();
+            return Collections.emptyMap();
+        }
+        parser.close();
+        return map;
     }
 
     private static Class<?> getClass(ClassLoader classLoader, String[] classes) {

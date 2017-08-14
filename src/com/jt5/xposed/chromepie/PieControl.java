@@ -20,9 +20,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
-import android.content.res.XmlResourceParser;
 import android.preference.PreferenceManager;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -33,12 +31,9 @@ import android.widget.TextView;
 import com.jt5.xposed.chromepie.view.BaseItem;
 import com.jt5.xposed.chromepie.view.PieMenu;
 
-import org.xmlpull.v1.XmlPullParser;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,29 +58,29 @@ public class PieControl implements PieMenu.PieController {
     private PieMenu mPie;
     private final Resources mXResources;
     private final XSharedPreferences mXPreferences;
-    private final int mItemSize;
     private Unhook mFinishPageLoadHook;
     private final List<PieMenu.Trigger> mEnabledTriggers;
     private final boolean mApplyThemeColor;
     private int mThemeColor;
-    private final List<String> mNoTabActions;
+    private static final List<String> NO_TAB_ACTIONS = Collections.unmodifiableList(
+            Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit",
+                    "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver",
+                    "expand_notifications", "bookmarks", "history", "most_visited", "recent_tabs"));
 
     PieControl(Activity activity, Resources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mActivity = activity;
+        mXResources = res;
+        mXPreferences = prefs;
         Utils.initialise(classLoader);
         if (Utils.isDocumentModeEnabled(mActivity, classLoader)) {
             mHelper = new ChromeDocumentHelper(mActivity, classLoader);
         } else {
             mHelper = new ChromeHelper(mActivity, classLoader);
         }
-        mXResources = res;
-        mXPreferences = prefs;
         Utils.reloadPreferences(mXPreferences);
-        mItemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
         mEnabledTriggers = initTriggerPositions();
-        applyFullscreen();
         mApplyThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
-        mNoTabActions = getNoTabActions();
+        applyFullscreen();
     }
 
     void attachToContainer(ViewGroup container) {
@@ -124,12 +119,6 @@ public class PieControl implements PieMenu.PieController {
         mHelper.setFullscreen(mXPreferences.getBoolean("launch_in_fullscreen", defValue));
     }
 
-    private List<String> getNoTabActions() {
-        return Arrays.asList("new_tab", "new_incognito_tab", "fullscreen",
-                "settings", "exit", "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver",
-                "expand_notifications", "bookmarks", "history", "most_visited", "recent_tabs");
-    }
-
     private List<PieMenu.Trigger> initTriggerPositions() {
         Set<String> triggerSet = mXPreferences.getStringSet("trigger_side_set",
                 new HashSet<>(Arrays.asList("0", "1", "2")));
@@ -165,7 +154,7 @@ public class PieControl implements PieMenu.PieController {
         final int tabCount = mHelper.getTabCount();
         final List<BaseItem> items = mPie.getItems();
         for (BaseItem item : items) {
-            boolean shouldEnable = (tabCount != 0) || mNoTabActions.contains(item.getId());
+            boolean shouldEnable = (tabCount != 0) || NO_TAB_ACTIONS.contains(item.getId());
             item.setEnabled(shouldEnable);
             if (!shouldEnable || item.getView() == null) {
                 continue;
@@ -181,9 +170,11 @@ public class PieControl implements PieMenu.PieController {
 
     @Override
     public boolean shouldShowMenu(PieMenu.Trigger triggerPosition) {
-        return mEnabledTriggers.contains(triggerPosition) && !mHelper.isInFullscreenVideo() &&
-                (mHelper.isInOverview() == (mHelper.getTabCount() == 0)) && !mHelper.touchScrollInProgress() &&
-                (mHelper.getUrlBar() != null && !mHelper.getUrlBar().hasFocus());
+        return (mHelper.isInOverview() == (mHelper.getTabCount() == 0))
+                && mEnabledTriggers.contains(triggerPosition)
+                && !mHelper.isInFullscreenVideo()
+                && !mHelper.touchScrollInProgress()
+                && (mHelper.getUrlBar() == null || !mHelper.getUrlBar().hasFocus());
     }
 
     @Override
@@ -204,7 +195,7 @@ public class PieControl implements PieMenu.PieController {
         Map<String, ?> keyMap = mXPreferences.getAll();
         if (keyMap.isEmpty()) {
             XposedBridge.log(TAG + "Failed to load preferences, using default values");
-            keyMap = createDefaultsMap();
+            keyMap = Utils.createDefaultsMap(mXResources);
         }
         for (int i = 1; i <= MAX_SLICES; i++) {
             Boolean enabled = (Boolean) keyMap.get("screen_slice_" + i);
@@ -224,35 +215,6 @@ public class PieControl implements PieMenu.PieController {
         drawables.recycle();
     }
 
-    private Map<String, ?> createDefaultsMap() {
-        Map<String, Object> map = new HashMap<>();
-        XmlResourceParser parser = mXResources.getXml(R.xml.aosp_preferences);
-        String namespace = "http://schemas.android.com/apk/res/android";
-        try {
-            int eventType = parser.getEventType();
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-                if (eventType == XmlPullParser.START_TAG) {
-                    if (parser.getName().equals("SwitchPreference")) {
-                        String key = parser.getAttributeValue(namespace, "key");
-                        boolean value = parser.getAttributeBooleanValue(namespace, "defaultValue", true);
-                        map.put(key, value);
-                    } else if (parser.getName().equals("ListPreference")) {
-                        String key = parser.getAttributeValue(namespace, "key");
-                        String value = parser.getAttributeValue(namespace, "defaultValue");
-                        map.put(key, value);
-                    }
-                }
-                eventType = parser.next();
-            }
-        } catch (Exception e) {
-            XposedBridge.log(TAG + e);
-            parser.close();
-            return Collections.emptyMap();
-        }
-        parser.close();
-        return map;
-    }
-
     private BaseItem initItem(List<String> values, TypedArray drawables, String[] actions, String value) {
         if (value != null && !value.equals("none")) {
             int index = values.indexOf(value);
@@ -265,17 +227,18 @@ public class PieControl implements PieMenu.PieController {
     }
 
     private BaseItem makeItem(String id, int iconRes, int action) {
+        int itemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
         View view;
         if (id.equals("show_tabs")) {
             view = makeTabsView(iconRes);
         } else {
             view = new ImageView(mActivity);
             ((ImageView) view).setImageDrawable(mXResources.getDrawable(iconRes));
-            view.setMinimumWidth(mItemSize);
-            view.setMinimumHeight(mItemSize);
             ((ImageView) view).setScaleType(ScaleType.CENTER);
-            view.setLayoutParams(new LayoutParams(mItemSize, mItemSize));
+            view.setMinimumWidth(itemSize);
+            view.setMinimumHeight(itemSize);
         }
+        view.setLayoutParams(new LayoutParams(itemSize, itemSize));
         try {
             return (PieItem) Class.forName(ChromePie.PACKAGE_NAME + ".Item_" + id)
                     .getConstructor(View.class, String.class, int.class).newInstance(view, id, action);
@@ -289,15 +252,13 @@ public class PieControl implements PieMenu.PieController {
     }
 
     private View makeTabsView(int iconRes) {
-        LayoutInflater li = mActivity.getLayoutInflater();
-        ViewGroup view = (ViewGroup) li.inflate(mXResources.getLayout(R.layout.qc_tabs_view), null);
-        TextView count = (TextView) view.getChildAt(1);
+        View view = mActivity.getLayoutInflater().inflate(mXResources.getLayout(R.layout.qc_tabs_view), null);
+        TextView count = (TextView) view.findViewById(R.id.count_label);
         count.setBackground(mXResources.getDrawable(R.drawable.tab_nr));
         count.setText(Integer.toString(mHelper.getTabCount()));
-        ImageView icon = (ImageView) view.getChildAt(0);
+        ImageView icon = (ImageView) view.findViewById(R.id.count_icon);
         icon.setImageDrawable(mXResources.getDrawable(iconRes));
         icon.setScaleType(ScaleType.CENTER);
-        view.setLayoutParams(new LayoutParams(mItemSize, mItemSize));
         return view;
     }
 

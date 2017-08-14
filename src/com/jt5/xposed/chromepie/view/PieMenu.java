@@ -138,7 +138,7 @@ public class PieMenu extends FrameLayout {
     }
 
     public void setThemeColors(int themeColor) {
-        int statusColor = Utils.getDarkenedColor(themeColor);
+        int statusColor = Utils.getDarkenedColor(themeColor, 0.6f);
         int tintedColor = Utils.applyColorTint(themeColor, 0.2f);
         mNormalPaint.setColor(Utils.applyColorAlpha(themeColor, 224));
         mSelectedPaint.setColor(Utils.applyColorAlpha(statusColor, 224));
@@ -149,7 +149,7 @@ public class PieMenu extends FrameLayout {
     private void setTabCountBackgroundColor(int color) {
         List<PieItem> items = findItemsById("show_tabs");
         for (PieItem item : items) {
-            ((GradientDrawable) ((ViewGroup) item.getView()).getChildAt(1)
+            ((GradientDrawable) item.getView().findViewById(R.id.count_label)
                     .getBackground()).setColor(color);
         }
     }

@@ -10,7 +10,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Process;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -273,7 +272,7 @@ class Item_show_tabs extends PieItem {
     protected void onOpen(ChromeHelper helper, Resources resources) {
         int tabCount = helper.getTabCount();
         setEnabled(!helper.isTablet() && tabCount != 0);
-        TextView tv = (TextView) ((ViewGroup) getView()).getChildAt(1);
+        TextView tv = (TextView) getView().findViewById(R.id.count_label);
         tv.setText(Integer.toString(tabCount));
     }
 
@@ -285,8 +284,8 @@ class Item_show_tabs extends PieItem {
     @Override
     public void setAlpha(float alpha) {
         final int alphaInt = Math.round(alpha * (isEnabled() ? 255 : 77));
-        final ImageView icon = (ImageView) ((ViewGroup) getView()).getChildAt(0);
-        final TextView count = (TextView) ((ViewGroup) getView()).getChildAt(1);
+        final ImageView icon = (ImageView) getView().findViewById(R.id.count_icon);
+        final TextView count = (TextView) getView().findViewById(R.id.count_label);
         icon.setAlpha((float) alphaInt / 255);
         count.setTextColor(Color.argb(alphaInt, 255, 255, 255));
         count.getBackground().setAlpha(alphaInt);
@@ -599,7 +598,7 @@ class Item_toggle_data_saver extends PieItem {
         if (mResources == null) mResources = resources;
         ImageView view = (ImageView) getView();
         if (helper.isDataReductionEnabled(helper.getDataReductionSettings())) {
-            view.setColorFilter(0x99000000);
+            view.setColorFilter(0x7C000000);
             view.setImageDrawable(resources.getDrawable(R.drawable.ic_data_saver_off_white));
         } else {
             view.setColorFilter(null);
@@ -611,7 +610,7 @@ class Item_toggle_data_saver extends PieItem {
     public void onClick(ChromeHelper helper) {
         Object dataSettings = helper.getDataReductionSettings();
         boolean enabled = helper.isDataReductionEnabled(dataSettings);
-        if (helper.setDataReductionEnabled(dataSettings, enabled)) {
+        if (helper.setDataReductionEnabled(dataSettings, !enabled)) {
             Toast.makeText(helper.getActivity(), mResources.getString(enabled ?
                     R.string.data_saver_disabled : R.string.data_saver_enabled), Toast.LENGTH_SHORT).show();
         }

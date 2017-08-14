@@ -847,13 +847,13 @@ class ChromeHelper {
 
     boolean setDataReductionEnabled(Object dataSettings, boolean enabled) {
         try {
-            Utils.callMethod(dataSettings, "setDataReductionProxyEnabled", !enabled);
+            Utils.callMethod(dataSettings, "setDataReductionProxyEnabled", enabled);
             return true;
         } catch (NoSuchMethodError nsme) {
 
         }
         try {
-            Utils.callMethod(dataSettings, "setDataReductionProxyEnabled", mActivity, !enabled);
+            Utils.callMethod(dataSettings, "setDataReductionProxyEnabled", mActivity, enabled);
             return true;
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
