@@ -496,7 +496,7 @@ class ChromeHelper {
 
     Boolean isTablet() {
         try {
-            return (Boolean) Utils.callMethod(mActivity, "isTablet");
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_DEVICE_UTILS, "isTablet");
         } catch (NoSuchMethodError nsme) {
 
         }
@@ -608,6 +608,11 @@ class ChromeHelper {
     }
 
     ComponentName getShareComponentName() {
+        try {
+            return (ComponentName) Utils.callStaticMethod(Utils.CLASS_SHARE_HELPER, "getLastShareComponentName", (Object) null);
+        } catch (NoSuchMethodError nsme) {
+
+        }
         try {
             return (ComponentName) Utils.callStaticMethod(Utils.CLASS_SHARE_HELPER, "getLastShareComponentName");
         } catch (NoSuchMethodError nsme) {
@@ -861,11 +866,24 @@ class ChromeHelper {
         return false;
     }
 
+    private List getRecentlyClosedTabs(Object recentsBridge) {
+        try {
+            return (List) Utils.callMethod(recentsBridge, "getRecentlyClosedTabs", 1);
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return (List) Utils.callMethod(recentsBridge, "getRecentlyClosedTabs");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return null;
+    }
+
     boolean hasRecentlyClosedTabs() {
         try {
             Object tabModel = getTabModel();
-            List recentTabs = (List) Utils.callMethod(Utils.getObjectField(
-                    tabModel, "mRecentlyClosedBridge"), "getRecentlyClosedTabs");
+            List recentTabs = getRecentlyClosedTabs(Utils.getObjectField(tabModel, "mRecentlyClosedBridge"));
             Object rewoundTabs = Utils.getObjectField(tabModel, "mRewoundList");
             return (recentTabs != null && !recentTabs.isEmpty()) ||
                     (Boolean) Utils.callMethod(rewoundTabs, "hasPendingClosures");
