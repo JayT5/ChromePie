@@ -89,7 +89,7 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage 
                 control.attachToContainer(container);
                 XposedHelpers.setAdditionalInstanceField(activity, "pie_control", control);
             }
-        }, 500);
+        }, 1000L);
     }
 
 }
