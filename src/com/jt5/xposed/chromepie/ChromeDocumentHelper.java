@@ -78,7 +78,7 @@ class ChromeDocumentHelper extends ChromeHelper {
     private Object getNextTabIfClosed() {
         Object tabToClose = getCurrentTab();
         try {
-            int closingTabIndex = getTabIndex(tabToClose);
+            int closingTabIndex = getTabIndex(getTabModel(), tabToClose);
             Object adjacentTab = getTabAt((closingTabIndex == 0) ? 1 : closingTabIndex - 1);
             Object parentTab = getTabById((Integer) Utils.callMethod(tabToClose, "getParentId"));
 
@@ -106,7 +106,7 @@ class ChromeDocumentHelper extends ChromeHelper {
     private void showNextTab(Object tab) {
         try {
             Object model = getDocumentModel((Boolean) Utils.callMethod(tab, "isIncognito"));
-            int index = (Integer) Utils.callMethod(model, "indexOf", tab);
+            int index = getTabIndex(model, tab);
             Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "setIndex", model, index);
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
@@ -129,6 +129,29 @@ class ChromeDocumentHelper extends ChromeHelper {
             XposedBridge.log(TAG + nsme);
         }
         return null;
+    }
+
+    private Object getTabAt(int index) {
+        try {
+            return Utils.callMethod(getTabModel(), "getTabAt", index);
+        } catch (NoSuchMethodError nsme) {
+
+        }
+        try {
+            return Utils.callMethod(getTabModel(), "getTab", index);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return null;
+    }
+
+    private Integer getTabIndex(Object model, Object tab) {
+        try {
+            return (Integer) Utils.callMethod(model, "indexOf", tab);
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return -1;
     }
 
 }

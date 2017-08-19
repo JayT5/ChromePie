@@ -501,15 +501,12 @@ class Item_next_tab extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled(helper.tabExistsAtIndex(1));
+        setEnabled(helper.currentTabIndex() < helper.getTabCount() - 1);
     }
 
     @Override
     public void onClick(ChromeHelper helper) {
-        int index = helper.getTabIndex(helper.getCurrentTab());
-        if (index != -1) {
-            helper.showTabByIndex(index + 1);
-        }
+        helper.showTabByIndex(helper.currentTabIndex() + 1);
     }
 }
 
@@ -520,15 +517,12 @@ class Item_previous_tab extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled(helper.tabExistsAtIndex(-1));
+        setEnabled(helper.currentTabIndex() > 0);
     }
 
     @Override
     public void onClick(ChromeHelper helper) {
-        int index = helper.getTabIndex(helper.getCurrentTab());
-        if (index != -1) {
-            helper.showTabByIndex(index - 1);
-        }
+        helper.showTabByIndex(helper.currentTabIndex() - 1);
     }
 }
 

@@ -105,31 +105,13 @@ class ChromeHelper {
         return new Object();
     }
 
-    Integer getTabIndex(Object tab) {
+    Integer currentTabIndex() {
         try {
-            return (Integer) Utils.callMethod(getTabModel(), "indexOf", tab);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-            return -1;
-        }
-    }
-
-    Boolean tabExistsAtIndex(int i) {
-        return getTabAt(getTabIndex(getCurrentTab()) + i) != null;
-    }
-
-    Object getTabAt(int index) {
-        try {
-            return Utils.callMethod(getTabModel(), "getTabAt", index);
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            return Utils.callMethod(getTabModel(), "getTab", index);
+            return (Integer) Utils.callMethod(getTabModel(), "index");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
-        return null;
+        return -1;
     }
 
     void showTabByIndex(int index) {
