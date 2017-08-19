@@ -31,8 +31,6 @@
     <string name="ts_left">左</string>
     <string name="pie_size_title">パイメニューのサイズ</string>
     <string name="trigger_area_title">トリガー領域のサイズ</string>
-    <string name="donate_title">寄付</string>
-    <string name="donate_summary">タッチしてPayPalで寄付をして、開発をサポートしてください。</string>
     <string name="slice">スライス</string>
     <string name="pie_item">パイアイテム</string>
     <string name="main_item">メインアイテム</string>

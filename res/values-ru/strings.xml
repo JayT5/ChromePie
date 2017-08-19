@@ -20,8 +20,6 @@
     <string name="close_all">Закрыть все</string>
     <string name="close_tab">Закрыть вкладку</string>
     <string name="desktop_site">Полная версия</string>
-    <string name="donate_summary">Нажмите, чтобы поддержать развитие, пожертвовав через PayPal</string>
-    <string name="donate_title">Пожертвовать</string>
     <string name="edit_pie_menu_summary">Изменить элементы</string>
     <string name="edit_pie_menu_title">Меню элементов</string>
     <string name="edit_url">Изменить URL</string>

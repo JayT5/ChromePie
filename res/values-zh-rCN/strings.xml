@@ -42,9 +42,6 @@
     <string name="pie_size_title">Pie 菜单大小</string>
     <string name="trigger_area_title">触发区域大小</string>
 
-    <string name="donate_title">捐赠</string>
-    <string name="donate_summary">点此可通过 PayPal 捐赠以支持后续开发</string>
-
     <string name="reposition_menu_title">确保 Pie 菜单适配屏幕</string>
     <string name="reposition_menu_summary">自动调整 Pie 菜单的位置以防止于屏幕较顶端或底端启用时所造成的显示不全</string>
 

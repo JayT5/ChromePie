@@ -43,13 +43,5 @@
         android:key="hide_launcher_icon"
         android:title="@string/hide_launcher_icon_title"
         android:defaultValue="false" />
-    <Preference
-        android:key="donate"
-        android:title="@string/donate_title"
-        android:summary="@string/donate_summary" >
-        <intent
-            android:action="android.intent.action.VIEW"
-            android:data="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=KBY3MHRMVW5PG" />
-    </Preference>
 
 </PreferenceScreen>

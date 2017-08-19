@@ -42,9 +42,6 @@
     <string name="pie_size_title">pie菜单大小</string>
     <string name="trigger_area_title">触发范围大小</string>
 
-    <string name="donate_title">捐赠</string>
-    <string name="donate_summary">使用PayPal捐赠給开发人员</string>
-
     <string name="reposition_menu_title">确保pie菜单适应屏幕</string>
     <string name="reposition_menu_summary">重新定位pie菜单，以防止在过大或过小的屏幕上超出画面。</string>
 

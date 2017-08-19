@@ -6,7 +6,6 @@
     <string name="data_saver_enabled">데이터 세이버 실행</string>
     <string name="desktop_site">데스크탑 버전으로 보기</string>
     <string name="direct_share">공유</string>
-    <string name="donate_title">기부하기</string>
     <string name="edit_pie_menu_summary">파이 메뉴를 설정합니다.</string>
     <string name="edit_pie_menu_title">파이 메뉴</string>
     <string name="edit_url">URL 수정</string>
@@ -77,7 +76,6 @@
    같습니다. 메뉴를 선택한 다음 손을 떼면 설정된 작업을 수행합니다. 변경된 설정들은
    크롬이 재실행 후 적용됩니다.</string>
     <string name="ts_bottom">아래쪽</string>
-    <string name="donate_summary">페이팔을 통한 기부로 개발에 도움을 주실 수 있습니다.</string>
     <string name="forward">앞으로</string>
 
 </resources>

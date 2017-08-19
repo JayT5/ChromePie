@@ -44,9 +44,6 @@
     <string name="pie_size_title">Pie menu size</string>
     <string name="trigger_area_title">Trigger area size</string>
 
-    <string name="donate_title">Donate</string>
-    <string name="donate_summary">Touch to support development by donating via PayPal</string>
-
     <string name="reposition_menu_title">Ensure pie menu fits on screen</string>
     <string name="reposition_menu_summary">Reposition the pie menu to prevent it getting cut off when activated too high or low on screen</string>
 

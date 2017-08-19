@@ -42,9 +42,6 @@
     <string name="pie_size_title">圓餅選單大小</string>
     <string name="trigger_area_title">觸發範圍大小</string>
 
-    <string name="donate_title">捐贈</string>
-    <string name="donate_summary">使用PayPal捐贈給開發人員</string>
-
     <string name="reposition_menu_title">確保圓餅選單符合螢幕</string>
     <string name="reposition_menu_summary">重新定位圓餅選單，以防止在過大或過小的螢幕上超出畫面。</string>
 

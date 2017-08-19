@@ -3,9 +3,9 @@
 
     <string name="app_name">ChromePie</string>
     <string name="app_description">Pridá koláčové ovládanie Google Chrome</string>
-    <string name="app_thread_link">Prejdite na <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">oficálnu 
+    <string name="app_thread_link">Prejdite na <a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">oficálnu
     tému na XDA Developers</a> pre podporu a spätnú väzbu</string>
-    <string name="app_about">ChromePie je Xposed module, ktorý pridá upraviteľné koláčové ovládanie 
+    <string name="app_about">ChromePie je Xposed module, ktorý pridá upraviteľné koláčové ovládanie
         do Google Chrome a Google Chrome Beta.\n\n
         Akcia zahŕňajú:
         \n•   Dozadu, dopredu, obnoviť, nová karta, nová karta inkognito, zavrieť kartu
@@ -13,9 +13,9 @@
         \n•   Pridať domov, zdieľať, prejsť nahor, celá obrazovka &amp; ďalšie
     </string>
     <string name="app_help">Kliknite na \'Pridať nový plátok\' pre pridanie hlavnej položky,
-	    ktorá sa zobrazí pri otvorení ponuky. Tieto hlavné položky môžu obsahovať podpoložky, 
-        ktoré sa objavia, keď pohnete prstom na hlavnú položku. Počet zobrazených podpoložiek 
-        sa rovná počtu vytvorených hlavných položiek. Ak chcete vykonať akciu, zdvihnite prst 
+	    ktorá sa zobrazí pri otvorení ponuky. Tieto hlavné položky môžu obsahovať podpoložky,
+        ktoré sa objavia, keď pohnete prstom na hlavnú položku. Počet zobrazených podpoložiek
+        sa rovná počtu vytvorených hlavných položiek. Ak chcete vykonať akciu, zdvihnite prst
 		z danej položky. Akékoľvek zmeny vyžadujú reštartovanie aplikácie Chrome.
     </string>
     <string name="app_version">Verzia: %s</string>
@@ -28,25 +28,22 @@
     <string name="chrome_killed">Chrome sa ukončil</string>
     <string name="chrome_not_found">Chrome sa nenašiel</string>
     <string name="chrome_app_chooser">Vyberte aplikáciu</string>
-    
+
     <string name="edit_pie_menu_title">Koláčová ponuka</string>
     <string name="edit_pie_menu_summary">Upraviť položky v koláčovej ponuke</string>
-    
+
     <string name="new_slice">Pridať nový plátok</string>
     <string name="pie_slices_cat">Plátky koláča</string>
     <string name="hide_launcher_icon_title">Skryť ikonu v spúšťači</string>
-    
+
     <string name="trigger_side">Pozície spustenia</string>
     <string name="ts_right">Vľavo</string>
     <string name="ts_left">Vpravo</string>
     <string name="ts_bottom">Dole</string>
-    
+
     <string name="pie_size_title">Veľkosť koláčovej ponuky</string>
     <string name="trigger_area_title">Veľkosť oblasti spustenia</string>
-    
-    <string name="donate_title">Prispieť</string>
-    <string name="donate_summary">Dotykom podporte vývoj aplikácie darom cez PayPal</string>
-    
+
     <string name="reposition_menu_title">Prispôsobiť rozloženie koláčovej ponuky na obrazovke</string>
     <string name="reposition_menu_summary">Upraviť pozíciu koláčovej ponuky, aby sa zábranilo jej orezaniu, keď je aktivovaná príliš vysoko alebo nízko na obrazovke</string>
 
@@ -56,7 +53,7 @@
     <string name="slice">Plátok</string>
     <string name="pie_item">Položka koláča</string>
     <string name="main_item">Hlavná položka</string>
-    
+
     <!-- Pie items -->
     <string name="none">Žiadna</string>
     <string name="back">Dozadu</string>
