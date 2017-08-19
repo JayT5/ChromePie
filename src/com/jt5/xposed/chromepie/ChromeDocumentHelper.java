@@ -11,7 +11,7 @@ class ChromeDocumentHelper extends ChromeHelper {
     }
 
     @Override
-    Boolean isDocumentMode() {
+    boolean isDocumentMode() {
         return true;
     }
 

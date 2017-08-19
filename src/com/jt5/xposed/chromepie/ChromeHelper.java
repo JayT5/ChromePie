@@ -47,6 +47,15 @@ class ChromeHelper {
         return mActivity;
     }
 
+    boolean isDocumentMode() {
+        return false;
+    }
+
+    boolean isCustomTabs() {
+        return mActivity.getClass().getName().equals(
+                "org.chromium.chrome.browser.customtabs.CustomTabActivity");
+    }
+
     int getResIdentifier(String id) {
         return getResIdentifier(id, "id");
     }
@@ -285,17 +294,18 @@ class ChromeHelper {
 
     Object getLayoutManager() {
         try {
+            Object viewHolder = Utils.getObjectField(mActivity, "mCompositorViewHolder");
+            return Utils.getObjectField(viewHolder, "mLayoutManager");
+        } catch (NoSuchFieldError nsfe) {
+
+        }
+        try {
             return Utils.getObjectField(mActivity, "mLayoutManager");
         } catch (NoSuchFieldError nsfe) {
 
         }
         try {
             return Utils.callMethod(mActivity, "getLayoutManager");
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            return Utils.callMethod(mActivity, "getAndSetupOverviewLayout");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
@@ -694,10 +704,6 @@ class ChromeHelper {
         return controlHeightId == 0 ? 0 : mActivity.getResources().getDimensionPixelSize(controlHeightId);
     }
 
-    Boolean isDocumentMode() {
-        return false;
-    }
-
     Object getLocationBar() {
         try {
             return Utils.callMethod(mActivity, "getLocationBar");
@@ -751,8 +757,9 @@ class ChromeHelper {
         mActivity.startActivity(intent);
     }
 
-    Boolean shouldUseThemeColor(int themeColor) {
-        return !isDefaultPrimaryColor(themeColor) && isValidThemeColor(themeColor) && !isIncognito();
+    boolean shouldUseThemeColor(int themeColor) {
+        return !isDefaultPrimaryColor(themeColor) && isValidThemeColor(themeColor)
+                && !isIncognito() && !isCustomTabs();
     }
 
     private boolean isValidThemeColor(int color) {

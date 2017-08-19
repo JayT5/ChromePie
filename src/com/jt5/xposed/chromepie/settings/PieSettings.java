@@ -53,6 +53,7 @@ public class PieSettings extends PreferenceActivity {
             "org.chromium.chrome.browser.ChromeTabbedActivity",
             "org.chromium.chrome.browser.document.DocumentActivity",
             "org.chromium.chrome.browser.document.IncognitoDocumentActivity",
+            "org.chromium.chrome.browser.customtabs.CustomTabActivity",
             "com.google.android.apps.chrome.ChromeTabbedActivity",
             "com.google.android.apps.chrome.document.DocumentActivity",
             "com.google.android.apps.chrome.document.IncognitoDocumentActivity",

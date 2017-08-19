@@ -7,7 +7,6 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Handler;
 import android.os.Process;
 import android.view.View;
 import android.widget.EditText;
@@ -180,17 +179,8 @@ class Item_bookmarks extends PieItem {
     public void onClick(final ChromeHelper helper) {
         if (helper.getTabCount() == 0) {
             helper.createNewTab();
-            // Allow time for the new tab animation to finish
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Item_bookmarks.super.onClick(helper);
-                }
-            }, 100);
-        } else {
-            super.onClick(helper);
         }
+        super.onClick(helper);
     }
 }
 

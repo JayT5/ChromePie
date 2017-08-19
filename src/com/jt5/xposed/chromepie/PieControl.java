@@ -53,6 +53,17 @@ public class PieControl implements PieMenu.PieController {
     private static final String TAG = "ChromePie:PieControl: ";
     public static final int MAX_SLICES = 6;
 
+    private static final List<String> NO_TAB_ACTIONS = Collections.unmodifiableList(
+            Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit",
+                    "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver", "downloads",
+                    "expand_notifications", "bookmarks", "history", "most_visited", "recent_tabs"));
+    private static final List<String> CUSTOM_TAB_ACTIONS = Collections.unmodifiableList(
+            Arrays.asList("back", "forward", "refresh", "close_tab", "add_bookmark", "add_to_home",
+                    "find_in_page", "desktop_site", "fullscreen", "scroll_to_top",
+                    "scroll_to_bottom", "share", "direct_share", "print", "settings", "go_to_home",
+                    "exit", "reader_mode", "recent_apps", "toggle_data_saver",
+                    "expand_notifications"));
+
     private final Activity mActivity;
     private final ChromeHelper mHelper;
     private PieMenu mPie;
@@ -62,21 +73,17 @@ public class PieControl implements PieMenu.PieController {
     private final List<PieMenu.Trigger> mEnabledTriggers;
     private final boolean mApplyThemeColor;
     private int mThemeColor;
-    private static final List<String> NO_TAB_ACTIONS = Collections.unmodifiableList(
-            Arrays.asList("new_tab", "new_incognito_tab", "fullscreen", "settings", "exit",
-                    "go_to_home", "show_tabs", "recent_apps", "toggle_data_saver",
-                    "expand_notifications", "bookmarks", "history", "most_visited", "recent_tabs"));
 
     PieControl(Activity activity, Resources res, XSharedPreferences prefs, ClassLoader classLoader) {
         mActivity = activity;
-        mXResources = res;
-        mXPreferences = prefs;
         Utils.initialise(classLoader);
         if (Utils.isDocumentModeEnabled(mActivity, classLoader)) {
             mHelper = new ChromeDocumentHelper(mActivity, classLoader);
         } else {
             mHelper = new ChromeHelper(mActivity, classLoader);
         }
+        mXResources = res;
+        mXPreferences = prefs;
         Utils.reloadPreferences(mXPreferences);
         mEnabledTriggers = initTriggerPositions();
         mApplyThemeColor = mXPreferences.getBoolean("apply_theme_color", true);
@@ -90,6 +97,7 @@ public class PieControl implements PieMenu.PieController {
             mPie.setLayoutParams(lp);
             populateMenu();
             mPie.setController(this);
+            mPie.setDefaultColors(mXResources);
         }
         container.addView(mPie);
     }
@@ -102,6 +110,7 @@ public class PieControl implements PieMenu.PieController {
 
     void destroy() {
         removeFromParent();
+        mPie.clearItems();
         mPie = null;
         if (mFinishPageLoadHook != null) {
             mFinishPageLoadHook.unhook();
@@ -154,7 +163,8 @@ public class PieControl implements PieMenu.PieController {
         final int tabCount = mHelper.getTabCount();
         final List<BaseItem> items = mPie.getItems();
         for (BaseItem item : items) {
-            boolean shouldEnable = (tabCount != 0) || NO_TAB_ACTIONS.contains(item.getId());
+            boolean shouldEnable = mHelper.isCustomTabs() ? CUSTOM_TAB_ACTIONS.contains(item.getId())
+                    : tabCount != 0 || NO_TAB_ACTIONS.contains(item.getId());
             item.setEnabled(shouldEnable);
             if (!shouldEnable || item.getView() == null) {
                 continue;
@@ -170,11 +180,11 @@ public class PieControl implements PieMenu.PieController {
 
     @Override
     public boolean shouldShowMenu(PieMenu.Trigger triggerPosition) {
-        return (mHelper.isInOverview() == (mHelper.getTabCount() == 0))
-                && mEnabledTriggers.contains(triggerPosition)
+        return mEnabledTriggers.contains(triggerPosition)
                 && !mHelper.isInFullscreenVideo()
                 && !mHelper.touchScrollInProgress()
-                && (mHelper.getUrlBar() == null || !mHelper.getUrlBar().hasFocus());
+                && (mHelper.isCustomTabs() || ((mHelper.isInOverview() == (mHelper.getTabCount() == 0))
+                && (mHelper.getUrlBar() == null || !mHelper.getUrlBar().hasFocus())));
     }
 
     @Override
