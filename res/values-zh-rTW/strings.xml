@@ -3,8 +3,10 @@
 
     <string name="app_name">ChromePie</string>
     <string name="app_description">在Chrome裡新增圓餅控制</string>
-    <string name="app_thread_link">" 前往"<a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">XDA Developers</a> 尋求幫助或回報問題</string>
-    <string name="app_about">"ChromePie是一個Xposed模組，可以自定新增圓餅控制到Google Chrome及Google Chrome Beta。\n\n
+    <string name="app_thread_link">" 前往"<a href="http://forum.xda-developers.com/xposed/modules/mod-chromepie-add-pie-controls-to-t2869531">XDA Developers</a> 
+    尋求幫助或回報問題</string>
+    <string name="app_about">"ChromePie是一個Xposed模組，可以自定新增圓餅控制
+        到Google Chrome及Google Chrome Beta。\n\n
         包含：
         \n•   上一頁、下一頁、重新整理、新分頁、新無痕分頁、關閉分頁
         \n•   新增書籤、歷史記錄、要求電腦版顯示、在頁面中搜尋
@@ -91,5 +93,7 @@
     <string name="recent_apps">最近開啟程式</string>
     <string name="toggle_data_saver">開關 Data Saver</string>
     <string name="expand_notifications">展開通知</string>
+    <string name="downloads">下載</string>
+    <string name="open_recently_closed">開起最近關閉分頁</string>
 
 </resources>
