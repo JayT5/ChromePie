@@ -59,7 +59,7 @@ public class PieControl implements PieMenu.PieController {
                     "expand_notifications", "bookmarks", "history", "most_visited", "recent_tabs"));
     private static final List<String> CUSTOM_TAB_ACTIONS = Collections.unmodifiableList(
             Arrays.asList("back", "forward", "refresh", "close_tab", "add_bookmark", "add_to_home",
-                    "find_in_page", "desktop_site", "fullscreen", "scroll_to_top",
+                    "find_in_page", "desktop_site", "fullscreen", "scroll_to_top", "show_tabs",
                     "scroll_to_bottom", "share", "direct_share", "print", "settings", "go_to_home",
                     "exit", "reader_mode", "recent_apps", "toggle_data_saver",
                     "expand_notifications"));

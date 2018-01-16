@@ -261,7 +261,7 @@ class Item_show_tabs extends PieItem {
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
         int tabCount = helper.getTabCount();
-        setEnabled(!helper.isTablet() && tabCount != 0);
+        setEnabled(tabCount != 0 && !helper.isTablet() && !helper.isCustomTabs());
         TextView tv = (TextView) getView().findViewById(R.id.count_label);
         tv.setText(Integer.toString(tabCount));
     }
