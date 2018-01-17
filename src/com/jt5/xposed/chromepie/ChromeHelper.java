@@ -656,13 +656,15 @@ class ChromeHelper {
     }
 
     void scroll(Object contentView, int yVel, int y) {
+        float density = mActivity.getResources().getDisplayMetrics().density + 1;
         try {
-            float density = mActivity.getResources().getDisplayMetrics().density + 1;
+            Utils.callMethod(getContentViewCore(), "flingViewport", SystemClock.uptimeMillis(), 0.f, yVel * density, false);
+            return;
+        } catch (NoSuchMethodError ignored) {}
+        try {
             Utils.callMethod(getContentViewCore(), "flingViewport", SystemClock.uptimeMillis(), 0, (int) (yVel * density));
             return;
-        } catch (NoSuchMethodError nsme) {
-
-        }
+        } catch (NoSuchMethodError ignored) {}
         try {
             Integer x = (Integer) Utils.callMethod(contentView, "computeHorizontalScrollOffset");
             Utils.callMethod(contentView, "scrollTo", x, y);
