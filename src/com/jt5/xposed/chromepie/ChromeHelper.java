@@ -294,8 +294,7 @@ class ChromeHelper {
 
     Object getLayoutManager() {
         try {
-            Object viewHolder = Utils.getObjectField(mActivity, "mCompositorViewHolder");
-            return Utils.getObjectField(viewHolder, "mLayoutManager");
+            return Utils.getObjectField(getCompositorViewHolder(), "mLayoutManager");
         } catch (NoSuchFieldError nsfe) {
 
         }
@@ -683,27 +682,48 @@ class ChromeHelper {
     }
 
     Integer getTopControlsHeight() {
+        if (isChromeHomeEnabled() || !doControlsResizeView()) return 0;
+        try {
+            return (Integer) Utils.callMethod(getCompositorViewHolder(), "getTopControlsHeightPixels");
+        } catch (NoSuchMethodError ignored) {}
         Object contentViewCore = getContentViewCore();
         if (contentViewCore == null) {
-            return getTopControlsDimen();
+            return getControlContainerHeightDimen("control_container_height");
         }
         try {
-            return (Boolean) Utils.getBooleanField(contentViewCore, "mTopControlsShrinkBlinkSize") ?
-                    (Integer) Utils.callMethod(contentViewCore, "getTopControlsHeightPix") : 0;
-        } catch (NoSuchFieldError | NoSuchMethodError e) {
-
-        }
-        try {
-            return (Integer) Utils.callMethod(contentViewCore, "getViewportSizeOffsetHeightPix");
+            return (Integer) Utils.callMethod(contentViewCore, "getTopControlsHeightPix");
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }
-        return getTopControlsDimen();
+        return getControlContainerHeightDimen("control_container_height");
     }
 
-    int getTopControlsDimen() {
-        int controlHeightId = getResIdentifier("control_container_height", "dimen");
-        return controlHeightId == 0 ? 0 : mActivity.getResources().getDimensionPixelSize(controlHeightId);
+    Integer getBottomControlsHeight() {
+        if (!isChromeHomeEnabled() || (!doControlsResizeView() && getTabCount() != 0)) return 0;
+        try {
+            return (Integer) Utils.callMethod(getCompositorViewHolder(), "getBottomControlsHeightPixels");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return getControlContainerHeightDimen("bottom_control_container_height");
+    }
+
+    private Boolean doControlsResizeView() {
+        try {
+            return (Boolean) Utils.callMethod(getCompositorViewHolder(), "controlsResizeView");
+        } catch (NoSuchMethodError ignored) {}
+        try {
+            Object contentViewCore = getContentViewCore();
+            return contentViewCore == null || Utils.getBooleanField(contentViewCore, "mTopControlsShrinkBlinkSize");
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
+        }
+        return true;
+    }
+
+    int getControlContainerHeightDimen(String resource) {
+        int id = getResIdentifier(resource, "dimen");
+        return id == 0 ? 0 : mActivity.getResources().getDimensionPixelSize(id);
     }
 
     Object getLocationBar() {
@@ -882,6 +902,43 @@ class ChromeHelper {
             XposedBridge.log(TAG + e);
         }
         return false;
+    }
+
+    private Object getCompositorViewHolder() {
+        try {
+            return Utils.getObjectField(mActivity, "mCompositorViewHolder");
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
+        }
+        return new Object();
+    }
+
+    Boolean isChromeHomeEnabled() {
+        try {
+            return (Boolean) Utils.callStaticMethod(Utils.CLASS_FEATURE_UTILS, "isChromeHomeEnabled");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return false;
+    }
+
+    Boolean isBottomSheetVisible() {
+        try {
+            Object bottomSheet = getBottomSheet();
+            return bottomSheet != null && (Boolean) Utils.callMethod(bottomSheet, "isVisible");
+        } catch (NoSuchMethodError nsme) {
+            XposedBridge.log(TAG + nsme);
+        }
+        return false;
+    }
+
+    private Object getBottomSheet() {
+        try {
+            return Utils.getObjectField(mActivity, "mBottomSheet");
+        } catch (NoSuchFieldError nsfe) {
+            XposedBridge.log(TAG + nsfe);
+        }
+        return null;
     }
 
 }

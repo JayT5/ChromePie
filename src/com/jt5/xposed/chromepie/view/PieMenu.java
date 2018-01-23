@@ -64,6 +64,8 @@ public class PieMenu extends FrameLayout {
 
         int getTopControlsHeight();
 
+        int getBottomControlsHeight();
+
     }
 
     private Point mCenter;
@@ -215,7 +217,7 @@ public class PieMenu extends FrameLayout {
     }
 
     private Trigger getTriggerPosition(float x, float y) {
-        if (y < mController.getTopControlsHeight()) {
+        if (y < mController.getTopControlsHeight() || y > getHeight() - mController.getBottomControlsHeight()) {
             return Trigger.NONE;
         }
         if ((x > mSlop) && (x < getWidth() - mSlop) && (y > getHeight() - mSlop)) {

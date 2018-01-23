@@ -376,7 +376,7 @@ class Item_scroll_to_top extends PieItem {
             Object contentView = helper.getContentView();
             Integer scrollOffset = (Integer) Utils.callMethod(contentView, "computeVerticalScrollOffset");
             Integer scrollExtent = (Integer) Utils.callMethod(contentView, "computeVerticalScrollExtent");
-            helper.scroll(contentView, scrollOffset + scrollExtent, -helper.getTopControlsDimen());
+            helper.scroll(contentView, scrollOffset + scrollExtent, -helper.getControlContainerHeightDimen("control_container_height"));
         } catch (NoSuchMethodError nsme) {
             XposedBridge.log(TAG + nsme);
         }

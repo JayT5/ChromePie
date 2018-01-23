@@ -183,6 +183,7 @@ public class PieControl implements PieMenu.PieController {
         return mEnabledTriggers.contains(triggerPosition)
                 && !mHelper.isInFullscreenVideo()
                 && !mHelper.touchScrollInProgress()
+                && (!mHelper.isChromeHomeEnabled() || !mHelper.isBottomSheetVisible())
                 && (mHelper.isCustomTabs() || ((mHelper.isInOverview() == (mHelper.getTabCount() == 0))
                 && (mHelper.getUrlBar() == null || !mHelper.getUrlBar().hasFocus())));
     }
@@ -195,6 +196,11 @@ public class PieControl implements PieMenu.PieController {
     @Override
     public int getTopControlsHeight() {
         return mHelper.getTopControlsHeight();
+    }
+
+    @Override
+    public int getBottomControlsHeight() {
+        return mHelper.getBottomControlsHeight();
     }
 
     private void populateMenu() {
