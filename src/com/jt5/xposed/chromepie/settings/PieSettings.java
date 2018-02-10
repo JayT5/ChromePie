@@ -63,15 +63,16 @@ public class PieSettings extends PreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getIntent().getExtras() == null || getIntent().getExtras().getString(PreferenceActivity.EXTRA_SHOW_FRAGMENT) == null) {
+        if (getIntent().getExtras() == null ||
+                getIntent().getExtras().getString(PreferenceActivity.EXTRA_SHOW_FRAGMENT) == null) {
             getFragmentManager().beginTransaction().replace(android.R.id.content, new PiePreferenceFragment()).commit();
         }
     }
 
     @Override
     public void onBackPressed() {
-        if (mCurrentFragment != null && mCurrentFragment instanceof SubPreferenceFragment) {
-            ((SubPreferenceFragment) mCurrentFragment).finishFragment();
+        if (mCurrentFragment != null && mCurrentFragment instanceof ItemsPreferenceFragment) {
+            ((ItemsPreferenceFragment) mCurrentFragment).finishFragment();
         } else {
             super.onBackPressed();
         }
@@ -86,7 +87,7 @@ public class PieSettings extends PreferenceActivity {
 
     @Override
     protected boolean isValidFragment(String fragmentName) {
-        return SubPreferenceFragment.class.getName().equals(fragmentName) ||
+        return ItemsPreferenceFragment.class.getName().equals(fragmentName) ||
                 MenuPreferenceFragment.class.getName().equals(fragmentName);
     }
 

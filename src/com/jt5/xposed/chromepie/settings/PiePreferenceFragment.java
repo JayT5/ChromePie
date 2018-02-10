@@ -58,7 +58,8 @@ public class PiePreferenceFragment extends PreferenceFragment {
         hideIcon.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                int state = (Boolean) newValue ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED : PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
+                int state = (Boolean) newValue ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED :
+                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
                 PackageManager pm = getActivity().getPackageManager();
                 pm.setComponentEnabledSetting(new ComponentName(getActivity(),
                         "com.jt5.xposed.chromepie.settings.PieSettings_Alias"), state, PackageManager.DONT_KILL_APP);

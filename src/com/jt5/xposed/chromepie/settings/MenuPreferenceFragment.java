@@ -25,6 +25,8 @@ import java.util.Map;
 
 public class MenuPreferenceFragment extends PreferenceFragment {
 
+    private static final int EDIT_ITEMS_REQUEST = 1;
+
     private SharedPreferences mSharedPrefs;
     private PreferenceCategory mPieMenuCat;
 
@@ -37,6 +39,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
         addPreferencesFromResource(R.xml.menu_preferences);
         mSharedPrefs = getActivity().getSharedPreferences(
                 getPreferenceManager().getSharedPreferencesName(), Context.MODE_WORLD_READABLE);
+
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         getActivity().getActionBar().setTitle(getResources().getString(R.string.edit_pie_menu_title));
@@ -90,7 +93,8 @@ public class MenuPreferenceFragment extends PreferenceFragment {
             Bundle extras = new Bundle();
             extras.putInt("slice", ((PieMainPreference) preference).getSlice());
             extras.putInt("count", mPieMenuCat.getPreferenceCount());
-            ((PreferenceActivity) getActivity()).startWithFragment(SubPreferenceFragment.class.getName(), extras, this, Activity.RESULT_CANCELED);
+            ((PreferenceActivity) getActivity()).startWithFragment(
+                        ItemsPreferenceFragment.class.getName(), extras, this, EDIT_ITEMS_REQUEST);
             return true;
         }
         return false;
@@ -98,7 +102,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == Activity.RESULT_OK) {
+        if (requestCode == EDIT_ITEMS_REQUEST && resultCode == Activity.RESULT_OK) {
             int slice = data.getIntExtra("slice", 1);
             String summary = data.getStringExtra("entry");
             PieMainPreference pref = (PieMainPreference) findPreference("screen_slice_" + slice);

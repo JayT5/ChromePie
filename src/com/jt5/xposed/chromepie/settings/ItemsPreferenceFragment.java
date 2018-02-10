@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.view.Menu;
@@ -13,7 +12,7 @@ import android.view.MenuItem;
 import com.jt5.xposed.chromepie.R;
 import com.jt5.xposed.chromepie.settings.preference.PieListPreference;
 
-public class SubPreferenceFragment extends PreferenceFragment {
+public class ItemsPreferenceFragment extends PreferenceFragment {
 
     private int mSlice;
     private int mCount;
@@ -22,9 +21,8 @@ public class SubPreferenceFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preference_screen);
-        Bundle extras = getArguments();
-        mSlice = extras.getInt("slice");
-        mCount = extras.getInt("count");
+        mSlice = getArguments().getInt("slice");
+        mCount = getArguments().getInt("count");
         setHasOptionsMenu(true);
         getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
         getActivity().getActionBar().setTitle(getResources().getString(R.string.slice) + " " + mSlice);
@@ -51,7 +49,8 @@ public class SubPreferenceFragment extends PreferenceFragment {
         Intent data = new Intent();
         data.putExtra("slice", mSlice);
         data.putExtra("entry", ((ListPreference) findPreference("slice_" + mSlice + "_item_" + mSlice)).getEntry());
-        ((PreferenceActivity) getActivity()).finishPreferencePanel(this, Activity.RESULT_OK, data);
+        getActivity().setResult(Activity.RESULT_OK, data);
+        getActivity().finish();
     }
 
     @Override
