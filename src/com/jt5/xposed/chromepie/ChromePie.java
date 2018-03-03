@@ -77,8 +77,9 @@ public class ChromePie implements IXposedHookZygoteInit, IXposedHookLoadPackage 
         final Resources resources;
         try {
             resources = activity.getPackageManager().getResourcesForApplication(PACKAGE_NAME);
-        } catch (PackageManager.NameNotFoundException e) {
-            XposedBridge.log(TAG + "Failed to initialise resources");
+            resources.getInteger(R.integer.qc_radius_increment);
+        } catch (PackageManager.NameNotFoundException | Resources.NotFoundException e) {
+            XposedBridge.log(TAG + "Failed to initialise resources. Have you rebooted? " + e);
             return;
         }
         final Handler handler = new Handler();
