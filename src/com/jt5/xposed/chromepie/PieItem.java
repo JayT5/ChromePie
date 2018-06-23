@@ -78,11 +78,8 @@ class Item_refresh extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        if (helper.isLoading()) {
-            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_stop_white));
-        } else {
-            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_refresh_white));
-        }
+        int drawable = helper.isLoading() ? R.drawable.ic_stop_white : R.drawable.ic_refresh_white;
+        ((ImageView) getView()).setImageDrawable(resources.getDrawable(drawable));
     }
 
     @Override
@@ -182,11 +179,8 @@ class Item_add_bookmark extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        if (helper.bookmarkExists()) {
-            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_add_bookmark_white));
-        } else {
-            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_added_bookmark_white));
-        }
+        int drawable = helper.bookmarkExists() ? R.drawable.ic_add_bookmark_white : R.drawable.ic_added_bookmark_white;
+        ((ImageView) getView()).setImageDrawable(resources.getDrawable(drawable));
         setEnabled(helper.editBookmarksSupported());
     }
 }
@@ -323,11 +317,9 @@ class Item_desktop_site extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        if (helper.isDesktopUserAgent()) {
-            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_mobile_site_white));
-        } else {
-            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_desktop_site_white));
-        }
+        int drawable = helper.isDesktopUserAgent() ? R.drawable.ic_mobile_site_white :
+                R.drawable.ic_desktop_site_white;
+        ((ImageView) getView()).setImageDrawable(resources.getDrawable(drawable));
     }
 }
 
@@ -338,11 +330,9 @@ class Item_fullscreen extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        if (helper.isFullscreen()) {
-            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_exit_white));
-        } else {
-            ((ImageView) getView()).setImageDrawable(resources.getDrawable(R.drawable.ic_fullscreen_white));
-        }
+        int drawable = helper.isFullscreen() ? R.drawable.ic_fullscreen_exit_white :
+                R.drawable.ic_fullscreen_white;
+        ((ImageView) getView()).setImageDrawable(resources.getDrawable(drawable));
     }
 
     @Override

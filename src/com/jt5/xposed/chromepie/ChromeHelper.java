@@ -778,12 +778,8 @@ class ChromeHelper {
     }
 
     private int getDefaultPrimaryColor() {
-        int color;
-        if (isIncognito()) {
-            color = getResIdentifier("incognito_primary_color", "color");
-        } else {
-            color = getResIdentifier("default_primary_color", "color");
-        }
+        String resource = isIncognito() ? "incognito_primary_color" : "default_primary_color";
+        int color = getResIdentifier(resource, "color");
         return color == 0 ? 0 : mActivity.getResources().getColor(color);
     }
 
