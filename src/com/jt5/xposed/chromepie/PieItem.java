@@ -546,6 +546,11 @@ class Item_recent_apps extends PieItem {
     }
 
     @Override
+    protected void onOpen(ChromeHelper helper, Resources resources) {
+        setEnabled(Build.VERSION.SDK_INT < Build.VERSION_CODES.N);
+    }
+
+    @Override
     public void onClick(ChromeHelper helper) {
         helper.toggleRecentApps();
     }
