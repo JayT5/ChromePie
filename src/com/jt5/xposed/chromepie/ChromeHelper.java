@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,13 +65,19 @@ class ChromeHelper {
         return mActivity.getResources().getIdentifier(id, type, mActivity.getPackageName());
     }
 
-    Boolean itemSelected(int id) {
+    boolean itemSelected(int id) {
         if (id != 0) {
             MenuItem item = mMenu.add(Menu.NONE, id, Menu.NONE, "");
             mMenu.removeItem(id);
             return mActivity.onOptionsItemSelected(item);
         }
         return false;
+    }
+
+    boolean dispatchKeyEvent(int keyCode, int metaState) {
+        final long now = SystemClock.uptimeMillis();
+        KeyEvent event = new KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 0, metaState);
+        return mActivity.onKeyDown(keyCode, event);
     }
 
     Object getCurrentTab() {
@@ -121,20 +128,6 @@ class ChromeHelper {
             XposedBridge.log(TAG + nsme);
         }
         return -1;
-    }
-
-    void showTabByIndex(int index) {
-        try {
-            Utils.callMethod(getTabModel(), "setIndex", index);
-            return;
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            Utils.callStaticMethod(Utils.CLASS_TAB_MODEL_UTILS, "setIndex", getTabModel(), index);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
     }
 
     void createNewTab() {
@@ -209,14 +202,8 @@ class ChromeHelper {
         try {
             Utils.callMethod(model, "closeTab", tabToClose, true, false, true);
             return;
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            Utils.callMethod(model, "closeTab", tabToClose);
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
+        } catch (NoSuchMethodError ignored) {}
+        dispatchKeyEvent(KeyEvent.KEYCODE_W, KeyEvent.META_CTRL_ON);
     }
 
     int getTabCount() {

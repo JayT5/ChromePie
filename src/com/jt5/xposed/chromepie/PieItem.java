@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Process;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -54,17 +55,7 @@ class Item_back extends PieItem {
     @Override
     public void onClick(ChromeHelper helper) {
         if (!helper.itemSelected(getMenuActionId())) {
-            try {
-                Utils.callMethod(helper.getActivity(), "goBack");
-                return;
-            } catch (NoSuchMethodError nsme) {
-
-            }
-            try {
-                Utils.callMethod(helper.getCurrentTab(), "goBack");
-            } catch (NoSuchMethodError nsme) {
-                XposedBridge.log(TAG + nsme);
-            }
+            helper.dispatchKeyEvent(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.META_ALT_ON);
         }
     }
 }
@@ -496,7 +487,7 @@ class Item_next_tab extends PieItem {
 
     @Override
     public void onClick(ChromeHelper helper) {
-        helper.showTabByIndex(helper.currentTabIndex() + 1);
+        helper.dispatchKeyEvent(KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON);
     }
 }
 
@@ -512,7 +503,7 @@ class Item_previous_tab extends PieItem {
 
     @Override
     public void onClick(ChromeHelper helper) {
-        helper.showTabByIndex(helper.currentTabIndex() - 1);
+        helper.dispatchKeyEvent(KeyEvent.KEYCODE_TAB, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON);
     }
 }
 
