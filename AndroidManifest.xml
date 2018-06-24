@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jt5.xposed.chromepie"
-    android:versionCode="19"
-    android:versionName="0.7.2" >
+    android:versionCode="20"
+    android:versionName="0.7.3" >
 
     <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="23" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
