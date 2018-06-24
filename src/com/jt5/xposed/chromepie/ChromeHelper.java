@@ -99,7 +99,7 @@ class ChromeHelper {
         try {
             return Utils.callMethod(mActivity, "getCurrentTab");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return new Object();
         }
     }
@@ -116,7 +116,7 @@ class ChromeHelper {
                 return Utils.callMethod(modelSelector, "getCurrentModel");
             }
         } catch (NoSuchFieldError | NoSuchMethodError e) {
-            XposedBridge.log(TAG + e);
+            Utils.log(TAG + e);
         }
         return new Object();
     }
@@ -125,7 +125,7 @@ class ChromeHelper {
         try {
             return (Integer) Utils.callMethod(getTabModel(), "index");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return -1;
     }
@@ -139,7 +139,7 @@ class ChromeHelper {
             Object tabCreator = Utils.callMethod(mActivity, "getTabCreator", false);
             Utils.callMethod(tabCreator, "launchUrl", url, getTabLaunchType());
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
     }
 
@@ -157,7 +157,7 @@ class ChromeHelper {
                 Utils.callMethod(tab, "loadUrl", urlParams);
             }
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
     }
 
@@ -166,7 +166,7 @@ class ChromeHelper {
         try {
             return XposedHelpers.newInstance(Utils.CLASS_LOAD_URL_PARAMS, url);
         } catch (Throwable t) {
-            XposedBridge.log(TAG + t);
+            Utils.log(TAG + t);
         }
         return null;
     }
@@ -191,7 +191,7 @@ class ChromeHelper {
             Class<?> contentVideoView = XposedHelpers.findClass("org.chromium.content.browser.ContentVideoView", mClassLoader);
             return Utils.callStaticMethod(contentVideoView, "getContentVideoView");
         } catch (ClassNotFoundError | NoSuchMethodError e) {
-            XposedBridge.log(TAG + e);
+            Utils.log(TAG + e);
         }
         return null;
     }
@@ -210,7 +210,7 @@ class ChromeHelper {
         try {
             return (Integer) Utils.callMethod(getTabModel(), "getCount");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return 1;
         }
     }
@@ -219,7 +219,7 @@ class ChromeHelper {
         try {
             return (String) Utils.callMethod(getCurrentTab(), "getUrl");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return "";
         }
     }
@@ -238,7 +238,7 @@ class ChromeHelper {
         try {
             Utils.callMethod(tab, "requestFocus");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
     }
 
@@ -269,7 +269,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callMethod(mActivity, "isInOverviewMode");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return false;
     }
@@ -288,7 +288,7 @@ class ChromeHelper {
         try {
             return Utils.callMethod(mActivity, "getLayoutManager");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return null;
     }
@@ -297,7 +297,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callMethod(getCurrentTab(), "getUseDesktopUserAgent");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return false;
         }
     }
@@ -306,7 +306,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callMethod(getCurrentTab(), "isLoading");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return false;
         }
     }
@@ -322,7 +322,7 @@ class ChromeHelper {
             Boolean isNativePage = (Boolean) Utils.callMethod(tab, "isNativePage");
             return !isNativePage && getWebContents() != null;
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return true;
         }
     }
@@ -331,7 +331,7 @@ class ChromeHelper {
         try {
             return (Long) Utils.callMethod(getCurrentTab(), "getBookmarkId") == -1L;
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return false;
         }
     }
@@ -340,7 +340,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callMethod(getCurrentTab(), "canGoBack");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return true;
         }
     }
@@ -349,7 +349,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callMethod(getCurrentTab(), "canGoForward");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return true;
         }
     }
@@ -361,7 +361,7 @@ class ChromeHelper {
                 return Utils.getBooleanField(fullscreenHandler, "mIsPersistentMode");
             }
         } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
+            Utils.log(TAG + nsfe);
         }
         return getVideoView() != null;
     }
@@ -374,7 +374,7 @@ class ChromeHelper {
                 return Utils.getObjectField(fullscreenManager, "mHtmlApiHandler");
             }
         } catch (NoSuchMethodError | NoSuchFieldError e) {
-            XposedBridge.log(TAG + e);
+            Utils.log(TAG + e);
         }
         return null;
     }
@@ -457,7 +457,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callMethod(getTabModel(), "isIncognito");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
             return false;
         }
     }
@@ -476,7 +476,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callStaticMethod(Utils.CLASS_DEVICE_UTILS, "isTablet", mActivity);
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return false;
     }
@@ -485,7 +485,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callStaticMethod(Utils.CLASS_FEATURE_UTILS, "canAllowSync", mActivity);
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return true;
     }
@@ -494,7 +494,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callMethod(Utils.callStaticMethod(Utils.CLASS_SERVICE_BRIDGE, "getInstance"), "isPrintingEnabled");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return true;
     }
@@ -506,7 +506,7 @@ class ChromeHelper {
                 return (Boolean) Utils.callMethod(bookmarkBridge, "isEditBookmarksEnabled");
             }
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return true;
     }
@@ -534,7 +534,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callStaticMethod(Utils.CLASS_SHORTCUT_HELPER, "isAddToHomeIntentSupported", mActivity);
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return true;
     }
@@ -549,7 +549,7 @@ class ChromeHelper {
         try {
             Utils.callStaticMethod(Utils.CLASS_DISTILLER_TAB_UTILS, "distillCurrentPageAndView", getWebContents());
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
     }
 
@@ -557,7 +557,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callStaticMethod(Utils.CLASS_DISTILLER_URL_UTILS, "isDistilledPage", getUrl());
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return false;
     }
@@ -575,7 +575,7 @@ class ChromeHelper {
         try {
             return (String) Utils.callStaticMethod(Utils.CLASS_DISTILLER_URL_UTILS, "getOriginalUrlFromDistillerUrl", getUrl());
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return "";
     }
@@ -594,7 +594,7 @@ class ChromeHelper {
         try {
             return (ComponentName) Utils.callStaticMethod(Utils.CLASS_SHARE_HELPER, "getLastShareComponentName", mActivity);
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return null;
     }
@@ -610,7 +610,7 @@ class ChromeHelper {
         try {
             return Utils.callMethod(tab, "getContentViewCore");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return null;
     }
@@ -619,7 +619,7 @@ class ChromeHelper {
         try {
             return Utils.getObjectField(getContentViewCore(), "mContainerViewInternals");
         } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
+            Utils.log(TAG + nsfe);
         }
         return new Object();
     }
@@ -631,7 +631,7 @@ class ChromeHelper {
                 return Utils.getBooleanField(contentViewCore, "mTouchScrollInProgress");
             }
         } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
+            Utils.log(TAG + nsfe);
         }
         return false;
     }
@@ -650,7 +650,7 @@ class ChromeHelper {
             Integer x = (Integer) Utils.callMethod(contentView, "computeHorizontalScrollOffset");
             Utils.callMethod(contentView, "scrollTo", x, y);
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
     }
 
@@ -658,7 +658,7 @@ class ChromeHelper {
         try {
             return Utils.callMethod(getCurrentTab(), "getWebContents");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return new Object();
     }
@@ -675,7 +675,7 @@ class ChromeHelper {
         try {
             return (Integer) Utils.callMethod(contentViewCore, "getTopControlsHeightPix");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return getControlContainerHeightDimen("control_container_height");
     }
@@ -685,7 +685,7 @@ class ChromeHelper {
         try {
             return (Integer) Utils.callMethod(getCompositorViewHolder(), "getBottomControlsHeightPixels");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return getControlContainerHeightDimen("bottom_control_container_height");
     }
@@ -698,7 +698,7 @@ class ChromeHelper {
             Object contentViewCore = getContentViewCore();
             return contentViewCore == null || Utils.getBooleanField(contentViewCore, "mTopControlsShrinkBlinkSize");
         } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
+            Utils.log(TAG + nsfe);
         }
         return true;
     }
@@ -728,7 +728,7 @@ class ChromeHelper {
         try {
             return (EditText) Utils.getObjectField(locationBar, "mUrlBar");
         } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
+            Utils.log(TAG + nsfe);
         }
         return null;
     }
@@ -737,7 +737,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callMethod(getLocationBar(), "isVoiceSearchEnabled");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return true;
     }
@@ -750,7 +750,7 @@ class ChromeHelper {
             Object statusBar = Utils.callStaticMethod(statusBarClass, "asInterface", statusBarBinder);
             Utils.callMethod(statusBar, "toggleRecentApps");
         } catch (Throwable t) {
-            XposedBridge.log(TAG + t);
+            Utils.log(TAG + t);
         }
     }
 
@@ -800,7 +800,7 @@ class ChromeHelper {
         try {
             return (Integer) Utils.callMethod(tab, "getThemeColor");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return getDefaultPrimaryColor();
     }
@@ -825,7 +825,7 @@ class ChromeHelper {
             Class<?> dataReduction = XposedHelpers.findClass("org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings", mClassLoader);
             return Utils.callStaticMethod(dataReduction, "getInstance");
         } catch (ClassNotFoundError | NoSuchMethodError e) {
-            XposedBridge.log(TAG + e);
+            Utils.log(TAG + e);
         }
         return new Object();
     }
@@ -834,7 +834,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callMethod(dataSettings, "isDataReductionProxyEnabled");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return false;
     }
@@ -850,7 +850,7 @@ class ChromeHelper {
             Utils.callMethod(dataSettings, "setDataReductionProxyEnabled", mActivity, enabled);
             return true;
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return false;
     }
@@ -864,7 +864,7 @@ class ChromeHelper {
         try {
             return (List) Utils.callMethod(recentsBridge, "getRecentlyClosedTabs");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return null;
     }
@@ -877,7 +877,7 @@ class ChromeHelper {
             return (recentTabs != null && !recentTabs.isEmpty()) ||
                     (Boolean) Utils.callMethod(rewoundTabs, "hasPendingClosures");
         } catch (NoSuchFieldError | NoSuchMethodError e) {
-            XposedBridge.log(TAG + e);
+            Utils.log(TAG + e);
         }
         return true;
     }
@@ -886,7 +886,7 @@ class ChromeHelper {
         try {
             return Utils.getObjectField(mActivity, "mCompositorViewHolder");
         } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
+            Utils.log(TAG + nsfe);
         }
         return new Object();
     }
@@ -895,7 +895,7 @@ class ChromeHelper {
         try {
             return (Boolean) Utils.callStaticMethod(Utils.CLASS_FEATURE_UTILS, "isChromeHomeEnabled");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return false;
     }
@@ -905,7 +905,7 @@ class ChromeHelper {
             Object bottomSheet = getBottomSheet();
             return bottomSheet != null && (Boolean) Utils.callMethod(bottomSheet, "isVisible");
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            Utils.log(TAG + nsme);
         }
         return false;
     }
@@ -914,7 +914,7 @@ class ChromeHelper {
         try {
             return Utils.getObjectField(mActivity, "mBottomSheet");
         } catch (NoSuchFieldError nsfe) {
-            XposedBridge.log(TAG + nsfe);
+            Utils.log(TAG + nsfe);
         }
         return null;
     }

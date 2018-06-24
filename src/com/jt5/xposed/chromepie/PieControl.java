@@ -296,7 +296,7 @@ public class PieControl implements PieMenu.PieController {
             mFinishPageLoadHook = XposedBridge.hookMethod(XposedHelpers.findMethodBestMatch(
                     mHelper.getCurrentTab().getClass(), "didFinishPageLoad"), pageLoadHook);
         } catch (Throwable t) {
-            XposedBridge.log(TAG + t);
+            Utils.log(TAG + t);
         }
     }
 

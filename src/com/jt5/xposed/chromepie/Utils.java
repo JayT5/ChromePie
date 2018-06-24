@@ -145,6 +145,11 @@ public class Utils {
         return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
+    public static void log(String text) {
+        if (isObfuscated()) return;
+        XposedBridge.log(text);
+    }
+
     static Map<String, ?> createDefaultsMap(Resources resources) {
         Map<String, Object> map = new HashMap<>();
         XmlResourceParser parser = resources.getXml(R.xml.aosp_preferences);
