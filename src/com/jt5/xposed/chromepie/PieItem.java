@@ -206,7 +206,7 @@ class Item_most_visited extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled(!helper.isIncognito());
+        setEnabled(!helper.isIncognito() && !Utils.isObfuscated());
     }
 
     @Override
@@ -409,7 +409,7 @@ class Item_direct_share extends PieItem {
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
         ComponentName compName = helper.getShareComponentName();
-        setEnabled(compName != null && !helper.isOnNewTabPage());
+        setEnabled((compName != null && !helper.isOnNewTabPage()) || Utils.isObfuscated());
         ImageView iv = (ImageView) getView();
         if (compName == null) {
             iv.setImageDrawable(resources.getDrawable(R.drawable.ic_direct_share_white));
@@ -472,7 +472,7 @@ class Item_next_tab extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled(helper.currentTabIndex() < helper.getTabCount() - 1);
+        setEnabled(helper.currentTabIndex() < helper.getTabCount() - 1 || Utils.isObfuscated());
     }
 
     @Override
@@ -488,7 +488,7 @@ class Item_previous_tab extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled(helper.currentTabIndex() > 0);
+        setEnabled(helper.currentTabIndex() > 0 || Utils.isObfuscated());
     }
 
     @Override
@@ -504,7 +504,8 @@ class Item_reader_mode extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled((helper.getWebContents() != null && helper.nativeIsUrlDistillable()) || helper.isDistilledPage());
+        setEnabled(!Utils.isObfuscated() && (helper.isDistilledPage() ||
+                (helper.getWebContents() != null && helper.nativeIsUrlDistillable())));
     }
 
     @Override
@@ -527,7 +528,7 @@ class Item_voice_search extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled(helper.isVoiceSearchEnabled());
+        setEnabled(helper.isVoiceSearchEnabled() && !Utils.isObfuscated());
     }
 
     @Override
@@ -566,6 +567,7 @@ class Item_toggle_data_saver extends PieItem {
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
         if (mResources == null) mResources = resources;
+        setEnabled(!Utils.isObfuscated());
         ImageView view = (ImageView) getView();
         if (helper.isDataReductionEnabled(helper.getDataReductionSettings())) {
             view.setColorFilter(0x7C000000);

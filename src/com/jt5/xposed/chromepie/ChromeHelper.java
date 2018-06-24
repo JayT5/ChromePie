@@ -884,7 +884,7 @@ class ChromeHelper {
         } catch (NoSuchFieldError | NoSuchMethodError e) {
             XposedBridge.log(TAG + e);
         }
-        return false;
+        return true;
     }
 
     private Object getCompositorViewHolder() {

@@ -120,6 +120,10 @@ public class Utils {
         return false;
     }
 
+    public static boolean isObfuscated() {
+        return CLASS_CHROME_APPLICATION == null;
+    }
+
     public static int getDarkenedColor(int color, float factor) {
         float[] statusColor = new float[3];
         Color.colorToHSV(color, statusColor);
