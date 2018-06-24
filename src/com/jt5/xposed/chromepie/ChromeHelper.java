@@ -247,16 +247,11 @@ class ChromeHelper {
             Object layout = getLayoutManager();
             if (layout != null) {
                 Utils.callMethod(layout, "showOverview", true);
+                return;
             }
-            return;
-        } catch (NoSuchMethodError nsme) {
-
-        }
-        try {
-            Utils.callMethod(mActivity, "toggleOverview");
-        } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
-        }
+        } catch (NoSuchMethodError ignored) {}
+        View tabSwitcherButton = getActivity().findViewById(getResIdentifier("tab_switcher_button"));
+        if (tabSwitcherButton != null) tabSwitcherButton.callOnClick();
     }
 
     Boolean isInOverview() {

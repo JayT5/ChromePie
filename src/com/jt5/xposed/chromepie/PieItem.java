@@ -245,10 +245,10 @@ class Item_show_tabs extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        int tabCount = helper.getTabCount();
-        setEnabled(tabCount != 0 && !helper.isTablet() && !helper.isCustomTabs());
-        TextView tv = (TextView) getView().findViewById(R.id.count_label);
-        tv.setText(Integer.toString(tabCount));
+        setEnabled(helper.getTabCount() != 0 && !helper.isTablet() && !helper.isCustomTabs());
+        if (Utils.isObfuscated()) return;
+        TextView tv = getView().findViewById(R.id.count_label);
+        tv.setText(Integer.toString(helper.getTabCount()));
     }
 
     @Override
@@ -258,12 +258,16 @@ class Item_show_tabs extends PieItem {
 
     @Override
     public void setAlpha(float alpha) {
-        final int alphaInt = Math.round(alpha * (isEnabled() ? 255 : 77));
-        final ImageView icon = (ImageView) getView().findViewById(R.id.count_icon);
-        final TextView count = (TextView) getView().findViewById(R.id.count_label);
-        icon.setAlpha((float) alphaInt / 255);
-        count.setTextColor(Color.argb(alphaInt, 255, 255, 255));
-        count.getBackground().setAlpha(alphaInt);
+        if (Utils.isObfuscated()) {
+            super.setAlpha(alpha);
+        } else {
+            final int alphaInt = Math.round(alpha * (isEnabled() ? 255 : 77));
+            final ImageView icon = getView().findViewById(R.id.count_icon);
+            final TextView count = getView().findViewById(R.id.count_label);
+            icon.setAlpha((float) alphaInt / 255);
+            count.setTextColor(Color.argb(alphaInt, 255, 255, 255));
+            count.getBackground().setAlpha(alphaInt);
+        }
     }
 }
 

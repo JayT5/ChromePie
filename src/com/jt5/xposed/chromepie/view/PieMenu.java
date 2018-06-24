@@ -149,6 +149,7 @@ public class PieMenu extends FrameLayout {
     }
 
     private void setTabCountBackgroundColor(int color) {
+        if (Utils.isObfuscated()) return;
         List<PieItem> items = findItemsById("show_tabs");
         for (PieItem item : items) {
             ((GradientDrawable) item.getView().findViewById(R.id.count_label)
