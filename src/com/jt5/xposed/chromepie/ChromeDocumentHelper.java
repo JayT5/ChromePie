@@ -6,8 +6,8 @@ import de.robv.android.xposed.XposedBridge;
 
 class ChromeDocumentHelper extends ChromeHelper {
 
-    ChromeDocumentHelper(Activity activity, ClassLoader classLoader) {
-        super(activity, classLoader);
+    ChromeDocumentHelper(Activity activity) {
+        super(activity);
     }
 
     @Override

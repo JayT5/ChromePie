@@ -23,9 +23,7 @@ import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XC_MethodHook.Unhook;
-import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
-import de.robv.android.xposed.XposedHelpers.ClassNotFoundError;
 
 class ChromeHelper {
 
@@ -35,11 +33,9 @@ class ChromeHelper {
     final Activity mActivity;
     private Unhook mFullscreenWindowFocusHook;
     private final Menu mMenu;
-    private final ClassLoader mClassLoader;
 
-    ChromeHelper(Activity activity, ClassLoader classLoader) {
+    ChromeHelper(Activity activity) {
         mActivity = activity;
-        mClassLoader = classLoader;
         PopupMenu popup = new PopupMenu(mActivity, null);
         mMenu = popup.getMenu();
     }
@@ -188,10 +184,9 @@ class ChromeHelper {
 
     private Object getVideoView() {
         try {
-            Class<?> contentVideoView = XposedHelpers.findClass("org.chromium.content.browser.ContentVideoView", mClassLoader);
-            return Utils.callStaticMethod(contentVideoView, "getContentVideoView");
-        } catch (ClassNotFoundError | NoSuchMethodError e) {
-            Utils.log(TAG + e);
+            return Utils.callStaticMethod(Utils.CLASS_CONTENT_VIDEO_VIEW, "getContentVideoView");
+        } catch (NoSuchMethodError nsme) {
+            Utils.log(TAG + nsme);
         }
         return null;
     }
@@ -744,9 +739,9 @@ class ChromeHelper {
 
     void toggleRecentApps() {
         try {
-            Class<?> serviceClass = XposedHelpers.findClass("android.os.ServiceManager", mClassLoader);
+            Class<?> serviceClass = Class.forName("android.os.ServiceManager");
             IBinder statusBarBinder = (IBinder) Utils.callStaticMethod(serviceClass, "getService", "statusbar");
-            Class<?> statusBarClass = XposedHelpers.findClass(statusBarBinder.getInterfaceDescriptor(), mClassLoader).getClasses()[0];
+            Class<?> statusBarClass = Class.forName(statusBarBinder.getInterfaceDescriptor()).getClasses()[0];
             Object statusBar = Utils.callStaticMethod(statusBarClass, "asInterface", statusBarBinder);
             Utils.callMethod(statusBar, "toggleRecentApps");
         } catch (Throwable t) {
@@ -822,10 +817,9 @@ class ChromeHelper {
 
     Object getDataReductionSettings() {
         try {
-            Class<?> dataReduction = XposedHelpers.findClass("org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings", mClassLoader);
-            return Utils.callStaticMethod(dataReduction, "getInstance");
-        } catch (ClassNotFoundError | NoSuchMethodError e) {
-            Utils.log(TAG + e);
+            return Utils.callStaticMethod(Utils.CLASS_DATA_REDUCTION_SETTINGS, "getInstance");
+        } catch (NoSuchMethodError nsme) {
+            Utils.log(TAG + nsme);
         }
         return new Object();
     }

@@ -74,13 +74,13 @@ public class PieControl implements PieMenu.PieController {
     private final boolean mApplyThemeColor;
     private int mThemeColor;
 
-    PieControl(Activity activity, Resources res, XSharedPreferences prefs, ClassLoader classLoader) {
+    PieControl(Activity activity, Resources res, XSharedPreferences prefs) {
         mActivity = activity;
-        Utils.initialise(classLoader);
-        if (Utils.isDocumentModeEnabled(mActivity, classLoader)) {
-            mHelper = new ChromeDocumentHelper(mActivity, classLoader);
+        Utils.initialise(mActivity.getClassLoader());
+        if (Utils.isDocumentModeEnabled(mActivity)) {
+            mHelper = new ChromeDocumentHelper(mActivity);
         } else {
-            mHelper = new ChromeHelper(mActivity, classLoader);
+            mHelper = new ChromeHelper(mActivity);
         }
         mXResources = res;
         mXPreferences = prefs;

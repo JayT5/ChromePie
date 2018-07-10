@@ -38,6 +38,8 @@ public class Utils {
     static Class<?> CLASS_SHORTCUT_HELPER;
     static Class<?> CLASS_TAB_LAUNCH_TYPE;
     static Class<?> CLASS_SHARE_HELPER;
+    static Class<?> CLASS_CONTENT_VIDEO_VIEW;
+    static Class<?> CLASS_DATA_REDUCTION_SETTINGS;
 
     static void initialise(ClassLoader classLoader) {
         String[] tabModelUtils = {
@@ -82,6 +84,12 @@ public class Utils {
         String[] shareHelper = {
                 "org.chromium.chrome.browser.share.ShareHelper"
         };
+        String[] contentVideoView = {
+                "org.chromium.content.browser.ContentVideoView"
+        };
+        String[] dataReductionSettings = {
+                "org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings"
+        };
 
         CLASS_TAB_MODEL_UTILS = getClass(classLoader, tabModelUtils);
         CLASS_LOAD_URL_PARAMS = getClass(classLoader, loadUrlParams);
@@ -94,6 +102,8 @@ public class Utils {
         CLASS_SHORTCUT_HELPER = getClass(classLoader, shortcutHelper);
         CLASS_TAB_LAUNCH_TYPE = getClass(classLoader, tabLaunchType);
         CLASS_SHARE_HELPER = getClass(classLoader, shareHelper);
+        CLASS_CONTENT_VIDEO_VIEW = getClass(classLoader, contentVideoView);
+        CLASS_DATA_REDUCTION_SETTINGS = getClass(classLoader, dataReductionSettings);
     }
 
     static void reloadPreferences(XSharedPreferences prefs) {
