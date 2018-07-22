@@ -125,7 +125,9 @@ public class PieControl implements PieMenu.PieController {
             defValue = prefs.getBoolean("chromepie_apply_fullscreen", false);
             prefs.edit().remove("chromepie_apply_fullscreen").apply();
         }
-        mHelper.setFullscreen(mXPreferences.getBoolean("launch_in_fullscreen", defValue));
+        if (mXPreferences.getBoolean("launch_in_fullscreen", defValue)) {
+            mHelper.setFullscreen(true);
+        }
     }
 
     private List<PieMenu.Trigger> initTriggerPositions() {
