@@ -395,7 +395,7 @@ public class Utils {
             field.setAccessible(true);
             fieldCache.put(fullFieldName, field);
             return field;
-        } catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException | NoClassDefFoundError e) {
             fieldCache.put(fullFieldName, null);
             throw new NoSuchFieldError(fullFieldName);
         }
