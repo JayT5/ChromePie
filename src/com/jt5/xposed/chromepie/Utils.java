@@ -6,6 +6,7 @@ import android.content.res.XmlResourceParser;
 import android.graphics.Color;
 import android.os.StrictMode;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.xmlpull.v1.XmlPullParser;
 
@@ -27,6 +28,8 @@ public class Utils {
     private static final Map<String, Field> fieldCache = new HashMap<>();
     private static final Map<String, Method> methodCache = new HashMap<>();
 
+    private static Boolean sIsObfuscated;
+
     static Class<?> CLASS_TAB_MODEL_UTILS;
     static Class<?> CLASS_LOAD_URL_PARAMS;
     static Class<?> CLASS_DEVICE_UTILS;
@@ -41,7 +44,7 @@ public class Utils {
     static Class<?> CLASS_CONTENT_VIDEO_VIEW;
     static Class<?> CLASS_DATA_REDUCTION_SETTINGS;
 
-    static void initialise(ClassLoader classLoader) {
+    static void initialise(ClassLoader classLoader, ChromeHelper helper) {
         String[] tabModelUtils = {
                 "org.chromium.chrome.browser.tabmodel.TabModelUtils",
                 "com.google.android.apps.chrome.tabmodel.TabModelUtils"
@@ -104,6 +107,8 @@ public class Utils {
         CLASS_SHARE_HELPER = getClass(classLoader, shareHelper);
         CLASS_CONTENT_VIDEO_VIEW = getClass(classLoader, contentVideoView);
         CLASS_DATA_REDUCTION_SETTINGS = getClass(classLoader, dataReductionSettings);
+
+        sIsObfuscated = Object.class.equals(helper.getTabModel().getClass());
     }
 
     static void reloadPreferences(XSharedPreferences prefs) {
@@ -115,23 +120,24 @@ public class Utils {
         }
     }
 
-    static Boolean isDocumentModeEnabled(Context context, ClassLoader classLoader) {
+    static Boolean isDocumentModeEnabled(Context context) {
+        Class<?> featureUtils;
         try {
-            return (Boolean) callStaticMethod(CLASS_FEATURE_UTILS, "isDocumentMode", context);
-        } catch (NoSuchMethodError nsme) {
-
-        }
+            featureUtils = getClass(context.getClassLoader(), new String[] {
+                    "org.chromium.chrome.browser.util.FeatureUtilities",
+                    "com.google.android.apps.chrome.utilities.FeatureUtilities"
+            });
+            return (Boolean) callStaticMethod(featureUtils, "isDocumentMode", context);
+        } catch (NoSuchMethodError e) {}
         try {
-            Class<?> featureUtilsInternal = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", classLoader);
-            return (Boolean) callStaticMethod(featureUtilsInternal, "isDocumentMode", context);
-        } catch (XposedHelpers.ClassNotFoundError | NoSuchMethodError e) {
-
-        }
+            featureUtils = XposedHelpers.findClass("com.google.android.apps.chrome.utilities.FeatureUtilitiesInternal", context.getClassLoader());
+            return (Boolean) callStaticMethod(featureUtils, "isDocumentMode", context);
+        } catch (XposedHelpers.ClassNotFoundError | NoSuchMethodError e) {}
         return false;
     }
 
     public static boolean isObfuscated() {
-        return CLASS_CHROME_APPLICATION == null;
+        return BooleanUtils.isNotFalse(sIsObfuscated);
     }
 
     public static int getDarkenedColor(int color, float factor) {

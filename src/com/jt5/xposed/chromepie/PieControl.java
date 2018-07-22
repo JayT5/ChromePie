@@ -76,12 +76,12 @@ public class PieControl implements PieMenu.PieController {
 
     PieControl(Activity activity, Resources res, XSharedPreferences prefs) {
         mActivity = activity;
-        Utils.initialise(mActivity.getClassLoader());
         if (Utils.isDocumentModeEnabled(mActivity)) {
             mHelper = new ChromeDocumentHelper(mActivity);
         } else {
             mHelper = new ChromeHelper(mActivity);
         }
+        Utils.initialise(mActivity.getClassLoader(), mHelper);
         mXResources = res;
         mXPreferences = prefs;
         Utils.reloadPreferences(mXPreferences);
