@@ -20,8 +20,6 @@ import com.jt5.xposed.chromepie.R;
 
 public class PiePreferenceFragment extends PreferenceFragment {
 
-    private SharedPreferences mPrefs;
-
     @SuppressLint("WorldReadableFiles")
     @SuppressWarnings("deprecation")
     @Override
@@ -29,18 +27,18 @@ public class PiePreferenceFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         getPreferenceManager().setSharedPreferencesMode(Context.MODE_WORLD_READABLE);
         addPreferencesFromResource(R.xml.main_preferences);
-        mPrefs = getActivity().getSharedPreferences(
+        SharedPreferences prefs = getActivity().getSharedPreferences(
                 getPreferenceManager().getSharedPreferencesName(), Context.MODE_WORLD_READABLE);
 
         // Committing a value to shared preferences ensures they are
         // world readable in case readability was reset somehow
-        boolean readable = mPrefs.getBoolean("readable", true);
-        mPrefs.edit().putBoolean("readable", !readable).commit();
+        boolean readable = prefs.getBoolean("readable", true);
+        prefs.edit().putBoolean("readable", !readable).commit();
         setHasOptionsMenu(true);
 
         // If SharedPreferences does not contain this preference,
         // we can presume this is a new install
-        if (!mPrefs.contains("screen_slice_1")) {
+        if (!prefs.contains("screen_slice_1")) {
             PreferenceManager.setDefaultValues(getActivity(), getPreferenceManager().getSharedPreferencesName(),
                     Context.MODE_WORLD_READABLE, R.xml.aosp_preferences, false);
         }
@@ -49,7 +47,7 @@ public class PiePreferenceFragment extends PreferenceFragment {
         killChrome.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                ((PieSettings) getActivity()).killProcesses(mPrefs, true);
+                ((PieSettings) getActivity()).killProcesses(true);
                 return true;
             }
         });
@@ -82,7 +80,7 @@ public class PiePreferenceFragment extends PreferenceFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.actionbar_kill:
-                ((PieSettings) getActivity()).killProcesses(mPrefs, false);
+                ((PieSettings) getActivity()).killProcesses(false);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

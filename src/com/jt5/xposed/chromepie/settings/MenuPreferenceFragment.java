@@ -120,7 +120,7 @@ public class MenuPreferenceFragment extends PreferenceFragment {
                 loadPreferences();
                 return true;
             case R.id.actionbar_kill:
-                ((PieSettings) getActivity()).killProcesses(mSharedPrefs, false);
+                ((PieSettings) getActivity()).killProcesses(false);
                 return true;
             case android.R.id.home:
                 getActivity().finish();
