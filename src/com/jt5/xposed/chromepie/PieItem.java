@@ -246,9 +246,9 @@ class Item_show_tabs extends PieItem {
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
         setEnabled(helper.getTabCount() != 0 && !helper.isTablet() && !helper.isCustomTabs());
-        if (Utils.isObfuscated()) return;
-        TextView tv = getView().findViewById(R.id.count_label);
-        tv.setText(Integer.toString(helper.getTabCount()));
+        TextView count = getView().findViewById(R.id.count_label);
+        if (count == null) return;
+        count.setText(Integer.toString(helper.getTabCount()));
     }
 
     @Override
@@ -258,12 +258,12 @@ class Item_show_tabs extends PieItem {
 
     @Override
     public void setAlpha(float alpha) {
-        if (Utils.isObfuscated()) {
+        ImageView icon = getView().findViewById(R.id.count_icon);
+        TextView count = getView().findViewById(R.id.count_label);
+        if (icon == null || count == null) {
             super.setAlpha(alpha);
         } else {
-            final int alphaInt = Math.round(alpha * (isEnabled() ? 255 : 77));
-            final ImageView icon = getView().findViewById(R.id.count_icon);
-            final TextView count = getView().findViewById(R.id.count_label);
+            int alphaInt = Math.round(alpha * (isEnabled() ? 255 : 77));
             icon.setAlpha((float) alphaInt / 255);
             count.setTextColor(Color.argb(alphaInt, 255, 255, 255));
             count.getBackground().setAlpha(alphaInt);

@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.view.KeyEvent;
@@ -15,10 +16,12 @@ import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
 
 import com.jt5.xposed.chromepie.broadcastreceiver.PieReceiver;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -202,11 +205,24 @@ class ChromeHelper {
     }
 
     int getTabCount() {
+        int count = getTabModelCount();
+        return count == -1 ? 1 : count;
+    }
+
+    int getTabModelCount() {
         try {
-            return (Integer) Utils.callMethod(getTabModel(), "getCount");
+            return (int) Utils.callMethod(getTabModel(), "getCount");
         } catch (NoSuchMethodError nsme) {
-            Utils.log(TAG + nsme);
-            return 1;
+            ImageView tabSwitcherButton = getActivity().findViewById(
+                    getResIdentifier("tab_switcher_button"));
+            if (tabSwitcherButton == null) return -1;
+            Drawable tabSwitcherDrawable = tabSwitcherButton.getDrawable();
+            Field tabCountField = XposedHelpers.findFirstFieldByExactType(
+                    tabSwitcherDrawable.getClass(), int.class);
+            return Math.min(XposedHelpers.getIntField(tabSwitcherDrawable, tabCountField.getName()), 99);
+        } catch (NoSuchFieldError nsfe) {
+            Utils.log(TAG + nsfe);
+            return -1;
         }
     }
 

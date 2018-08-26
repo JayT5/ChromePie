@@ -247,7 +247,7 @@ public class PieControl implements PieMenu.PieController {
     private BaseItem makeItem(String id, int iconRes, int action) {
         int itemSize = mXResources.getDimensionPixelSize(R.dimen.qc_item_size);
         View view;
-        if (id.equals("show_tabs") && !Utils.isObfuscated()) {
+        if (id.equals("show_tabs") && mHelper.getTabModelCount() != -1) {
             view = makeTabsView(iconRes);
         } else {
             view = new ImageView(mActivity);
