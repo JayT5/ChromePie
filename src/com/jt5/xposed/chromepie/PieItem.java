@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Process;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -352,7 +353,9 @@ class Item_scroll_to_top extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled(helper.getContentViewCore() != null);
+        setEnabled(helper.getContentViewCore() != null ||
+                (helper.getTabView() instanceof ViewGroup &&
+                        ((ViewGroup) helper.getTabView()).getChildCount() == 0));
     }
 
     @Override
@@ -363,7 +366,8 @@ class Item_scroll_to_top extends PieItem {
             Integer scrollExtent = (Integer) Utils.callMethod(contentView, "computeVerticalScrollExtent");
             helper.scroll(contentView, scrollOffset + scrollExtent, -helper.getControlContainerHeightDimen("control_container_height"));
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            View tabView = helper.getTabView();
+            if (tabView != null) tabView.scrollBy(0, Integer.MIN_VALUE);
         }
     }
 }
@@ -375,7 +379,9 @@ class Item_scroll_to_bottom extends PieItem {
 
     @Override
     protected void onOpen(ChromeHelper helper, Resources resources) {
-        setEnabled(helper.getContentViewCore() != null);
+        setEnabled(helper.getContentViewCore() != null ||
+                (helper.getTabView() instanceof ViewGroup &&
+                        ((ViewGroup) helper.getTabView()).getChildCount() == 0));
     }
 
     @Override
@@ -386,7 +392,8 @@ class Item_scroll_to_bottom extends PieItem {
             Integer scrollOffset = (Integer) Utils.callMethod(contentView, "computeVerticalScrollOffset");
             helper.scroll(contentView, -scrollRange + scrollOffset, scrollRange);
         } catch (NoSuchMethodError nsme) {
-            XposedBridge.log(TAG + nsme);
+            View tabView = helper.getTabView();
+            if (tabView != null) tabView.scrollBy(0, Integer.MAX_VALUE);
         }
     }
 }

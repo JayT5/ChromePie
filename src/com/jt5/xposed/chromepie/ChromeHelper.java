@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnSystemUiVisibilityChangeListener;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -282,7 +283,7 @@ class ChromeHelper {
         } catch (NoSuchMethodError nsme) {
             Utils.log(TAG + nsme);
         }
-        return false;
+        return getTabView() == null;
     }
 
     Object getLayoutManager() {
@@ -628,11 +629,18 @@ class ChromeHelper {
 
     Object getContentView() {
         try {
-            return Utils.getObjectField(getContentViewCore(), "mContainerViewInternals");
+            Object contentViewCore = getContentViewCore();
+            if (contentViewCore != null) {
+                return Utils.getObjectField(contentViewCore, "mContainerViewInternals");
+            }
         } catch (NoSuchFieldError nsfe) {
             Utils.log(TAG + nsfe);
         }
         return new Object();
+    }
+
+    View getTabView() {
+        return getCompositorViewHolder().getChildAt(1);
     }
 
     Boolean touchScrollInProgress() {
@@ -651,10 +659,6 @@ class ChromeHelper {
         float density = mActivity.getResources().getDisplayMetrics().density + 1;
         try {
             Utils.callMethod(getContentViewCore(), "flingViewport", SystemClock.uptimeMillis(), 0.f, yVel * density, false);
-            return;
-        } catch (NoSuchMethodError ignored) {}
-        try {
-            Utils.callMethod(getContentViewCore(), "flingViewport", SystemClock.uptimeMillis(), 0, (int) (yVel * density));
             return;
         } catch (NoSuchMethodError ignored) {}
         try {
@@ -892,13 +896,8 @@ class ChromeHelper {
         return true;
     }
 
-    private Object getCompositorViewHolder() {
-        try {
-            return Utils.getObjectField(mActivity, "mCompositorViewHolder");
-        } catch (NoSuchFieldError nsfe) {
-            Utils.log(TAG + nsfe);
-        }
-        return new Object();
+    private ViewGroup getCompositorViewHolder() {
+        return mActivity.findViewById(getResIdentifier("compositor_view_holder"));
     }
 
     Boolean isChromeHomeEnabled() {
